@@ -1,0 +1,24 @@
+/* XRMOVI vehicle XLSX column chooser. */
+.xrm-assets-heading-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#xrm-export-vehicles{white-space:normal}
+.xrm-vehicle-export-modal{position:fixed;inset:0;background:rgba(2,9,19,.84);z-index:10020;display:grid;place-items:center;padding:16px;overscroll-behavior:contain}
+.xrm-vehicle-export-modal[hidden]{display:none!important}
+.xrm-vehicle-export-panel{width:min(710px,100%);max-height:min(92dvh,850px);overflow-y:auto;background:#102a3c;color:#edfaff;border:1px solid #4b7487;border-radius:18px;box-shadow:0 28px 100px #0009;padding:24px;display:grid;gap:16px;font:14px/1.5 system-ui,sans-serif}
+.xrm-vehicle-export-panel header{display:flex;align-items:start;justify-content:space-between;gap:12px}
+.xrm-vehicle-export-panel header small{font-size:11px;letter-spacing:.12em;color:#65dfcc;font-weight:750}
+.xrm-vehicle-export-panel h2{font-size:23px;line-height:1.25;margin:6px 0 0;color:#fff}
+.xrm-vehicle-export-panel p{color:#bfd5df;margin:0;line-height:1.65;font-size:13px}
+.xrm-vehicle-export-panel button{cursor:pointer;background:#13384d;border:1px solid #47738a;border-radius:10px;padding:11px 14px;color:#d7f5ff;font:600 13px system-ui;min-height:42px}
+.xrm-vehicle-export-panel button.primary{background:#27c6ad;border-color:#27c6ad;color:#032e30;font-weight:800}
+.xrm-vehicle-export-panel button:hover{filter:brightness(1.1)}
+#xrm-vehicle-export-close{font-size:23px;line-height:1;padding:6px 14px}
+.xrm-vehicle-export-summary{background:#17394d;padding:10px 14px;border:1px solid #42677b;border-radius:9px;color:#c9e8f6;font-size:12px}
+.xrm-vehicle-export-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.xrm-vehicle-export-col{display:flex;gap:10px;align-items:center;padding:11px 12px;min-width:0;border-radius:10px;border:1px solid #335a70;background:#0b2233;cursor:pointer;color:#e5f5ff}
+.xrm-vehicle-export-col[data-fixed="true"]{border-color:#288f87;background:#113d43;cursor:default}
+.xrm-vehicle-export-col input{width:18px;height:18px;accent-color:#29c7ac;flex:none;cursor:pointer}
+.xrm-vehicle-export-col input:disabled{cursor:not-allowed;opacity:1}
+.xrm-vehicle-export-col span{min-width:0;overflow-wrap:anywhere}
+.xrm-vehicle-export-col small{margin-left:auto;color:#72e6ce;font-size:11px;font-weight:800}
+.xrm-vehicle-export-panel footer{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+@media(max-width:600px){.xrm-vehicle-export-panel{padding:16px}.xrm-vehicle-export-columns{grid-template-columns:1fr}.xrm-vehicle-export-panel footer{display:grid;grid-template-columns:1fr 1fr}.xrm-vehicle-export-panel footer .primary{grid-column:1/-1;grid-row:1}.xrm-vehicle-export-panel footer button{white-space:normal}}
