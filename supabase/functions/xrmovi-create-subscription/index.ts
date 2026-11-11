@@ -4,7 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.58.0";
 const json=(body:unknown,status=200,origin="https://frota.nospassa.com.br")=>new Response(JSON.stringify(body),{
  status,headers:{"content-type":"application/json; charset=utf-8","access-control-allow-origin":origin,"access-control-allow-methods":"POST, OPTIONS","access-control-allow-headers":"authorization, apikey, content-type, x-client-info, x-supabase-api-version","cache-control":"no-store","vary":"Origin"}
 });
-const originAllowed=(origin:string|null)=>origin===null||["https://frota.nospassa.com.br","https://www.frota.nospassa.com.br"].includes(origin);
+const originAllowed=(origin:string|null)=>origin===null||["https://frota.nospassa.com.br","https://www.frota.nospassa.com.br","https://xrmovi.com.br","https://www.xrmovi.com.br"].includes(origin);
 Deno.serve(async(req:Request)=>{
  const origin=req.headers.get("origin");
  if(!originAllowed(origin))return json({error:"Origem não autorizada"},403);
@@ -123,7 +123,7 @@ Deno.serve(async(req:Request)=>{
     external_reference:intentId,
     payer_email:String(intent.payer_email),
     auto_recurring:{frequency:1,frequency_type:"months",transaction_amount:price,currency_id:"BRL"},
-    back_url:"https://frota.nospassa.com.br/v3/#subscription",
+    back_url:(origin && (origin==="https://xrmovi.com.br" || origin==="https://www.xrmovi.com.br") ? "https://xrmovi.com.br" : "https://frota.nospassa.com.br")+"/v3/#subscription",
     status:"pending"
    })
   });
