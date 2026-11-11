@@ -1,0 +1,71 @@
+/* XRMOVI | páginas comerciais públicas. Escopo isolado para preservar o painel operacional. */
+body.seo-page{color-scheme:dark;--sea:#061723;--panel:#0c2938;--panel2:#103545;--line:#2b5361;--mint:#69e4bd;--light:#effcff;--muted:#b3cad3;--gold:#ffdca2}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body.seo-page{margin:0;min-height:100vh;background:radial-gradient(ellipse 900px 600px at 85% 4%,#124451 0,transparent 68%),var(--sea);color:var(--light);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.65}
+.seo-page a{color:inherit;text-decoration:none}
+.seo-page a:focus-visible,.seo-page summary:focus-visible{outline:2px solid var(--mint);outline-offset:3px}
+.seo-page .shell{width:min(1150px,calc(100% - 40px));margin:auto}
+.seo-page .top{border-bottom:1px solid var(--line);background:#061724e8;backdrop-filter:blur(12px);position:sticky;top:0;z-index:5}
+.seo-page .top .shell{min-height:75px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.seo-page .brand{font-size:21px;letter-spacing:-.7px;font-weight:900;white-space:nowrap}.seo-page .brand span{color:var(--mint)}.seo-page .brand small{display:block;font-size:10px;letter-spacing:1.25px;color:#a3c7d3;font-weight:700}
+.seo-page .top nav{display:flex;gap:18px;align-items:center;flex-wrap:wrap;font-size:12px;font-weight:750}
+.seo-page .top nav a:not(.btn){color:#c1d7df}.seo-page .top nav a:hover,.seo-page .textlink:hover{color:var(--mint)}
+.seo-page .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;padding:13px 19px;font-weight:800;font-size:13px;border:1px solid var(--mint);background:var(--mint);color:#072e36;white-space:nowrap}
+.seo-page .btn.secondary{background:transparent;color:var(--light);border-color:#557888}.seo-page .btn:hover{filter:brightness(1.08)}
+.seo-page .crumbs{font-size:12px;color:#acc7cf;margin-top:29px}.seo-page .crumbs a{color:var(--mint)}.seo-page .crumbs span{padding:0 9px;color:#779ba9}
+.seo-page .hero{padding:62px 0 75px}
+.seo-page .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:54px;align-items:center}
+.seo-page .eyebrow{text-transform:uppercase;color:var(--mint);font-size:11px;letter-spacing:1.75px;font-weight:900;margin:0 0 15px}
+.seo-page h1{font-size:clamp(36px,5.2vw,64px);letter-spacing:-2.2px;line-height:1.1;margin:0 0 24px;max-width:780px}
+.seo-page .lead{font-size:17px;color:#c4dbe3;max-width:700px;margin:0 0 26px}
+.seo-page .cta-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.seo-page .mini-note{font-size:12px;color:#a4c3cc;margin:15px 0 0}
+.seo-page .visual{background:linear-gradient(153deg,#114250,#0a2435 65%);border:1px solid #3c6874;border-radius:24px;padding:24px;box-shadow:0 28px 65px #0004}
+.seo-page .visual-top{display:flex;justify-content:space-between;gap:12px;font-size:12px;font-weight:750;color:#b2d4dc;margin-bottom:19px}
+.seo-page .visual-top strong{color:var(--mint)}
+.seo-page .visual-grid{display:grid;gap:12px}
+.seo-page .visual-row{background:#082131;border:1px solid #315764;border-radius:12px;padding:14px 17px;display:flex;align-items:center;justify-content:space-between;gap:15px;font-size:12px}
+.seo-page .visual-row span{color:#bdd3df}.seo-page .visual-row strong{font-size:13px;color:var(--light);text-align:right}
+.seo-page .visual-foot{font-size:11px;color:#a6c9d1;margin-top:16px}
+.seo-page .stripe{border-top:1px solid #163849;border-bottom:1px solid #163849;background:#081e2c}
+.seo-page .section{padding:75px 0}
+.seo-page h2{font-size:clamp(27px,3.2vw,39px);letter-spacing:-1.15px;line-height:1.2;margin:0 0 16px}
+.seo-page h3{font-size:17px;line-height:1.4;margin:0 0 9px}
+.seo-page .section-intro{max-width:800px;color:var(--muted);margin:0 0 28px}
+.seo-page .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.seo-page .card{background:linear-gradient(150deg,#103343,#0a2635);border:1px solid #305766;border-radius:16px;padding:23px}
+.seo-page .card .index{display:block;font-size:12px;color:var(--mint);font-weight:900;margin-bottom:19px}
+.seo-page .card p,.seo-page .subtext{color:var(--muted);font-size:14px;margin:0}
+.seo-page .two{display:grid;grid-template-columns:1fr 1fr;gap:35px;align-items:start}
+.seo-page .step-list{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:15px}
+.seo-page .step-list li{border-left:3px solid var(--mint);padding:8px 0 8px 20px}
+.seo-page .step-list strong{display:block;font-size:15px}.seo-page .step-list span{color:var(--muted);font-size:14px}
+.seo-page .example{border:1px solid #426b76;border-radius:16px;padding:25px;background:#0d2e3b}
+.seo-page .example h3{color:var(--mint)}
+.seo-page .example p,.seo-page .example li{color:#c9dce1;font-size:14px}
+.seo-page .example ul{padding-left:21px}
+.seo-page .faqs{display:grid;gap:10px;max-width:900px}
+.seo-page details{background:#0b2a3b;border:1px solid #315967;border-radius:13px;padding:16px 20px}
+.seo-page summary{font-size:15px;font-weight:800;cursor:pointer}
+.seo-page details p{font-size:14px;color:#c5d9e1;margin:12px 0 0}
+.seo-page .related{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.seo-page .related a{display:block;padding:20px;border:1px solid #365c69;border-radius:14px;background:#102d3a;font-weight:800;font-size:14px}
+.seo-page .related a span{display:block;font-weight:400;color:#b1cbd4;margin-top:8px;font-size:12px}
+.seo-page .related a:hover{border-color:var(--mint)}
+.seo-page .final-cta{border:1px solid #3c817b;background:linear-gradient(125deg,#16464a,#0b2a3b);border-radius:22px;padding:35px;display:flex;align-items:center;justify-content:space-between;gap:30px}
+.seo-page .final-cta h2{margin:0 0 10px;font-size:30px}.seo-page .final-cta p{margin:0;color:#c5dce1}
+.seo-page footer{border-top:1px solid #30505b;padding:30px 0;color:#aac6d1;font-size:12px}
+.seo-page footer .shell{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.seo-page footer a{color:var(--mint)}
+/* Links editoriais exibidos na landing atual, sem alterar componentes existentes. */
+.seo-hub{padding:64px 0;background:#081d2a;border-top:1px solid #274553}
+.seo-hub h2{font-size:clamp(27px,3vw,39px);letter-spacing:-1px;line-height:1.18;margin:10px 0 14px}
+.seo-hub .seo-hub-intro{max-width:770px;color:#b2cbd5;font-size:14px;margin:0 0 25px}
+.seo-hub .seo-hub-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.seo-hub .seo-hub-link{display:block;background:#0e2d3c;border:1px solid #365c68;border-radius:15px;padding:21px;color:#effcff;text-decoration:none}
+.seo-hub .seo-hub-link:hover{border-color:#67e1bb}
+.seo-hub .seo-hub-link strong{display:block;font-size:16px;margin-bottom:10px}
+.seo-hub .seo-hub-link span{color:#b2cbd5;font-size:12px}
+@media(max-width:900px){.seo-page .hero-grid,.seo-page .two{grid-template-columns:1fr}.seo-page .cards,.seo-page .related,.seo-hub .seo-hub-grid{grid-template-columns:1fr 1fr}.seo-page .hero{padding:42px 0 58px}.seo-page .visual{max-width:680px}}
+@media(max-width:660px){.seo-page .top .shell{align-items:flex-start;flex-direction:column;gap:10px;padding:12px 0}.seo-page .top nav{gap:12px}.seo-page .top nav a{font-size:11px}.seo-page .shell{width:min(100% - 30px,1150px)}.seo-page .cards,.seo-page .related,.seo-hub .seo-hub-grid{grid-template-columns:1fr}.seo-page .section{padding:50px 0}.seo-page .hero-grid{gap:28px}.seo-page h1{letter-spacing:-1.2px}.seo-page .final-cta{flex-direction:column;align-items:flex-start;padding:24px}.seo-page .final-cta h2{font-size:26px}.seo-page .btn{white-space:normal;text-align:center}.seo-page .cta-actions{align-items:stretch;flex-direction:column}.seo-page .visual{padding:16px}.seo-page .visual-row{padding:12px}.seo-hub{padding:50px 0}}
