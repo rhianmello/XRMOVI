@@ -1,0 +1,28 @@
+name: XRMOVI - Report with Fuel Receipts
+
+on:
+  push:
+    paths:
+      - 'v3/finance-receipts-report.js'
+      - 'tests/finance-receipts-report.test.mjs'
+      - '.github/workflows/test-finance-receipts-report.yml'
+  pull_request:
+    paths:
+      - 'v3/finance-receipts-report.js'
+      - 'tests/finance-receipts-report.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate report structure and access boundaries (mocked)
+        run: node --test tests/finance-receipts-report.test.mjs

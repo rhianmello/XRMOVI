@@ -1,0 +1,173 @@
+name: XRMOVI safe billing tests
+on:
+  push:
+    paths:
+      - 'supabase/functions/xrmovi-*/**'
+      - 'analytics/**'
+      - 'tests/ga4-confirmed-payments.test.mjs'
+      - 'tests/analytics-internal.test.mjs'
+      - 'tests/seo-core.test.mjs'
+      - 'supabase/tests/*.test.cjs'
+      - 'v3/xrmovi-adapter.js'
+      - 'v3/fuel-quality.js'
+      - 'v3/finance-receipts-report.js'
+      - 'v3/fines-core.js'
+      - 'v3/fines-module.js'
+      - 'v3/fines.css'
+      - 'v3/document-center.js'
+      - 'v3/tests/fines-module.test.cjs'
+      - 'supabase/migrations/*xrmovi_fines*.sql'
+      - 'supabase/migrations/*xrmovi_traffic_fines*.sql'
+      - 'v3/tests/fuel-liter-omission.test.cjs'
+      - 'v3/xrmovi-local-assistant.js'
+      - 'v3/xrmovi-assistant-brain.js'
+      - 'v3/xrmovi-local-model.js'
+      - 'v3/xrmovi-local-model-worker.js'
+      - 'v3/tests/assistant-local-model.test.cjs'
+      - 'v3/tests/assistant-brain.test.cjs'
+      - 'v3/xrmovi-local-assistant.css'
+      - 'v3/tests/assistant-layout.test.cjs'
+      - 'v3/index.html'
+      - 'v3/mileage.js'
+      - 'v3/mobile-experience.js'
+      - 'v3/vehicle-export.js'
+      - 'v3/vehicle-export.css'
+      - 'v3/tests/vehicle-export.test.cjs'
+      - 'v3/payment-email-notice.js'
+      - 'v3/onboarding.js'
+      - 'v3/subscription-panel.js'
+      - 'v3/pix-checkout.js'
+      - 'v3/tests/pix-payment.test.cjs'
+      - 'v3/tests/card-checkout-readiness.test.cjs'
+      - 'v3/renewal-reminder.js'
+      - 'v3/renewal-reminder.css'
+      - 'v3/tests/renewal-reminders.test.cjs'
+      - 'v3/subscription-panel.js'
+      - 'v3/xrmovi-guide-course.js'
+      - 'v3/tests/assistant-course.test.cjs'
+      - '.github/workflows/xrmovi-tests.yml'
+  pull_request:
+    paths:
+      - 'supabase/functions/xrmovi-*/**'
+      - 'analytics/**'
+      - 'tests/ga4-confirmed-payments.test.mjs'
+      - 'tests/analytics-internal.test.mjs'
+      - 'tests/seo-core.test.mjs'
+      - 'supabase/tests/*.test.cjs'
+      - 'v3/xrmovi-adapter.js'
+      - 'v3/fuel-quality.js'
+      - 'v3/finance-receipts-report.js'
+      - 'v3/fines-core.js'
+      - 'v3/fines-module.js'
+      - 'v3/fines.css'
+      - 'v3/document-center.js'
+      - 'v3/tests/fines-module.test.cjs'
+      - 'supabase/migrations/*xrmovi_fines*.sql'
+      - 'supabase/migrations/*xrmovi_traffic_fines*.sql'
+      - 'v3/tests/fuel-liter-omission.test.cjs'
+      - 'v3/xrmovi-local-assistant.js'
+      - 'v3/xrmovi-assistant-brain.js'
+      - 'v3/xrmovi-local-model.js'
+      - 'v3/xrmovi-local-model-worker.js'
+      - 'v3/tests/assistant-local-model.test.cjs'
+      - 'v3/tests/assistant-brain.test.cjs'
+      - 'v3/xrmovi-local-assistant.css'
+      - 'v3/tests/assistant-layout.test.cjs'
+      - 'v3/index.html'
+      - 'v3/mileage.js'
+      - 'v3/mobile-experience.js'
+      - 'v3/vehicle-export.js'
+      - 'v3/vehicle-export.css'
+      - 'v3/tests/vehicle-export.test.cjs'
+      - 'v3/payment-email-notice.js'
+      - 'v3/onboarding.js'
+      - 'v3/subscription-panel.js'
+      - 'v3/pix-checkout.js'
+      - 'v3/tests/pix-payment.test.cjs'
+      - 'v3/tests/card-checkout-readiness.test.cjs'
+      - 'v3/renewal-reminder.js'
+      - 'v3/renewal-reminder.css'
+      - 'v3/tests/renewal-reminders.test.cjs'
+      - 'v3/subscription-panel.js'
+      - 'v3/xrmovi-guide-course.js'
+      - 'v3/tests/assistant-course.test.cjs'
+      - '.github/workflows/xrmovi-tests.yml'
+permissions:
+  contents: read
+jobs:
+  billing-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate confirmed-purchase GA4 consent and queue guards
+        run: node --test tests/ga4-confirmed-payments.test.mjs
+      - name: Validate internal visitor exclusion and SEO
+        run: node --test tests/analytics-internal.test.mjs tests/seo-core.test.mjs
+      - name: Validate analytics script syntax
+        run: |
+          node --check analytics/xrmovi-analytics.js
+          node --check analytics/xrmovi-bridge.js
+      - name: Validate adapter JavaScript syntax
+        run: node --check v3/xrmovi-adapter.js
+      - name: Check vehicle Excel report and separate KM navigation
+        run: |
+          node --check v3/vehicle-export.js
+          node --check v3/mileage.js
+          node --test v3/tests/vehicle-export.test.cjs
+      - name: Verify missing fuel liters declaration, reports and consumption estimates
+        run: |
+          node --check v3/fuel-quality.js
+          node --check v3/finance-receipts-report.js
+          node --test v3/tests/fuel-liter-omission.test.cjs
+      - name: Validate and test traffic fine module, audits and Excel/PDF reports
+        run: |
+          node --check v3/fines-core.js
+          node --check v3/fines-module.js
+          node --check v3/document-center.js
+          node --test v3/tests/fines-module.test.cjs
+      - name: Validate local voice assistant JavaScript syntax
+        run: node --check v3/xrmovi-local-assistant.js
+      - name: Validate course knowledge base syntax
+        run: node --check v3/xrmovi-guide-course.js
+      - name: Validate contextual brain syntax
+        run: node --check v3/xrmovi-assistant-brain.js
+      - name: Test contextual conversation and authorized fleet tools
+        run: node --test v3/tests/assistant-brain.test.cjs
+      - name: Validate browser-side local model controller
+        run: node --check v3/xrmovi-local-model.js
+      - name: Validate worker as ES module
+        run: node --input-type=module --check < v3/xrmovi-local-model-worker.js
+      - name: Test local model opt-in, privacy and hardware fallback
+        run: node --test v3/tests/assistant-local-model.test.cjs
+      - name: Test local assistant lessons and routing
+        run: node --test v3/tests/assistant-course.test.cjs
+      - name: Test compact assistant layout and responsive controls
+        run: node --test v3/tests/assistant-layout.test.cjs
+      - name: Run isolated no-charge subscription tests
+        run: node --test supabase/tests/checkout_recovery.test.cjs supabase/tests/xrmovi_renewal.test.cjs supabase/tests/xrmovi_support_email.test.cjs
+      - name: Verify webhook signatures and redacted rejection diagnostics
+        run: node --test supabase/tests/pix_webhook_signature.test.cjs
+      - name: Verify signed recurring payment webhook and reject forged events
+        run: node --test supabase/tests/xrmovi_card_webhook_auth.test.cjs
+      - name: Test scheduled Mercado Pago invoice recovery without new charges
+        run: node --test supabase/tests/xrmovi_billing_sweep.test.cjs
+      - name: Test owner/admin cancellation never cancels another tenant
+        run: node --test supabase/tests/xrmovi_cancel_subscription.test.cjs
+      - name: Validate monthly Pix web modules
+        run: |
+          node --check v3/payment-email-notice.js
+          node --check v3/onboarding.js
+          node --check v3/subscription-panel.js
+          node --check v3/pix-checkout.js
+      - name: Run Pix no-charge security regressions
+        run: node --test v3/tests/pix-payment.test.cjs
+      - name: Verify card checkout readiness and safe pilot restrictions
+        run: node --test v3/tests/card-checkout-readiness.test.cjs
+      - name: Validate renewal reminder module
+        run: node --check v3/renewal-reminder.js
+      - name: Test renewal notice timing and outbound security
+        run: node --test v3/tests/renewal-reminders.test.cjs

@@ -1,0 +1,38 @@
+name: XRMOVI fast authenticated loading smoke
+on:
+  push:
+    paths:
+      - 'v3/tests/mobile-smoke-diagnostic.test.cjs'
+      - 'v3/mobile-experience.js'
+      - 'v3/mobile-experience.css'
+      - 'v3/mobile-refinement.css'
+      - 'v3/document-center.js'
+      - 'v3/tests/mobile-document-preview.test.cjs'
+      - 'v3/index.html'
+      - 'v3/xrmovi-adapter.js'
+      - 'v3/subscription-panel.js'
+      - '.github/workflows/xrmovi-fast-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Verify essential modules parse before browser launch
+        run: |
+          node --check --input-type=module < v3/subscription-panel.js
+          node --check --input-type=module < v3/xrmovi-adapter.js
+          node --check --input-type=module < v3/mobile-experience.js
+          node --check --input-type=module < v3/document-center.js
+          node --check v3/tests/mobile-document-preview.test.cjs
+      - run: npx playwright install chromium
+      - name: Authenticated desktop and mobile smoke with browser diagnostics
+        run: node --test --test-concurrency=1 v3/tests/mobile-smoke-diagnostic.test.cjs v3/tests/mobile-document-preview.test.cjs

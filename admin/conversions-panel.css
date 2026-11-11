@@ -1,0 +1,9 @@
+.conversion-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:17px}
+.conversion-metric{border-radius:12px;background:#123346;border:1px solid #316274;padding:15px;min-width:0;display:grid;gap:7px}
+.conversion-metric span{font-size:11px;color:#a8c9d6;font-weight:700}
+.conversion-metric strong{font-size:clamp(19px,2.1vw,28px);color:#76edc7;line-height:1.2;word-break:break-word}
+.conversion-metric small{font-size:10px;color:#91adbf}
+.conversion-note{padding:12px 18px;margin:0;color:#afcad5;font-size:12px;line-height:1.5}
+#view-conversions table{min-width:780px}
+@media(max-width:900px){.conversion-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:500px){.conversion-metrics{gap:8px;padding:10px}.conversion-metric{padding:10px}.conversion-metric strong{font-size:20px}}

@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta name="robots" content="noindex, nofollow"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#071725"><title>XRMOVI | Gestão comercial e clientes</title>
+<link rel="stylesheet" href="./seo-panel.css?v=20261103-1">
+<link rel="stylesheet" href="./conversions-panel.css?v=20261105-1">
+<style>
+:root{color-scheme:dark;--bg:#061523;--panel:#0d2839;--panel2:#102f43;--line:#2d4f61;--mint:#4fe2b8;--muted:#9abacb;--white:#edfaff;--danger:#f58a9c;--gold:#eac47b}*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 95% 0,#104351 0,transparent 42%),var(--bg);color:var(--white);font:14px/1.55 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,textarea{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}[hidden]{display:none!important}
+header{position:sticky;top:0;z-index:5;background:#071624ed;backdrop-filter:blur(14px);border-bottom:1px solid #2c4c5b;padding:12px clamp(16px,2.5vw,34px);display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{display:flex;gap:11px;align-items:center;font-size:18px;font-weight:850}.logo{width:37px;height:37px;display:grid;place-items:center;border-radius:11px;background:#13443c;border:1px solid #397d70;color:var(--mint);font-size:20px}.brand strong{color:var(--mint)}.brand small{font-size:10px;color:#93bec4;letter-spacing:1px;margin-left:4px}
+.actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.btn{background:#18374b;border:1px solid #3a6577;border-radius:9px;padding:9px 13px;color:#e8f7fa;font-weight:750;font-size:12px;cursor:pointer;white-space:nowrap}.btn:hover{border-color:#58dec3}.btn:disabled{opacity:.5;cursor:wait}.btn.primary{background:var(--mint);border-color:var(--mint);color:#06303a}.btn.danger{background:#542638;border-color:#985064;color:#ffdce1}.btn.ghost{background:transparent}
+main{max-width:1530px;padding:clamp(18px,2.5vw,34px);margin:auto}.eyebrow{color:var(--mint);font-weight:850;font-size:10px;letter-spacing:1.5px}.head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:22px}.head h1{font-size:clamp(25px,3vw,38px);margin:6px 0;letter-spacing:-1px;line-height:1.2}.head p{color:var(--muted);margin:0;font-size:13px}.account-identity{font-size:11px;color:#b2cbd5;overflow-wrap:anywhere}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:20px}.kpi{background:linear-gradient(150deg,#123247,#0a2536);border:1px solid #2d5364;border-radius:13px;padding:16px;min-width:0}.kpi span{display:block;color:#a2c8d4;font-size:10px;text-transform:uppercase;letter-spacing:.55px;min-height:30px}.kpi b{display:block;font-size:clamp(21px,2.5vw,32px);line-height:1.2;white-space:nowrap;letter-spacing:-.8px}.kpi small{display:block;font-size:10px;color:#8aa9bb;margin-top:8px}.kpi.money b{color:#84eacb}.kpi.warning b{color:#f2c68d}.kpi.blocked b{color:#ffa4b4}
+.tabs{display:flex;flex-wrap:wrap;gap:7px;border-bottom:1px solid #2a5060;padding:0 0 13px;margin-bottom:18px}.tabs button{background:transparent;border:1px solid transparent;border-radius:10px;color:#b4cad6;padding:9px 14px;font-size:12px;font-weight:750}.tabs button[aria-selected=true]{background:#17463f;color:#8af1cf;border-color:#2c8271}.tabs button:hover{border-color:#376678}
+.panel{border:1px solid #2c5263;background:#0b2638;border-radius:16px;overflow:hidden;margin-bottom:17px}.panel-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;border-bottom:1px solid #24485a;padding:16px 18px}.panel h2{font-size:16px;margin:0}.panel small{color:#91b1bf;font-size:11px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:710px}th,td{text-align:left;border-bottom:1px solid #254759;padding:12px 15px;font-size:12px}th{background:#113044;color:#91b8c9;font-size:10px;letter-spacing:.7px;text-transform:uppercase}td{color:#d5e7ef}tbody tr:hover{background:#123449}tbody tr:last-child td{border-bottom:0}.sub{display:block;color:#89aabd;font-size:10px;margin-top:4px}.empty{margin:0;padding:20px;color:#a6c5d1;font-size:12px}.pill{display:inline-flex;border-radius:999px;padding:4px 8px;background:#214156;color:#c8deea;font-size:10px;font-weight:750}.pill.active{background:#17473c;color:#70eec0}.pill.blocked{background:#562b38;color:#ffadb9}.pill.trial{background:#433c29;color:#f6d392}.pill.pending{background:#4a3929;color:#ffca83}
+.search{border:1px solid #3b6880;color:#fff;background:#061c2c;border-radius:9px;padding:10px 12px;font-size:12px;min-width:min(290px,100%)}.search:focus,textarea:focus{outline:2px solid #55e7bb;outline-offset:1px}.two-col{display:grid;grid-template-columns:1.22fr .78fr;gap:15px}.two-col>.panel{margin:0}.chart{display:flex;align-items:end;gap:9px;min-height:225px;padding:18px 20px 16px}.chart-col{flex:1;display:grid;grid-template-rows:1fr auto auto;justify-items:center;gap:7px;height:195px;min-width:0}.chart-space{width:100%;display:flex;align-items:end;height:153px;background:linear-gradient(180deg,#15394a0e,#16334444);border-radius:8px}.chart-bar{width:100%;min-height:3px;background:linear-gradient(0deg,#278a8d,#61eac0);border-radius:8px 8px 2px 2px}.chart-label{font-size:10px;color:#9cbdcc;white-space:nowrap}.chart-value{font-size:9px;color:#c7e8e5;font-variant-numeric:tabular-nums}
+.notice{margin-top:17px;border:1px solid #5e5a3f;background:#332f20;border-radius:11px;padding:13px 16px;color:#e9d7aa;font-size:12px}.notice.error{border-color:#925064;background:#3e2631;color:#ffd2dc}.notice.success{border-color:#367f6d;background:#173d37;color:#c2f6e4}.status{color:#c5e6d9;font-size:12px;min-height:20px;margin-bottom:12px}.screen{display:grid;place-content:center;text-align:center;min-height:45vh;gap:12px}.screen h2{margin:0}.screen p{color:#a5c4d4}.inbox{display:grid;grid-template-columns:minmax(250px,340px) minmax(0,1fr);min-height:490px}.contacts{border-right:1px solid #2c5367;overflow-y:auto;max-height:650px}.contact{display:grid;gap:3px;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid #234456;padding:14px;color:#dcecf6}.contact:hover,.contact.active{background:#154038}.contact b{font-size:12px}.contact small{font-size:11px;color:#92b2c4}.unread{color:#0a3033;background:#63edba;border-radius:99px;padding:2px 6px;font-size:10px;font-weight:800;float:right}.conversation{display:flex;flex-direction:column;min-width:0}.conversation-top{padding:15px;border-bottom:1px solid #2c5367;font-weight:750}.messages{min-height:280px;max-height:520px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;flex:1;background:#091e2f}.bubble{align-self:flex-start;max-width:min(80%,550px);padding:10px 13px;background:#1b3c50;border:1px solid #356176;border-radius:12px;overflow-wrap:anywhere;white-space:pre-wrap;font-size:12px}.bubble.mine{align-self:flex-end;background:#16493f;border-color:#387c68}.bubble small{display:block;margin-top:7px;font-size:9px;color:#a0c2c9;text-align:right}.compose{display:flex;gap:10px;padding:14px;border-top:1px solid #2c5367;align-items:flex-end}.compose textarea{resize:vertical;min-height:54px;max-height:155px;border:1px solid #3a6b7e;background:#061b29;border-radius:10px;color:white;flex:1;padding:11px;font-size:12px}
+footer{padding:20px;text-align:center;color:#849eae;font-size:11px}
+@media(max-width:1200px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:860px){.two-col{grid-template-columns:1fr}.inbox{grid-template-columns:1fr}.contacts{max-height:210px;border-right:0;border-bottom:1px solid #2c5367}}@media(max-width:550px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.kpi{padding:12px}.kpi b{font-size:21px}main{padding:17px 11px}.compose{flex-direction:column;align-items:stretch}.chart{gap:4px;padding:12px}.chart-label{font-size:8px}}
+.xrm-mail-setup{margin:10px 0 16px;padding:12px 16px;background:#0a2833;border:1px solid #386b72;border-radius:12px;color:#cce6eb;font-size:12px}
+.xrm-mail-setup summary{color:#83ecd1;font-weight:800;cursor:pointer}
+.xrm-mail-setup p{color:#b4d1dc}.xrm-mail-setup ol{padding-left:22px;display:grid;gap:9px}
+.xrm-mail-setup a{color:#83ecd1;text-decoration:underline;text-underline-offset:3px}
+.xrm-mail-setup code{background:#061927;padding:2px 5px;border-radius:4px;overflow-wrap:anywhere}
+.notice.billing-notice{background:#112d3c;border-color:#326176;color:#c8e3eb}
+.xrm-billing-setup{margin:8px 0 16px;padding:12px 16px;background:#0a2833;border:1px solid #386b72;border-radius:12px;color:#cce6eb;font-size:12px}
+.xrm-billing-setup summary{color:#83ecd1;font-weight:800;cursor:pointer}
+ .xrm-billing-setup[hidden]{display:none!important}
+.xrm-billing-setup p{color:#b4d1dc}.xrm-billing-setup ol{padding-left:22px;display:grid;gap:9px}
+.xrm-billing-setup a{color:#83ecd1;text-decoration:underline;text-underline-offset:3px}
+.xrm-billing-setup code{background:#061927;padding:2px 5px;border-radius:4px;overflow-wrap:anywhere}
+</style><link rel="icon" href="/pwa/icon.svg?v=20261110-brand-v2" type="image/svg+xml"></head><body>
+<header><a href="../" class="brand"><img class="xrmovi-official-mark" src="/assets/xrmovi-logo-oficial.svg?v=20261110-v2" alt="XRMOVI" width="164" height="40"><span><small>PROPRIETÁRIO</small></span></a><div class="actions"><a class="btn ghost" href="../v3/">Frota</a><button class="btn" id="refresh">Atualizar</button><button class="btn" id="signout">Sair</button></div></header>
+<main>
+ <div id="loading" class="screen"><h2>Validando administração</h2><p>Consultando permissões no Supabase…</p></div>
+ <div id="unauthorized" class="screen" hidden><h2>Acesso restrito</h2><p id="denied-text">Este usuário não é administrador do XRMOVI.</p><a class="btn" href="../">Voltar à landing</a></div>
+ <div id="content" hidden>
+  <div class="head"><div><div class="eyebrow">BI COMERCIAL · CLIENTES E FATURAMENTO</div><h1>Central do proprietário</h1><p>Controle a entrada de clientes, status de acesso, mensagens e movimentações financeiras.</p></div><div class="account-identity" id="user-label"></div></div>
+  <div class="kpis">
+   <div class="kpi"><span><span style="color:#4fe2b8">●</span> Pessoas online agora</span><b id="k-online">—</b><small id="online-detail">Conectando… · sem seu acesso</small></div>
+   <div class="kpi"><span>Contas cadastradas</span><b id="k-accounts">—</b><small>Clientes (sem o proprietário)</small></div>
+   <div class="kpi"><span>Aguardando pagamento</span><b id="k-trial">—</b><small>Contas sem assinatura ativa</small></div>
+   <div class="kpi"><span>Assinaturas ativas</span><b id="k-active">—</b><small>Situação registrada</small></div>
+   <div class="kpi warning"><span>Canceladas ou vencidas</span><b id="k-expired">—</b><small>Assinatura inativa</small></div>
+   <div class="kpi blocked"><span>Bloqueados</span><b id="k-blocked">—</b><small>Acesso à frota suspenso</small></div>
+   <div class="kpi money"><span>Recebimentos confirmados</span><b id="k-paid">—</b><small>Histórico do banco</small></div>
+  </div>
+  <div class="notice billing-notice" role="status" aria-live="polite"><strong>Pagamentos do XRMOVI:</strong> <span id="xrm-billing-health">Conferindo liberação de compras…</span></div>
+  <details id="xrm-billing-setup" class="xrm-billing-setup">
+   <summary>Verificações para liberar pagamentos públicos</summary>
+   <p>Essa limitação é uma proteção do próprio XRMOVI para testes, não uma lista de clientes autorizados pelo Mercado Pago. Após a liberação, qualquer cliente cadastrado poderá contratar por Pix ou cartão.</p>
+   <ol>
+    <li>Em <a href="https://www.mercadopago.com.br/developers/panel/app" target="_blank" rel="noopener noreferrer">Mercado Pago → Integrações → Webhooks</a>, confira a assinatura secreta da mesma aplicação que recebe os pagamentos. Notificações com HTTP 401 não foram validadas e precisam de correção antes da venda pública.</li>
+    <li>Em <a href="https://supabase.com/dashboard/project/ztqtcbzjesrkuaijmylm/functions/secrets" target="_blank" rel="noopener noreferrer">Supabase → Edge Functions → Secrets</a>, confira se <code>XRMOVI_MP_WEBHOOK_SECRET</code> corresponde à assinatura do Mercado Pago. Não cole esse segredo aqui, no GitHub ou no suporte.</li>
+    <li>Teste a entrega de um evento real existente: o webhook deve retornar <strong>HTTP 200</strong> e a assinatura deve ser ativada automaticamente, sem intervenção manual ou nova cobrança.</li>
+    <li><strong>Somente após o teste</strong>, configure <code>XRMOVI_BILLING_PILOT_ONLY</code> como <code>false</code> no Supabase Secrets. Isso libera pagamentos a todos os clientes cadastrados, sem autorizar e-mails individualmente.</li>
+   </ol>
+   <p>O login do cliente continua obrigatório. A configuração de avisos de suporte por e-mail abaixo é independente dos pagamentos.</p>
+  </details>
+  <div class="notice" role="status" aria-live="polite"><strong>Avisos de suporte por e-mail:</strong> <span id="xrm-mail-health">Verificando provedor de envio…</span></div>
+  <details id="xrm-mail-setup" class="xrm-mail-setup">
+   <summary>Ativar notificações por e-mail e recuperação de senha</summary>
+   <p>O servidor já possui a fila e o processamento automático. Para habilitar o envio é necessário vincular o Resend a um domínio verificado. Nunca informe sua chave privada neste site.</p>
+   <ol>
+    <li>Entre no <a href="https://resend.com/domains" target="_blank" rel="noopener noreferrer">Resend → Domains</a>, adicione seu domínio (por exemplo, <code>nospassa.com.br</code>) e publique no seu DNS os registros informados pelo provedor. Aguarde o status de envio verificado.</li>
+    <li>Em <a href="https://resend.com/api-keys" target="_blank" rel="noopener noreferrer">Resend → API Keys</a>, crie uma chave com permissão apenas para envio (Sending access).</li>
+    <li>Na <a href="https://supabase.com/dashboard/project/ztqtcbzjesrkuaijmylm/functions/secrets" target="_blank" rel="noopener noreferrer">área de Secrets do Supabase</a>, cadastre <code>XRMOVI_RESEND_API_KEY</code> com a chave privada e <code>XRMOVI_SUPPORT_MAIL_FROM</code> com um remetente do domínio verificado, por exemplo <code>XRMOVI &lt;avisos@nospassa.com.br&gt;</code>.</li>
+    <li>Para o cliente recuperar a senha, habilite o SMTP personalizado em Supabase → Authentication → SMTP Settings, usando host <code>smtp.resend.com</code>, porta <code>465</code>, usuário <code>resend</code> e a chave de envio como senha. Remetente sugerido: <code>acesso@nospassa.com.br</code>, após verificação do domínio.</li>
+    <li>Em Supabase → Authentication → URL Configuration, autorize exatamente <code>https://frota.nospassa.com.br/redefinir-senha.html</code> e teste com uma conta de homologação.</li>
+   </ol>
+   <p>Os novos avisos de suporte serão enviados para o e-mail do proprietário já configurado no servidor. A configuração não gera cobrança Mercado Pago.</p>
+  </details>
+  <div id="feedback" class="status" role="status" aria-live="polite"></div>
+  <nav class="tabs" aria-label="Áreas da administração">
+   <button data-tab="overview" aria-selected="true">Visão executiva</button><button data-tab="customers" aria-selected="false">Clientes</button><button data-tab="signups" aria-selected="false">Todos os cadastros</button><button data-tab="messages" aria-selected="false">Mensagens <span id="nav-unread"></span></button><button data-tab="payments" aria-selected="false">Pagamentos</button><button data-tab="requests" aria-selected="false">Solicitações</button><button data-tab="seo" aria-selected="false">SEO no Google</button><button data-tab="conversions" aria-selected="false">Vendas e conversões</button>
+  </nav>
+  <div id="view-overview" class="tab-view">
+   <div class="two-col">
+    <section class="panel"><div class="panel-head"><h2>Receita confirmada por mês</h2><small id="revenue-total"></small></div><div id="revenue-chart" class="chart" aria-label="Receita confirmada por mês"></div></section>
+    <section class="panel"><div class="panel-head"><h2>Carteira de clientes</h2><small>Contas e acessos</small></div><div style="padding:18px;display:grid;gap:13px" id="portfolio-breakdown"></div></section>
+   </div>
+   <section class="panel" style="margin-top:17px"><div class="panel-head"><h2>Últimos cadastros</h2><button class="btn ghost" data-goto="customers">Ver clientes</button></div><div class="table-wrap"><table><thead><tr><th>Cliente / empresa</th><th>Plano</th><th>Situação</th><th>Entrada</th><th>Autorização</th></tr></thead><tbody id="recent-customers"></tbody></table></div></section>
+   <div class="notice">Os valores financeiros exibidos são os recebimentos efetivamente confirmados no histórico do banco. O painel não considera mensalidades previstas como dinheiro recebido. A situação das credenciais aparece no diagnóstico acima.</div>
+  </div>
+  <section id="view-customers" class="panel tab-view" hidden><div class="panel-head"><h2>Clientes cadastrados</h2><input class="search" id="customer-search" placeholder="Buscar cliente ou empresa…" type="search"></div><div class="notice" style="margin:0 18px 12px">A autorização manual libera a operação por prazo definido, mas <strong>não confirma pagamento</strong>. Somente o proprietário pode conceder ou revogar. Toda ação é auditada.</div><div class="table-wrap"><table><thead><tr><th>Cliente / empresas</th><th>Plano</th><th>Assinatura</th><th>Veículos</th><th>Acesso</th><th>Entrada</th><th>Ações</th></tr></thead><tbody id="customers-body"></tbody></table></div></section>
+  <section id="view-signups" class="panel tab-view" hidden><div class="panel-head"><h2>Todos os cadastros</h2><input class="search" id="signup-search" placeholder="Buscar e-mail…" type="search"></div><div class="notice" style="margin:0 18px 12px">Inclui usuários que ainda não escolheram plano ou não possuem empresa. Dados disponíveis somente ao administrador. Não são enviados e-mails automaticamente; campanhas futuras deverão respeitar consentimento e opção de descadastro.</div><div class="table-wrap"><table><thead><tr><th>E-mail</th><th>Cadastro</th><th>E-mail confirmado</th><th>Já entrou</th><th>Situação</th></tr></thead><tbody id="signups-body"></tbody></table></div></section><section id="view-messages" class="panel tab-view" hidden><div class="panel-head"><h2>Caixa de mensagens</h2><small>Conversa privada com o titular de cada conta</small></div><div class="inbox"><div class="contacts" id="contacts"></div><div class="conversation"><div class="conversation-top" id="thread-title">Selecione um cliente</div><div class="messages" id="thread-messages"><p class="empty">Escolha uma conta para conversar.</p></div><form class="compose" id="message-form"><textarea id="message-body" placeholder="Digite sua mensagem ao cliente…" maxlength="3000" required></textarea><button class="btn primary" type="submit">Enviar</button></form></div></div></section>
+  <section id="view-payments" class="panel tab-view" hidden><div class="panel-head"><h2>Recebimentos confirmados</h2><small>Não inclui tentativas sem confirmação</small></div><div class="table-wrap"><table><thead><tr><th>Data</th><th>Cliente</th><th>Valor</th><th>Provedor</th></tr></thead><tbody id="payments-body"></tbody></table></div></section>
+  <section id="view-requests" class="panel tab-view" hidden><div class="panel-head"><h2>Solicitações de plano</h2><small>Acompanhe os interessados</small></div><div class="table-wrap"><table><thead><tr><th>Data</th><th>Empresa</th><th>Plano solicitado</th><th>Estado</th></tr></thead><tbody id="requests-body"></tbody></table></div></section>
+  <section id="view-seo" class="tab-view" hidden aria-label="SEO e desempenho no Google"><p class="empty">Abra esta aba para consultar as métricas e a situação de indexação.</p></section>
+  <section id="view-conversions" class="tab-view" hidden aria-label="Aquisição de clientes e vendas verificadas"><p class="empty">Abra esta aba para consultar os pagamentos confirmados e a origem das campanhas.</p></section>
+ </div>
+</main><footer>XRMOVI · Administração comercial protegida · Bloqueios auditados no Supabase</footer>
+<script type="module">
+import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.58.0';
+const el=id=>document.getElementById(id),number=n=>Number(n||0).toLocaleString('pt-BR'),money=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}),date=d=>d?new Date(d).toLocaleDateString('pt-BR'):'—';
+const node=(tag,text='',className='')=>{const n=document.createElement(tag);n.textContent=String(text??'');if(className)n.className=className;return n};
+const emptyRows=(body,cols,msg)=>{const tr=node('tr'),td=node('td',msg);td.colSpan=cols;tr.append(td);body.append(tr)};
+const cell=(tr,value)=>{tr.append(node('td',value??'—'))};
+const pill=(tr,text,tone='')=>{const td=node('td'),span=node('span',text,'pill '+tone);td.append(span);tr.append(td)};
+const show=id=>{for(const x of ['loading','unauthorized','content'])el(x).hidden=x!==id};
+let db,info={accounts:[],summary:{},revenue:[],payments:[],requests:[]},signups=[],threadId=null,tab='overview';
+function status(text,type=''){el('feedback').textContent=text;el('feedback').className='status '+type}
+async function rpc(fn,args){const {data,error}=await db.rpc('xrmovi_'+fn,args);if(error)throw Error(error.message);return data}
+function rowCustomer(c,full=false){
+ const manual=Boolean(c.manual_access?.active&&Date.parse(c.manual_access.valid_until)>Date.now());
+  const recurring=Boolean(c.recurring?.has_recurring);
+ const manualUntil=manual?date(c.manual_access.valid_until):'';
+ const tr=node('tr');const first=node('td');const bold=node('b',c.email),companies=node('span',(c.companies||[]).map(x=>x.name).join(' · ')||'Sem empresa','sub');first.append(bold,companies);tr.append(first);
+ cell(tr,(c.plan||'—').toUpperCase()+(c.price?' · '+money(c.price):''));
+ const expired=c.status==='trial'&&c.trial_end&&Date.parse(c.trial_end)<Date.now();
+ // Show manual operating access in the recent list; preserve financial status in full customer details.
+ const manualVisible=!full&&!c.blocked&&manual&&c.status!=='active'&&!expired;
+ const displayStatus=manualVisible?'Acesso autorizado':expired?'Teste vencido':c.status==='canceled'?'Renovação cancelada':c.status==='pending'?'Aguardando pagamento':c.status||'—';
+ pill(tr,displayStatus,manualVisible?'active':expired?'blocked':c.status==='active'?'active':'pending');
+ if(manualVisible){
+  const statusCell=tr.lastElementChild;
+  statusCell.querySelector('.pill').title='Acesso liberado manualmente; não indica pagamento confirmado.';
+  statusCell.append(node('span','Liberação manual até '+manualUntil,'sub'));
+ }else if(manual)tr.lastElementChild.append(node('span','Operação autorizada manualmente até '+manualUntil,'sub'));
+  if(c.status==='canceled'&&c.paid_through)tr.lastElementChild.append(node('span','Acesso pago até '+date(c.paid_through),'sub'));
+ if(full){
+  cell(tr,number(c.vehicles));
+  const accessText=c.blocked?'Bloqueado':manual?'Manual até '+manualUntil:c.status==='active'?'Assinatura ativa':'Pagamento pendente';
+  pill(tr,accessText,c.blocked?'blocked':manual||c.status==='active'?'active':'pending');
+ }
+ cell(tr,date(c.created_at));
+ const td=node('td'),actions=node('div','','actions');
+ const manualButton=node('button',manual?'Revogar autorização':'Autorizar acesso','btn '+(manual?'danger':'primary'));
+ manualButton.type='button';manualButton.disabled=Boolean(c.blocked&&!manual);
+ manualButton.title=c.blocked&&!manual?'Remova o bloqueio administrativo antes de autorizar.':manual?'Revogar liberação temporária':'Permitir operação temporária sem registrar pagamento';
+ manualButton.onclick=()=>void changeManualAccess(c);
+ actions.append(manualButton);
+ if(full){
+  const toggle=node('button',c.blocked?'Desbloquear':'Bloquear','btn '+(c.blocked?'primary':'danger'));
+  toggle.type='button';toggle.onclick=()=>void changeAccess(c);
+  const chat=node('button','Mensagem'+(c.unread?' ('+c.unread+')':''),'btn');
+  chat.type='button';chat.onclick=()=>{threadId=c.id;openTab('messages');void loadThread()};
+  actions.append(toggle,chat);
+   if(recurring&&c.status==='active'){
+    const cancel=node('button','Cancelar renovação','btn danger');
+    cancel.type='button';cancel.title='Cancelar as próximas cobranças no Mercado Pago, mantendo o período já pago.';
+    cancel.onclick=()=>void cancelCustomerRecurring(c);
+    actions.append(cancel);
+   }
+ }
+ td.append(actions);tr.append(td);
+ return tr;
+}
+function commercialAccounts(){
+ // A conta proprietária é administrativa, não um cliente comercial.
+ return (info.accounts||[]).filter(a=>String(a.email||'').trim().toLowerCase()!=='rhian.udm@gmail.com');
+}
+function render(){
+ const s={...(info.summary||{})};
+ const owner=(info.accounts||[]).find(a=>String(a.email||'').trim().toLowerCase()==='rhian.udm@gmail.com');
+ if(owner){
+  s.accounts=Math.max(0,Number(s.accounts||0)-1);
+  if(owner.status==='pending')s.trial=Math.max(0,Number(s.trial||0)-1);
+  if(owner.status==='active')s.active=Math.max(0,Number(s.active||0)-1);
+  if(owner.blocked)s.blocked=Math.max(0,Number(s.blocked||0)-1);
+  if(owner.status==='canceled'||owner.status==='expired')s.expired=Math.max(0,Number(s.expired||0)-1);
+ }
+ for(const [key,id] of [['accounts','k-accounts'],['trial','k-trial'],['active','k-active'],['expired','k-expired'],['blocked','k-blocked']])el(id).textContent=number(s[key]);
+ el('k-paid').textContent=money(s.paid_total);
+ el('nav-unread').textContent=s.unread?'('+s.unread+')':'';
+ const chart=el('revenue-chart');chart.replaceChildren();
+ const monthly=new Map((info.revenue||[]).map(row=>[row.period,Number(row.amount)||0]));
+ const months=Array.from({length:12},(_,i)=>{const now=new Date();now.setDate(1);now.setMonth(now.getMonth()-(11-i));return now.toISOString().slice(0,7)});
+ const max=Math.max(1,...months.map(x=>monthly.get(x)||0));
+ for(const month of months){const value=monthly.get(month)||0;const col=node('div','','chart-col'),space=node('div','','chart-space'),bar=node('div','','chart-bar');bar.style.height=Math.max(2,value/max*100)+'%';bar.title=month+': '+money(value);space.append(bar);col.append(space,node('span',month.slice(5),'chart-label'),node('span',value?money(value):'—','chart-value'));chart.append(col)}
+ el('revenue-total').textContent='Total: '+money(s.paid_total);
+ const portfolio=el('portfolio-breakdown');portfolio.replaceChildren();
+ for(const [label,value,tone] of [['Aguardando pagamento',s.trial,'pending'],['Assinaturas ativas',s.active,'active'],['Assinaturas vencidas/canceladas',s.expired,'blocked'],['Contas bloqueadas',s.blocked,'blocked'],['Mensagens não lidas',s.unread,'pending'],['Mensalidades de referência',money(s.mrr),'active']]){
+  const line=node('div');line.style.cssText='display:flex;justify-content:space-between;align-items:center;gap:12px';line.append(node('span',label),node('span',value,'pill '+tone));portfolio.append(line)
+ }
+ const recent=el('recent-customers');recent.replaceChildren();commercialAccounts().slice(0,7).forEach(c=>recent.append(rowCustomer(c)));if(!recent.children.length)emptyRows(recent,5,'Ainda não há clientes.');
+ renderCustomers();renderSignups();renderPayments();renderRequests();renderContacts();
+}
+function renderCustomers(){
+ const root=el('customers-body');root.replaceChildren();const q=el('customer-search').value.toLocaleLowerCase('pt-BR');
+ const list=commercialAccounts().filter(c=>(c.email+' '+(c.companies||[]).map(x=>x.name).join(' ')).toLocaleLowerCase('pt-BR').includes(q));
+ for(const c of list)root.append(rowCustomer(c,true));if(!list.length)emptyRows(root,7,'Nenhum cliente encontrado.')
+}
+function renderSignups(){
+ const root=el('signups-body');root.replaceChildren();
+ const q=el('signup-search').value.trim().toLocaleLowerCase('pt-BR');
+ const rows=signups.filter(u=>u.email?.toLocaleLowerCase('pt-BR').includes(q)&&u.email?.toLowerCase()!=='rhian.udm@gmail.com');
+ for(const u of rows){
+  const tr=node('tr');cell(tr,u.email);cell(tr,date(u.created_at));
+  pill(tr,u.email_confirmed?'Sim':'Não',u.email_confirmed?'active':'pending');
+  pill(tr,u.has_signed_in?'Sim':'Não',u.has_signed_in?'active':'pending');
+  pill(tr,u.has_billing_account?'Conta comercial criada':u.has_company?'Empresa vinculada':u.has_plan_request?'Plano solicitado':'Cadastro sem plano',u.has_billing_account?'active':'pending');
+  root.append(tr);
+ }
+ if(!rows.length)emptyRows(root,5,'Nenhum cadastro encontrado.');
+}
+function renderPayments(){const root=el('payments-body');root.replaceChildren();for(const p of info.payments||[]){const r=node('tr');cell(r,date(p.date));cell(r,p.email);cell(r,money(p.amount));cell(r,p.provider);root.append(r)}if(!root.children.length)emptyRows(root,4,'Nenhum pagamento confirmado registrado.')}
+function renderRequests(){const root=el('requests-body');root.replaceChildren();for(const p of info.requests||[]){const r=node('tr');cell(r,date(p.date));cell(r,p.company);cell(r,p.plan);pill(r,p.status,p.status==='pending'?'pending':'');root.append(r)}if(!root.children.length)emptyRows(root,4,'Nenhuma solicitação registrada.')}
+function renderContacts(){
+ const root=el('contacts');root.replaceChildren();
+ const ordered=[...commercialAccounts()].sort((a,b)=>Number(b.unread>0)-Number(a.unread>0)||Date.parse(b.last_message||b.created_at)-Date.parse(a.last_message||a.created_at));
+ for(const a of ordered){const b=node('button','','contact'+(a.id===threadId?' active':''));b.type='button';const title=node('b',a.email),desc=node('small',(a.companies||[]).map(x=>x.name).join(' · ')||'Sem empresa');b.append(title,desc);if(a.unread)b.append(node('span',a.unread+' nova(s)','unread'));b.onclick=()=>{threadId=a.id;renderContacts();void loadThread()};root.append(b)}
+ if(!ordered.length)root.append(node('p','Nenhuma conta cadastrada.','empty'));
+}
+async function changeAccess(c){
+ const action=c.blocked?'LIBERAR':'BLOQUEAR';
+ const reason=prompt(action+' o acesso à frota de '+c.email+'? Informe o motivo (mínimo 5 caracteres). O registro ficará na auditoria.');
+ if(reason===null)return;
+ if(reason.trim().length<5){status('Informe um motivo com pelo menos 5 caracteres.','error');return}
+ if(!confirm('Confirmar '+action+' para '+c.email+'?'))return;
+ try{await rpc('admin_client_access',{p_account:c.id,p_blocked:!c.blocked,p_reason:reason.trim()});status('Acesso de '+c.email+' atualizado e auditado.','success');await refresh()}
+ catch(e){status(e.message,'error')}
+}
+async function changeManualAccess(c){
+ const active=Boolean(c.manual_access?.active&&Date.parse(c.manual_access.valid_until)>Date.now());
+ let days=null;
+ if(!active){
+  const answer=prompt('Quantos dias de acesso manual para '+c.email+'? Informe 1, 7, 15 ou 30.','7');
+  if(answer===null)return;
+  days=Number(answer);
+  if(!Number.isInteger(days)||![1,7,15,30].includes(days)){status('O prazo deve ser 1, 7, 15 ou 30 dias.','error');return}
+ }
+ const reason=prompt((active?'REVOGAR':'AUTORIZAR')+' acesso de '+c.email+'. Informe uma justificativa (mínimo 10 caracteres):',active?'Liberação manual encerrada':'Falha na confirmação do pagamento');
+ if(reason===null)return;
+ if(reason.trim().length<10||reason.trim().length>500){status('A justificativa precisa ter entre 10 e 500 caracteres.','error');return}
+ const message=active?'Revogar acesso manual de '+c.email+'?':'Autorizar '+c.email+' por '+days+' dia(s), sem registrar pagamento?';
+ if(!confirm(message))return;
+ try{
+  await rpc('admin_manual_access',{p_account:c.id,p_days:days,p_reason:reason.trim(),p_revoke:active});
+  await refresh();
+  status(active?'Autorização manual revogada e registrada na auditoria.':'Acesso manual autorizado por '+days+' dia(s) e registrado na auditoria.','success');
+ }catch(e){status('Não foi possível alterar a autorização: '+e.message,'error')}
+}
+async function cancelCustomerRecurring(c){
+ if(!c.recurring?.has_recurring||c.status!=='active')return;
+ const reason=prompt('Cancelar a RENOVAÇÃO AUTOMÁTICA de '+c.email+'? O cliente manterá acesso até '+date(c.paid_through)+'. Informe o motivo do cancelamento (10 a 500 caracteres):','Solicitação de cancelamento da assinatura pelo cliente');
+ if(reason===null)return;
+ if(reason.trim().length<10||reason.trim().length>500){status('O motivo deve ter entre 10 e 500 caracteres.','error');return}
+ if(!confirm('CONFIRMAR cancelamento da renovação de '+c.email+' no Mercado Pago? Não haverá estorno automático e o período pago será preservado.'))return;
+ status('Cancelando a renovação no Mercado Pago. Não feche esta tela...');
+ try{
+  const {data,error}=await db.functions.invoke('xrmovi-cancel-subscription',{body:{account_id:c.id,reason:reason.trim()}});
+  if(error){
+   let detail=error.message||'Erro ao cancelar a renovação';
+   try{const item=await error.context?.json?.();if(item?.error)detail=String(item.error)}catch{}
+   throw new Error(detail);
+  }
+  if(data?.status!=='canceled'||data?.provider_confirmed!==true)throw new Error('O provedor não confirmou o cancelamento.');
+  await refresh();
+  status('Renovação de '+c.email+' cancelada no Mercado Pago. Acesso preservado até '+date(data.paid_through)+'.','success');
+ }catch(e){status('Não foi possível concluir o cancelamento: '+e.message,'error')}
+}
+async function loadThread(){
+ const a=commercialAccounts().find(x=>x.id===threadId);if(!a){el('thread-title').textContent='Selecione um cliente';return}
+ el('thread-title').textContent=a.email+' · '+(a.companies||[]).map(x=>x.name).join(' / ');
+ const root=el('thread-messages');root.replaceChildren(node('p','Carregando mensagens…','empty'));
+ try{
+  const entries=await rpc('client_message_thread',{p_account:a.id});root.replaceChildren();
+  for(const m of entries||[]){const bubble=node('div',m.body,'bubble'+(m.mine?' mine':''));bubble.append(node('small',(m.mine?'Você':'Cliente')+' · '+new Date(m.date).toLocaleString('pt-BR')));root.append(bubble)}
+  if(!root.children.length)root.append(node('p','Ainda não há mensagens. Envie a primeira.','empty'));
+  root.scrollTop=root.scrollHeight;
+  a.unread=0;renderContacts();
+ }catch(e){root.replaceChildren(node('p',e.message,'empty'))}
+}
+async function refresh(){
+ const button=el('refresh');button.disabled=true;
+ try{const [overview,grants,subscriptions,allSignups]=await Promise.all([rpc('commercial_admin_overview'),rpc('admin_manual_access_list'),rpc('admin_recurring_cancellations'),rpc('admin_auth_signups')]);info=overview;signups=Array.isArray(allSignups)?allSignups:[];const grantsByAccount=new Map((grants||[]).map(g=>[g.account_id,g]));const subByAccount=new Map((subscriptions||[]).map(x=>[x.account_id,x]));for(const account of info.accounts||[]){account.manual_access=grantsByAccount.get(account.id)||null;account.recurring=subByAccount.get(account.id)||null;}render();show('content');if(tab==='messages'&&threadId)await loadThread()}
+ catch(e){status('Erro ao consultar o BI: '+e.message,'error');if(el('content').hidden){show('unauthorized');el('denied-text').textContent=e.message}}
+ finally{button.disabled=false}
+}
+let seoIsLoading=false;
+async function loadSeo(){
+ if(seoIsLoading||!db)return;
+ seoIsLoading=true;
+ const root=el('view-seo');
+ root.replaceChildren(node('p','Consultando dados do SEO no Supabase…','empty'));
+ try{
+  const [data,module]=await Promise.all([rpc('admin_seo_dashboard'),import('./seo-panel.js?v=20261103-1')]);
+  module.renderSeoPanel(root,data,{
+   refresh:()=>loadSeo(),
+   update:async params=>{await rpc('admin_seo_page_status',params);await loadSeo()}
+  });
+ }catch(e){
+  root.replaceChildren(node('p','Não foi possível carregar o SEO: '+e.message,'empty'));
+  status('Falha na consulta do SEO: '+e.message,'error');
+ }finally{seoIsLoading=false}
+}
+let conversionsIsLoading=false;
+async function loadConversions(){
+ if(conversionsIsLoading||!db)return;
+ conversionsIsLoading=true;
+ const root=el('view-conversions');
+ root.replaceChildren(node('p','Consultando pagamentos confirmados…','empty'));
+ try{
+  const [data,module,ga4]=await Promise.all([rpc('marketing_admin_dashboard'),import('./conversions-panel.js?v=20261105-ga4-1'),rpc('ga4_admin_status')]);
+  module.renderConversionsPanel(root,data,ga4);
+ }catch(e){
+  root.replaceChildren(node('p','Não foi possível carregar conversões: '+e.message,'empty'));
+  status('Falha na consulta das conversões: '+e.message,'error');
+ }finally{conversionsIsLoading=false}
+}
+function openTab(name){
+ tab=name;document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===name)));
+ document.querySelectorAll('.tab-view').forEach(view=>view.hidden=view.id!=='view-'+name);
+ if(name==='messages'&&threadId)void loadThread();
+ if(name==='seo')void loadSeo();
+ if(name==='conversions')void loadConversions();
+}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>openTab(b.dataset.tab));
+document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>openTab(b.dataset.goto));
+el('customer-search').oninput=renderCustomers;
+el('signup-search').oninput=renderSignups;
+el('message-form').onsubmit=async event=>{
+ event.preventDefault();const a=(info.accounts||[]).find(x=>x.id===threadId);
+ const body=el('message-body').value.trim();if(!a){status('Selecione um cliente primeiro.','error');return}if(!body)return;
+ const button=el('message-form').querySelector('button');button.disabled=true;
+ try{await rpc('client_message_send',{p_account:a.id,p_body:body});el('message-body').value='';await loadThread();status('Mensagem enviada à caixa interna de '+a.email+'.','success');}
+ catch(e){status(e.message,'error')}
+ finally{button.disabled=false}
+};
+el('refresh').onclick=()=>void refresh();
+el('signout').onclick=async()=>{if(db)await db.auth.signOut();try{localStorage.removeItem('xrmovi_ga4_internal_admin_v1')}catch(_error){}location.replace('../?login=1')};
+async function checkBillingStatus(){
+ const label=el('xrm-billing-health');
+ try{
+  const {data,error}=await db.functions.invoke('xrmovi-billing-diagnostics',{body:{check:'read_only'}});
+  if(error)throw error;
+  const mailLabel=el('xrm-mail-health');
+  mailLabel.textContent=data?.support_email_configured===true
+   ?'Credenciais encontradas. Faça um teste de entrega com uma mensagem de homologação antes de considerar o envio confirmado.'
+   :'Provedor de envio ainda não configurado. Abra as instruções abaixo para ativar as notificações.';
+  el('xrm-mail-setup').open=data?.support_email_configured!==true;
+   const setup=el('xrm-billing-setup');
+   const publicPaymentsReady=data?.configuration_ready===true
+     &&data?.billing_switch_enabled===true
+     &&data?.billing_pilot_only===false;
+   // Public sales are already enabled: hide obsolete pilot-only guidance.
+   setup.hidden=publicPaymentsReady;
+   setup.open=!publicPaymentsReady
+     &&data?.billing_pilot_only===true&&data?.billing_switch_enabled===true;
+  if(data?.configuration_ready===true){
+   label.textContent=data.billing_switch_enabled===true
+    ?(data.billing_pilot_only===true
+      ?'XRMOVI em piloto: pagamento permitido apenas para contas de teste. Para liberar todos os clientes, valide a assinatura dos webhooks e veja as instruções abaixo.'
+      :'XRMOVI com compras públicas habilitadas. Verifique regularmente as aprovações e entregas dos webhooks.')
+    :'Mercado Pago: Access Token e assinatura secreta encontrados; conta recebedora confirmada. Pagamento real ainda desativado.';
+  }else{
+   const issues=[];
+   if(!data?.token_configured)issues.push('Access Token não cadastrado');
+   else if(!data?.token_authorized)issues.push('Access Token não validado pelo Mercado Pago');
+   else if(!data?.merchant_matches)issues.push('Access Token pertence a uma conta diferente da aplicação XRMOVI');
+   if(!data?.webhook_secret_configured)issues.push('assinatura secreta não cadastrada');
+   label.textContent='Mercado Pago: '+(issues.join(' · ')||'configuração pendente')+'.';
+  }
+ }catch{
+  label.textContent='Mercado Pago: não foi possível validar as credenciais. Confira a sessão e atualize a página.';
+  el('xrm-mail-health').textContent='Não foi possível verificar a configuração do provedor de e-mail.';
+ }
+}
+function startOnlineCounter(){
+ const card=el('k-online'),detail=el('online-detail');
+ const channel=db.channel('xrmovi-online-visitors-v1',{config:{presence:{key:'admin-observer-'+crypto.randomUUID()}}});
+ const update=()=>{
+  const state=channel.presenceState(),ids=new Set();
+  for(const records of Object.values(state))for(const item of records){if(item?.id)ids.add(item.id)}
+  card.textContent=number(ids.size);detail.textContent='Visitantes com página aberta · sem seu acesso';
+ };
+ channel.on('presence',{event:'sync'},update).subscribe(status=>{
+  if(status==='SUBSCRIBED')update();
+  if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'){card.textContent='—';detail.textContent='Conexão indisponível'}
+ });
+ window.addEventListener('pagehide',()=>void db.removeChannel(channel),{once:true});
+}
+async function start(){
+ try{const cfg=await fetch('../v3/config.json',{cache:'no-store'});if(!cfg.ok)throw Error('Configuração indisponível');
+  const c=await cfg.json();db=createClient(c.supabaseUrl,c.supabaseAnonKey);
+  const {data,error}=await db.auth.getUser();if(error||!data?.user){location.replace('../?login=1');return}
+  el('user-label').textContent='Conectado como '+data.user.email;
+  const check=await rpc('platform_is_admin');if(check!==true)throw Error('Usuário não autorizado como administrador da plataforma.');
+  // Only a server-verified platform administrator can mark this browser as internal.
+  try{localStorage.setItem('xrmovi_ga4_internal_admin_v1',JSON.stringify({role:'platform_admin',until:Date.now()+14*24*60*60*1000}))}catch(_error){}
+  await refresh();startOnlineCounter();void checkBillingStatus();
+ }catch(e){show('unauthorized');el('denied-text').textContent=e.message}
+}
+void start();
+</script></body></html>

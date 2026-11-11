@@ -1,0 +1,30 @@
+name: Mercado Pago preapproval regression
+
+on:
+  push:
+    paths:
+      - 'supabase/functions/xrmovi-pix/preapproval-transport.js'
+      - 'supabase/functions/xrmovi-pix/pix-payment-payload.js'
+      - 'tests/mercadopago-preapproval.test.mjs'
+      - '.github/workflows/test-mercadopago-preapproval.yml'
+  pull_request:
+    paths:
+      - 'supabase/functions/xrmovi-pix/preapproval-transport.js'
+      - 'supabase/functions/xrmovi-pix/pix-payment-payload.js'
+      - 'tests/mercadopago-preapproval.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test canceled/cancelled fallback (mocked; no payment calls)
+        run: node --test tests/mercadopago-preapproval.test.mjs
