@@ -1,0 +1,2 @@
+﻿Data_Prevista;ID_Veiculo;Placa;Servico;Criterio;KM_Limite;Data_Realizada;KM_Realizado;Custo_R$;Status;Comprovante
+2026-12-10;VEI001;ABC1D23;Troca de óleo;KM;50000;;;0,00;Pendente;

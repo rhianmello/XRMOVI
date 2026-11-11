@@ -1,0 +1,11 @@
+{
+  "name": "xrmovi-fleet",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.mjs supabase/tests/*.test.cjs v3/tests/assistant-*.test.cjs v3/tests/pix-payment.test.cjs v3/tests/renewal-reminders.test.cjs",
+    "test:browser": "node --test --test-concurrency=1 v3/tests/company-branding.test.cjs v3/tests/fleet-interface.test.cjs tests/*.test.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.64.1"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "/v3/",
+  "name": "XRMOVI — Gestão de Frotas",
+  "short_name": "XRMOVI",
+  "description": "Gestão de veículos, manutenção, abastecimento e documentos",
+  "start_url": "/v3/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#071725",
+  "theme_color": "#071725",
+  "icons": [
+    {
+      "src": "/pwa/icon.svg?v=20261110-brand-v2",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa/icon-maskable.svg?v=20261110-brand-v2",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
