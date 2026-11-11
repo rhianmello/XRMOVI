@@ -1,0 +1,54 @@
+<!doctype html><html lang="pt-BR"><head>
+<meta name="robots" content="noindex, nofollow"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#091a2a"><title>XRMOVI | Minha conta e mensagens</title>
+<style>*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0,#114351,#061522 60%);color:#edfbff;font:14px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}a{color:inherit;text-decoration:none}button,input,textarea{font:inherit}button{cursor:pointer}header{padding:15px clamp(15px,3vw,35px);background:#071a2be8;border-bottom:1px solid #2f5464;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.brand{font-size:20px;font-weight:900}.brand b{color:#5ee2bc}main{width:min(940px,100%);margin:auto;padding:30px 18px 45px}.eyebrow{color:#67e9c2;font-weight:850;font-size:11px;letter-spacing:1.5px}.head{display:flex;align-items:end;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:20px}h1{font-size:clamp(25px,4vw,35px);margin:7px 0 5px}p{color:#a9c6d3;margin:0}.btn{border:1px solid #447386;background:#183649;padding:10px 14px;border-radius:9px;color:white;font-weight:750;font-size:12px}.btn.primary{background:#51dfb9;border-color:#51dfb9;color:#08303a}.panel{border:1px solid #31576a;border-radius:15px;background:#0e293d;overflow:hidden;margin-bottom:17px}.panel-head{padding:16px 18px;border-bottom:1px solid #2b4e61;display:flex;justify-content:space-between;gap:10px;align-items:center}.panel-head b{font-size:15px}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:16px}.stat{border:1px solid #335c6a;border-radius:11px;background:#11374b;padding:13px}.stat small{font-size:10px;color:#9bbecb;display:block}.stat b{font-size:15px;display:block;margin-top:5px}.warning{padding:15px 18px;border:1px solid #965f61;border-radius:11px;background:#422936;color:#ffd6df;margin-bottom:18px}.note{padding:12px 18px;color:#aac6d4;font-size:12px}.messages{padding:17px;display:flex;flex-direction:column;gap:10px;min-height:240px;max-height:490px;overflow-y:auto;background:#0a2234}.bubble{align-self:flex-start;border:1px solid #346176;background:#1a3d52;border-radius:12px;padding:10px 13px;max-width:80%;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}.bubble.mine{align-self:flex-end;background:#17473e;border-color:#3d7d6a}.bubble small{display:block;color:#a3cbd0;font-size:10px;margin-top:7px}.compose{border-top:1px solid #31556a;padding:14px 17px;display:flex;align-items:end;gap:10px}.compose textarea{flex:1;min-height:65px;background:#081e2d;border:1px solid #366377;border-radius:10px;padding:11px;color:#fff;resize:vertical}.feedback{font-size:12px;color:#76e7bf;padding:0 17px 15px}.select{background:#092438;border:1px solid #40728a;color:#fff;border-radius:8px;padding:9px}.empty{padding:20px;color:#aac6d3}footer{padding:16px;text-align:center;color:#7b9cac;font-size:11px}@media(max-width:580px){.stats{grid-template-columns:1fr}.compose{flex-direction:column;align-items:stretch}}
+</style><link rel="icon" href="/pwa/icon.svg?v=20261110-brand-v2" type="image/svg+xml"></head><body><header><a href="../" class="brand" aria-label="XRMOVI — início"><img src="/assets/xrmovi-logo-oficial.svg?v=20261110-v2" alt="XRMOVI" width="172" height="42" style="display:block;width:172px;max-width:38vw;height:auto;object-fit:contain"></a><div style="display:flex;gap:8px"><a class="btn" href="../v3/">Painel da frota</a><button class="btn" id="logout" type="button">Sair</button></div></header>
+<main><div class="head"><div><div class="eyebrow">ÁREA DO CLIENTE</div><h1>Minha conta e mensagens</h1><p>Fale diretamente com a administração do XRMOVI.</p></div><select class="select" id="company" aria-label="Empresa"></select></div>
+<div id="status" class="note">Validando sua conta…</div>
+<section class="panel" id="account-card" hidden><div class="panel-head"><b>Minha assinatura</b><a class="btn" href="../v3/#subscription">Ver planos e capacidade</a></div><div class="stats"><div class="stat"><small>Empresa</small><b id="company-name">—</b></div><div class="stat"><small>Plano</small><b id="plan-name">—</b></div><div class="stat"><small>Situação</small><b id="account-status">—</b></div></div><div id="blocked" class="warning" hidden>O acesso operacional a esta conta foi suspenso. Seus dados permanecem preservados. Use a caixa de mensagens para conversar com o administrador.<div id="reason" style="margin-top:7px"></div></div></section>
+<section class="panel" id="inbox" hidden><div class="panel-head"><b>Conversa com o XRMOVI</b><button class="btn" id="reload" type="button">Atualizar mensagens</button></div><div class="messages" id="messages"></div><form id="compose" class="compose"><textarea id="body" maxlength="3000" placeholder="Como podemos ajudar?" required></textarea><button type="submit" class="btn primary">Enviar mensagem</button></form><div class="feedback" id="feedback"></div></section>
+</main><footer>As conversas são privadas entre o titular da assinatura e o administrador da plataforma.</footer>
+<script type="module">
+import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.58.0';
+const el=id=>document.getElementById(id),node=(tag,text,cls)=>{const n=document.createElement(tag);n.textContent=String(text||'');if(cls)n.className=cls;return n};
+let db,companies=[],account=null;
+const rpc=async(fn,args)=>{const {data,error}=await db.rpc('xrmovi_'+fn,args);if(error)throw Error(error.message);return data};
+async function thread(){
+ if(!account)return;
+ const root=el('messages');root.replaceChildren(node('p','Carregando mensagens…','empty'));
+ try{const data=await rpc('client_message_thread',{p_account:account.account_id});root.replaceChildren();
+  for(const m of data||[]){const bubble=node('div',m.body,'bubble'+(m.mine?' mine':''));bubble.append(node('small',(m.mine?'Você':'Administração')+' · '+new Date(m.date).toLocaleString('pt-BR')));root.append(bubble)}
+  if(!root.children.length)root.append(node('p','Ainda não há mensagens. Envie sua primeira dúvida.','empty'));root.scrollTop=root.scrollHeight;
+ }catch(e){root.replaceChildren(node('p',e.message,'empty'))}
+}
+async function choose(){
+ const cid=el('company').value,company=companies.find(c=>c.id===cid);
+ if(!company)return;
+ el('status').textContent='Consultando '+company.name+'…';
+ try{
+  account=await rpc('client_inbox',{cid});el('account-card').hidden=!account.enabled;el('inbox').hidden=!account.enabled;
+  el('company-name').textContent=company.name;el('plan-name').textContent=String(company.plan||'—').toUpperCase();el('account-status').textContent=account.blocked?'Acesso bloqueado':company.status||'—';
+  el('blocked').hidden=!account.blocked;el('reason').textContent=account.blocked?(account.reason||'Entre em contato com a administração.'):'';
+  el('status').textContent=account.enabled?'Mensagens protegidas e vinculadas ao titular da assinatura.':'Esta conta não está vinculada ao titular da assinatura.';
+  if(account.enabled)await thread();
+ }catch(e){el('status').textContent=e.message}
+}
+el('company').onchange=()=>void choose();el('reload').onclick=()=>void thread();
+el('compose').onsubmit=async e=>{e.preventDefault();if(!account?.account_id)return;
+ const body=el('body').value.trim();if(!body)return;
+ const submit=el('compose').querySelector('button');submit.disabled=true;
+ try{await rpc('client_message_send',{p_account:account.account_id,p_body:body});el('body').value='';el('feedback').textContent='Mensagem enviada para a administração.';await thread()}
+ catch(err){el('feedback').textContent=err.message}finally{submit.disabled=false}
+};
+el('logout').onclick=async()=>{if(db)await db.auth.signOut();location.replace('../?login=1')};
+async function start(){
+ try{const r=await fetch('../v3/config.json',{cache:'no-store'});if(!r.ok)throw Error('Configuração não encontrada');const c=await r.json();db=createClient(c.supabaseUrl,c.supabaseAnonKey);
+ const {data,error}=await db.auth.getUser();if(error||!data?.user){location.replace('../?login=1');return}
+ companies=await rpc('my_companies');el('company').replaceChildren();
+ for(const c of companies){const opt=node('option',c.name);opt.value=c.id;el('company').append(opt)}
+ if(!companies.length){el('status').textContent='Nenhuma empresa cadastrada para este login.';return}
+ const param=new URLSearchParams(location.search).get('company');if(companies.some(c=>c.id===param))el('company').value=param;
+ await choose();
+ }catch(e){el('status').textContent='Não foi possível abrir a área do cliente: '+e.message}
+}
+void start();
+</script></body></html>

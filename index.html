@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XRMOVI | Software de Gestão de Frotas, KM e Manutenção</title>
+<meta name="description" content="Software de gestão de frotas com QR Code por veículo, controle de quilometragem, manutenção, abastecimento, despesas e documentos. Conheça o XRMOVI.">
+<link rel="canonical" href="https://frota.nospassa.com.br/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="XRMOVI">
+<meta property="og:title" content="XRMOVI | O motorista informa. Você tem o controle.">
+<meta property="og:description" content="QR Code por veículo, foto do hodômetro, controle de KM e alertas de troca de óleo em um único painel de frota.">
+<meta property="og:url" content="https://frota.nospassa.com.br/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="XRMOVI | Software de Gestão de Frotas">
+<meta name="twitter:description" content="Controle veículos, KM, abastecimentos, manutenção e despesas da sua frota em um único sistema.">
+<meta name="theme-color" content="#071c2d">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"XRMOVI","url":"https://frota.nospassa.com.br/","inLanguage":"pt-BR"}</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "XRMOVI",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "url": "https://frota.nospassa.com.br/",
+  "inLanguage": "pt-BR",
+  "description": "Software de gestão de frotas com controle de quilometragem por QR Code, foto do hodômetro, manutenção, abastecimentos, despesas, documentos e alertas.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "XRMOVI",
+    "url": "https://frota.nospassa.com.br/"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "19.90",
+    "priceCurrency": "BRL",
+    "url": "https://frota.nospassa.com.br/#planos",
+    "description": "Plano Start, mensalidade a partir de R$ 19,90."
+  },
+  "featureList": [
+    "QR Code individual por veículo",
+    "Registro de quilometragem e foto do hodômetro",
+    "Alertas de revisão e troca de óleo",
+    "Controle de abastecimentos e despesas",
+    "Documentação e relatórios"
+  ]
+}
+</script>
+<style>
+:root{--bg:#061524;--panel:#0b2435;--panel2:#102b3b;--line:#254556;--white:#f4fbfc;--muted:#a7bac6;--mint:#54e0ad;--gold:#ffc77b}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--white);line-height:1.5}button,input{font:inherit}a{color:inherit;text-decoration:none} .shell{max-width:1190px;margin:auto;padding:0 24px}
+header{position:sticky;top:0;background:#061524ed;backdrop-filter:blur(16px);border-bottom:1px solid #1b3444;z-index:9}.nav{min-height:76px;display:flex;align-items:center;gap:28px;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:850;letter-spacing:-.7px;white-space:nowrap}.brand strong{color:var(--mint)}.mark{width:43px;height:43px;border:1px solid #387f7a;border-radius:13px;background:linear-gradient(140deg,#153e4b,#0a2637);display:grid;place-items:center;color:var(--mint)}
+.links{display:flex;align-items:center;gap:26px;font-size:13px;color:#c4d6dc}.links a:hover{color:var(--mint)}.btn{border:1px solid transparent;cursor:pointer;border-radius:11px;padding:12px 19px;background:var(--mint);color:#09242d;font-weight:800;display:inline-flex;justify-content:center;align-items:center;gap:9px}.btn:hover{filter:brightness(1.08)}.btn.outline{background:transparent;color:var(--white);border-color:#466476}.btn.small{padding:10px 16px}
+.hero{padding:92px 0 88px;background:radial-gradient(ellipse at 83% 16%,#184d5b 0,transparent 49%),radial-gradient(ellipse at 14% 90%,#0c3543 0,transparent 47%)}
+.hero-grid{display:grid;grid-template-columns:1.06fr .94fr;gap:56px;align-items:center}.eyebrow{color:var(--mint);font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:850}.hero h1{font-size:clamp(40px,5.6vw,70px);line-height:1.08;letter-spacing:-3px;margin:18px 0 22px}.hero h1 em{color:var(--mint);font-style:normal}.lead{font-size:17px;color:#b4cad4;max-width:550px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}.checks{display:flex;gap:19px;flex-wrap:wrap;color:#b5cbd3;font-size:12px;margin-top:25px}.checks span:before{content:"✓";color:var(--mint);margin-right:7px}
+.mock{background:linear-gradient(145deg,#123345,#081c2c);border:1px solid #315c69;border-radius:22px;box-shadow:0 30px 85px #0008;padding:18px;transform:perspective(900px) rotateY(-4deg)}.mock-top{display:flex;justify-content:space-between;color:#9fb8c4;font-size:11px;padding:8px 6px 17px}.dots{color:var(--mint);letter-spacing:4px}.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.mini-card{background:#143648;border:1px solid #28516a;border-radius:13px;padding:15px 12px}.mini-card span{font-size:10px;color:#adc0cb}.mini-card b{font-size:23px;display:block;margin-top:5px}.chartbox{background:#0b293b;border:1px solid #28516a;border-radius:13px;padding:20px 16px;margin-top:11px}.bars{height:124px;display:flex;align-items:end;gap:10px;margin-top:20px}.bars i{flex:1;background:linear-gradient(#55e0ac,#1a806f);border-radius:6px 6px 2px 2px}.micro{font-size:11px;color:#96b2bf}.vehicles{margin-top:10px;display:grid;gap:8px}.vehicle{padding:10px 13px;background:#103346;border-radius:9px;font-size:11px;display:flex;justify-content:space-between}.ok{color:var(--mint)}
+section.section{padding:83px 0}.section-head{max-width:640px;margin-bottom:34px}.section h2{font-size:clamp(29px,4vw,44px);letter-spacing:-1.3px;line-height:1.16;margin:11px 0}.section p{color:var(--muted)}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.feature{background:#0b2334;border:1px solid #254658;padding:27px;border-radius:18px}.feature .ico{font-size:27px}.feature h3{font-size:17px;margin:16px 0 8px}.feature p{font-size:13px;margin:0}
+.section.alt{background:#091c2a;border-top:1px solid #193746;border-bottom:1px solid #193746}.pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.plan{padding:28px;border:1px solid #2b4b5d;border-radius:18px;background:#102939}.plan.featured{border-color:var(--mint);box-shadow:0 0 0 1px #54e0ad30}.plan h3{margin:0;font-size:18px}.price{font-size:38px;font-weight:850;margin:17px 0}.price small{font-size:13px;color:var(--muted);font-weight:500}.plan p{font-size:13px;min-height:44px}.plan ul{padding:0;list-style:none;color:#c7d8de;font-size:13px}.plan li{padding:8px 0}.plan li:before{content:"✓ ";color:var(--mint)}.plan .btn{width:100%;margin-top:12px}
+.notice{font-size:12px;color:#92aab7;margin-top:21px}.cta{border:1px solid #347b77;border-radius:22px;background:linear-gradient(130deg,#123a49,#0b2939);padding:45px;text-align:center}.cta h2{margin-top:0}.cta p{max-width:600px;margin:0 auto 22px}
+footer{border-top:1px solid #223d4e;padding:35px 0;color:#95aebb;font-size:12px}.foot{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.modal{position:fixed;inset:0;background:#000b;display:none;place-items:center;z-index:20;padding:20px}.modal.open{display:grid}.dialog{position:relative;max-width:560px;width:100%;max-height:90vh;overflow:auto;background:#0d293b;border:1px solid #356479;border-radius:22px;padding:27px;box-shadow:0 30px 80px #0008}.close{position:absolute;right:19px;top:13px;background:transparent;color:#fff;border:0;font-size:29px;cursor:pointer}.dialog h2{margin-top:0}.dialog p{color:#b8cdd6}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}.tab{background:#17394a;color:#b7cdd5;border:1px solid #305264;border-radius:9px;padding:8px 13px;cursor:pointer}.tab.active{color:#052324;background:var(--mint)}.demo-row{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid #315064;padding:11px 0;font-size:14px}.demo-row b{color:var(--mint)}.demo-note{font-size:12px;color:#a3baca;margin-top:20px}
+@media(max-width:850px){.hero-grid{grid-template-columns:1fr}.mock{transform:none;max-width:600px}.links{display:none}.cards,.pricing{grid-template-columns:1fr}.hero{padding:62px 0}.section.section{padding:60px 0}.hero h1{letter-spacing:-1.8px}.mini-card b{font-size:18px}}@media(max-width:420px){.shell{padding:0 16px}.brand{font-size:16px}.brand .mark{width:35px;height:35px}.nav .btn{font-size:11px;padding:10px}.mini-grid{gap:6px}.mini-card{padding:10px 6px}.mini-card b{font-size:17px}.cta{padding:27px 18px}}
+.v2-availability{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;margin:12px 0;color:#b6cfdb;font-size:12px}.v2-availability a{color:#50e2bb;font-weight:800}.nav .actions{flex-wrap:wrap}@media(max-width:750px){.v2-availability{display:block}.v2-availability span{display:block;margin-top:6px}}
+
+/* Landing header without competing product-version CTAs */
+.nav{gap:16px}.nav .links{gap:clamp(12px,1.5vw,25px);flex:1;justify-content:center}.nav-actions{display:flex;flex:0 0 auto;align-items:center;white-space:nowrap}.nav-actions .btn{font-size:13px}@media(max-width:850px){.nav .links{display:none}.nav{justify-content:space-between}.nav-actions .btn{font-size:12px;padding:10px 12px}}
+
+/* Center landing header CTA vertically. */
+header .nav{align-items:center!important}
+header .nav-actions{align-self:center!important;margin:0!important;display:flex;align-items:center;justify-content:flex-end}
+header .nav-actions .btn{margin:0!important;align-self:center;vertical-align:middle}
+header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-fit:contain}header .brand{flex-shrink:0}@media(max-width:600px){header .brand-logo{width:165px;max-height:48px}header .nav{gap:10px}}
+
+/* PWA installation is a navigation action, never a floating control. */
+.xrm-install-nav-link,.xrm-install-mobile-link{appearance:none;border:0;background:transparent;color:#c4d6dc;cursor:pointer;font:inherit;font-size:13px;padding:5px 0;white-space:nowrap}
+.xrm-install-nav-link:hover,.xrm-install-mobile-link:hover{color:var(--mint)}
+.xrm-install-mobile-link{display:none}
+@media(max-width:850px){.xrm-install-mobile-link{display:inline-flex;align-items:center;font-size:12px;border:1px solid #466476;border-radius:9px;padding:9px 10px;color:var(--white)}.nav-actions{gap:7px!important}}
+@media(max-width:460px){.nav-actions .btn{font-size:11px!important;padding:9px 8px!important}.xrm-install-mobile-link{font-size:11px;padding:9px 7px}header .brand-logo{width:125px!important}}
+
+/* XRMOVI commercial: responsive native player, no autoplay. */
+.xrm-commercial-video-section{background:linear-gradient(180deg,#071b2a,#0a2334);border-top:1px solid #214557;border-bottom:1px solid #214557;padding:55px 0 58px}
+.xrm-commercial-video-section[hidden]{display:none!important}
+.xrm-commercial-video-header{text-align:center;max-width:790px;margin:0 auto 25px}
+.xrm-commercial-video-header h2{font-size:clamp(27px,3.4vw,43px);line-height:1.16;letter-spacing:-1px;margin:11px 0 10px}
+.xrm-commercial-video-header p{color:#b9cfda;font-size:15px;margin:0}
+.xrm-commercial-video-frame{width:100%;max-width:760px;margin:auto;border:1px solid #356476;border-radius:16px;overflow:hidden;background:#04111e;box-shadow:0 16px 42px #0007;aspect-ratio:16/9}
+.xrm-commercial-video-frame video{display:block;width:100%;height:100%;object-fit:contain;background:#04111e}
+.xrm-commercial-video-actions{margin:22px auto 0;display:flex;align-items:center;justify-content:center;gap:17px;flex-wrap:wrap}
+.xrm-commercial-video-actions span{color:#a9c4ce;font-size:12px}
+@media(max-width:600px){.xrm-commercial-video-section{padding:36px 0 40px}.xrm-commercial-video-frame{border-radius:12px}}
+</style><link rel="stylesheet" href="/seo/comercial.css">
+<script defer src="/analytics/xrmovi-analytics.js?v=20261110-qr-demo-1"></script>
+<script defer src="/analytics/xrmovi-widget-visits.js?v=20261108-1"></script>
+<link rel="stylesheet" href="/legal/policies.css">
+<link rel="manifest" href="/manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="icon" href="/pwa/icon.svg?v=20261110-brand-v2" type="image/svg+xml" sizes="any"></head><body>
+<header><div class="shell nav"><a class="brand" href="#inicio" aria-label="XRMOVI — voltar ao início"><img class="brand-logo" src="/assets/xrmovi-logo-oficial.svg?v=20261110-v2" alt="XRMOVI" width="248" height="61" decoding="async"></a><nav class="links" aria-label="Navegação principal"><a href="#recursos">Recursos</a><a href="#planos">Planos</a><button type="button" class="xrm-install-nav-link" data-demo>Demonstração</button><a href="/perguntas-frequentes/">Perguntas frequentes</a><button class="xrm-install-nav-link" type="button" data-xrm-install>Baixar App</button></nav><div class="actions nav-actions"><details class="xrm-mobile-nav"><summary aria-label="Abrir menu de navegação">☰ <span>Menu</span></summary><nav aria-label="Menu do celular"><a href="#recursos">Recursos</a><a href="#planos">Planos</a><button type="button" data-demo>Demonstração</button><a href="/perguntas-frequentes/">Perguntas frequentes</a><a href="#contato">Contato</a><button type="button" data-xrm-install>Baixar App</button></nav></details><a class="btn small" href="/?login=1">Entrar / Criar conta</a></div></div></header>
+<main id="inicio">
+<div class="hero xrm-qr-hero">
+ <div class="shell xrm-qr-hero-grid">
+  <div class="xrm-qr-hero-copy">
+   <div class="xrm-qr-hero-eyebrow"><span class="xrm-qr-signal" aria-hidden="true"></span> GESTÃO DE FROTAS SIMPLES E COMPLETA</div>
+   <h1>Gerencie sua frota com <em>mais controle</em> e menos papel.</h1>
+   <p class="xrm-qr-hero-lead">Veículos, motoristas, abastecimentos, manutenção, documentos, despesas e relatórios em um só lugar. Com QR Code por veículo, o motorista atualiza o KM pelo celular e você acompanha tudo no painel.</p>
+   <div class="actions xrm-qr-hero-actions">
+    <a class="btn xrm-qr-action-primary" href="/?login=1">Começar agora <span aria-hidden="true">→</span></a>
+    <button class="btn outline" type="button" data-demo>Ver demonstração <span aria-hidden="true">▶</span></button>
+   </div>
+   <div class="xrm-qr-hero-details">
+    <span><span aria-hidden="true">✓</span> Gestão na nuvem</span>
+    <span><span aria-hidden="true">✓</span> QR Code e foto do hodômetro</span>
+    <span><span aria-hidden="true">✓</span> Relatórios em PDF e Excel</span>
+   </div>
+   <p class="xrm-qr-plan-price"><span>Planos apresentados a partir de <strong>R$ 19,90/mês</strong></span><a href="#planos">Comparar planos <span aria-hidden="true">→</span></a></p>
+   <p class="xrm-qr-hero-trust">Já tem conta? <a href="/?login=1">Entrar no painel</a> · <button type="button" data-demo>Explorar prévia interativa</button></p>
+  </div>
+  <div class="xrm-qr-hero-showcase" aria-label="Exemplo ilustrativo do registro de quilometragem por QR Code">
+   <div class="xrm-qr-showcase-top"><span><span class="xrm-qr-live-dot" aria-hidden="true"></span> FLUXO DE QUILOMETRAGEM</span><span>DEMONSTRAÇÃO</span></div>
+   <div class="xrm-qr-showcase-main">
+    <div class="xrm-qr-vehicle-tag"><span class="xrm-qr-vehicle-icon" aria-hidden="true">▦</span><div><strong>FRT-007</strong><small>QR individual do veículo</small></div><span class="xrm-qr-tag-ready">ATIVO</span></div>
+    <div class="xrm-qr-showcase-center">
+     <div class="xrm-qr-print">
+      <div class="xrm-qr-print-label">ESCANEIE PARA ATUALIZAR O KM</div>
+      <div id="xrm-sales-qr" class="xrm-sales-qr-code" aria-label="QR Code demonstrativo que direciona para a apresentação do recurso"><span class="xrm-qr-placeholder">QR</span></div>
+      <div class="xrm-qr-print-foot">FRT-007 · Exemplo</div>
+     </div>
+     <div class="xrm-qr-showcase-arrow" aria-hidden="true">→</div>
+     <div class="xrm-qr-phone">
+      <div class="xrm-qr-phone-head"><span class="xrm-qr-phone-notch"></span><span>XRMOVI · KM</span></div>
+      <span class="xrm-qr-phone-kicker">HODÔMETRO ATUAL</span>
+      <strong class="xrm-qr-phone-km">18.420 <small>km</small></strong>
+      <div class="xrm-qr-phone-proof"><span aria-hidden="true">▧</span><div><strong>Foto do painel</strong><small>Comprovante anexado</small></div><span class="xrm-qr-phone-tick" aria-hidden="true">✓</span></div>
+      <div class="xrm-qr-phone-submit">Enviar leitura <span aria-hidden="true">↗</span></div>
+     </div>
+    </div>
+    <div class="xrm-qr-management">
+     <div class="xrm-qr-management-head"><span>NO PAINEL DO GESTOR</span><span class="xrm-qr-management-pill"><span aria-hidden="true">●</span> Atualização recebida</span></div>
+     <div class="xrm-qr-management-stats"><div><small>KM INFORMADO</small><strong>18.420 km</strong></div><div><small>PRÓXIMA TROCA</small><strong>20.000 km</strong></div></div>
+     <div class="xrm-qr-management-alert"><span aria-hidden="true">◷</span> <span>Troca de óleo próxima · Alerta configurável</span></div>
+    </div>
+   </div>
+   <div class="xrm-qr-showcase-note">Escaneie o QR Code ou <a href="#demo-qr">abra a simulação</a> para testar com dados fictícios.</div>
+  </div>
+ </div>
+</div>
+
+<section class="xrm-sales-overview" aria-labelledby="xrm-sales-overview-title">
+ <div class="shell">
+  <div class="xrm-sales-benefit-strip" aria-label="Recursos de gestão"><span>🚘 Controle de veículos</span><span>⛽ Abastecimentos</span><span>🛠️ Manutenções</span><span>📁 Documentos</span><span>🔔 Alertas</span><span>📊 Relatórios</span></div>
+  <div class="xrm-sales-overview-grid">
+   <div class="xrm-sales-overview-copy"><div class="eyebrow">TUDO EM UM SÓ SISTEMA</div><h2 id="xrm-sales-overview-title">Da operação ao resultado, <em>sem perder o controle.</em></h2><p>Visualize sua operação, organize os dados da frota e identifique o que exige atenção. Uma visão clara para decidir mais rápido.</p><ul><li>Veículos ativos, em manutenção e indisponíveis</li><li>Abastecimentos, despesas e histórico de KM</li><li>Documentação e prazos importantes</li><li>Gestão de empresas e contratos conforme seu plano</li></ul><a class="btn outline" href="#recursos">Conhecer os recursos →</a></div>
+   <div class="xrm-sales-dashboard" aria-label="Prévia ilustrativa do painel XRMOVI, sem dados reais de clientes"><div class="xrm-sales-dash-top"><strong><span class="xrm-sales-dot"></span> XRMOVI / Visão geral</strong><span>EXEMPLO ILUSTRATIVO</span></div><div class="xrm-sales-dash-kpis"><div><small>VEÍCULOS</small><strong>42</strong><span>Na frota</span></div><div><small>ATIVOS</small><strong>36</strong><span>Em operação</span></div><div><small>MANUTENÇÃO</small><strong>4</strong><span>Em atendimento</span></div><div><small>ATENÇÃO</small><strong>2</strong><span>Verificar</span></div></div><div class="xrm-sales-dash-content"><div class="xrm-sales-dash-chart"><strong>Visão de despesas</strong><div class="xrm-sales-dash-bars" aria-hidden="true"><i style="height:44%"></i><i style="height:70%"></i><i style="height:56%"></i><i style="height:83%"></i><i style="height:62%"></i><i style="height:93%"></i></div><div class="xrm-sales-dash-months"><span>Jun</span><span>Jul</span><span>Ago</span><span>Set</span><span>Out</span><span>Nov</span></div></div><div class="xrm-sales-dash-alerts"><strong>Prioridades da frota</strong><p><span class="xrm-sales-alert-circle">●</span> Revisões e trocas de óleo</p><p><span class="xrm-sales-alert-circle">●</span> Documentos a vencer</p><p><span class="xrm-sales-alert-circle">●</span> KM informado por QR Code</p></div></div></div>
+  </div>
+  <div class="xrm-sales-how"><h2>Como funciona</h2><div class="xrm-sales-how-grid"><article><span>01</span><h3>Cadastre sua empresa</h3><p>Crie a conta e escolha o plano adequado à sua operação.</p></article><article><span>02</span><h3>Adicione veículos e motoristas</h3><p>Organize os cadastros e configure os controles da frota.</p></article><article><span>03</span><h3>Acompanhe no painel</h3><p>Consulte custos, alertas, documentação e informações atualizadas.</p></article></div></div>
+ </div>
+</section>
+<section class="section" id="demo-qr" aria-labelledby="demo-qr-title">
+ <div class="shell">
+  <div class="qr-demo-card">
+   <h2 id="demo-qr-title" tabindex="-1">Teste com um veículo fictício</h2>
+   <p>Veja o que o motorista envia e o que aparece no painel do gestor. Sem cadastro.</p>
+   <noscript><p>Ative o JavaScript para testar ou <a href="#qr-frota">veja como funciona o registro de KM</a>.</p></noscript>
+   <div class="qr-demo-steps" hidden>
+    <div data-qr-step="driver">
+     <h3 tabindex="-1">1 de 3 · Envie a leitura do motorista</h3>
+     <p>Ao abrir o QR Code da van FRT-007, o motorista informa o KM e anexa uma foto do hodômetro.</p>
+     <div class="qr-demo-reading"><span>Hodômetro de exemplo</span><strong>19.850 km</strong></div>
+     <button type="button" class="btn" data-qr-action="received">Simular envio do KM com foto</button>
+    </div>
+    <div data-qr-step="received" hidden>
+     <h3 tabindex="-1">2 de 3 · Confira a leitura no painel</h3>
+     <p>A van FRT-007 aparece com <strong>19.850 km</strong> no histórico. O gestor pode conferir a foto junto à leitura.</p>
+     <button type="button" class="btn" data-qr-action="alert">Ver alerta de troca de óleo</button>
+    </div>
+    <div data-qr-step="alert" hidden>
+     <h3 tabindex="-1">3 de 3 · Faltam 150 km para trocar o óleo</h3>
+     <p>A troca da van FRT-007 está programada para <strong>20.000 km</strong>. Com a leitura atualizada, o gestor já pode programar o serviço.</p>
+     <div class="qr-demo-actions">
+      <a class="btn" href="#planos">Ver planos</a>
+      <a class="btn outline" href="https://wa.me/5521959092414?text=Ol%C3%A1%21%20Testei%20a%20demonstra%C3%A7%C3%A3o%20do%20XRMOVI%20e%20quero%20saber%20mais%20sobre%20os%20planos." target="_blank" rel="noopener noreferrer">Tirar dúvidas no WhatsApp</a>
+      <button type="button" class="btn outline" data-qr-action="driver">Recomeçar</button>
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+<style>
+#demo-qr{scroll-margin-top:96px}
+#demo-qr [hidden]{display:none}
+.qr-demo-card{max-width:760px;margin:auto;padding:clamp(20px,4vw,40px);background:#10293b;border:1px solid #30635f;border-radius:20px}
+.qr-demo-card h2,.qr-demo-card h3{margin-top:0}
+.qr-demo-card p{color:#c4d9e1}
+.qr-demo-steps{margin-top:24px;padding-top:24px;border-top:1px solid #366059}
+.qr-demo-reading{display:grid;gap:4px;width:fit-content;padding:10px 16px;margin:0 0 16px;background:#071722;border:1px solid #366059;border-radius:10px}
+.qr-demo-reading span{font-size:.85rem;color:#bed3df}
+.qr-demo-reading strong{font-variant-numeric:tabular-nums;color:#65e8b5;font-size:1.4rem}
+.qr-demo-actions{display:flex;flex-wrap:wrap;gap:10px}
+</style>
+<script id="xrm-qr-interactive">
+(function(){
+ const section=document.getElementById('demo-qr');
+ const steps=section.querySelector('.qr-demo-steps');
+ const panels=Array.from(steps.querySelectorAll('[data-qr-step]'));
+ let completed=false;
+ steps.hidden=false;
+ steps.querySelectorAll('[data-qr-action]').forEach(function(button){
+  button.addEventListener('click',function(){
+   const step=button.dataset.qrAction;
+   const panel=panels.find(function(item){return item.dataset.qrStep===step;});
+   panels.forEach(function(item){item.hidden=item!==panel;});
+   panel.querySelector('h3').focus();
+   if(step==='alert'&&!completed){
+    completed=true;
+    window.XrmoviAnalytics?.track('xrmovi_demo_complete',{location:'qr_demo'});
+   }
+  });
+ });
+})();
+</script>
+<section class="section xrm-commercial-video-section" id="video-xrmovi" aria-labelledby="xrm-commercial-video-title" hidden>
+ <div class="shell">
+  <div class="xrm-commercial-video-header">
+   <div class="eyebrow">CONHEÇA O XRMOVI EM AÇÃO</div>
+   <h2 id="xrm-commercial-video-title">Veja como o XRMOVI simplifica sua gestão de frotas</h2>
+   <p>Assista à apresentação e descubra como organizar veículos, motoristas, manutenção, abastecimentos e registros de quilometragem.</p>
+  </div>
+  <div class="xrm-commercial-video-frame">
+   <video id="xrm-commercial-video" controls preload="none" playsinline poster="/assets/xrmovi-video-capa.svg?v=20261110-brand-v2" controlsList="nodownload" aria-label="Vídeo comercial de apresentação do XRMOVI">
+    <source src="/assets/videos/XRMOVI_comercial_web.mp4" type="video/mp4">
+    Seu navegador não oferece reprodução de vídeo HTML5.
+   </video>
+  </div>
+  <div class="xrm-commercial-video-actions"><a class="btn" href="#planos">Conhecer os planos</a><span>Assista no seu ritmo, com áudio opcional.</span></div>
+ </div>
+</section>
+<script>
+(function(){
+ const section=document.getElementById('video-xrmovi');
+ const video=document.getElementById('xrm-commercial-video');
+ if(!section||!video)return;
+ const source=video.querySelector('source');
+ if(!source)return;
+ // Avoid a broken player until the video asset is present on the host.
+ fetch(source.src,{method:'HEAD',cache:'no-store'}).then(r=>{
+  if(r.ok&&(/video\/mp4/i.test(r.headers.get('content-type')||'')||r.url.endsWith('.mp4'))){
+   section.hidden=false;
+  }
+ }).catch(()=>{});
+})();
+</script>
+<section class="section xrm-qr-product" id="qr-frota" aria-labelledby="xrm-qr-title">
+ <div class="shell">
+  <div class="xrm-qr-section-intro">
+   <div class="eyebrow">UM QR CODE. MENOS PLANILHAS.</div>
+   <h2 id="xrm-qr-title">Sua frota registra o KM direto da rua. <span>Sua gestão enxerga tudo no painel.</span></h2>
+   <p>Você não precisa solicitar a quilometragem de cada veículo manualmente. Imprima ou compartilhe o QR Code individual e deixe o motorista informar a leitura pelo celular, com foto do painel como evidência.</p>
+  </div>
+  <div class="xrm-qr-steps">
+   <article><span class="xrm-qr-step-number">01</span><span class="xrm-qr-step-icon" aria-hidden="true">▦</span><h3>Um QR para cada veículo</h3><p>O gestor gera um código exclusivo para imprimir, colar no veículo ou enviar ao responsável.</p></article>
+   <article><span class="xrm-qr-step-number">02</span><span class="xrm-qr-step-icon" aria-hidden="true">▣</span><h3>KM + foto pelo celular</h3><p>O motorista abre o link na câmera, identifica o veículo e informa o KM total com uma foto legível.</p></article>
+   <article><span class="xrm-qr-step-number">03</span><span class="xrm-qr-step-icon" aria-hidden="true">◈</span><h3>Histórico e conferência</h3><p>As leituras ficam registradas no histórico da empresa. Variações suspeitas vão para aprovação ou rejeição do gestor.</p></article>
+   <article><span class="xrm-qr-step-number">04</span><span class="xrm-qr-step-icon" aria-hidden="true">◷</span><h3>Óleo e revisões em alerta</h3><p>Configure a troca a cada tantos quilômetros, receba avisos no painel e conclua o serviço com histórico.</p></article>
+  </div>
+  <div class="xrm-qr-benefits">
+   <div class="xrm-qr-benefits-copy"><span class="xrm-qr-benefits-eyebrow">FEITO PARA A ROTINA REAL DA FROTA</span><h3>Mais visibilidade. Menos cobrança de KM no WhatsApp.</h3><p>Atualização individual ou em lote, lembrete semanal com dia escolhido pelo gestor e registro de serviços. Uma leitura incomum não sobrescreve automaticamente o KM confirmado: ela é separada para conferência.</p></div>
+   <div class="xrm-qr-benefits-actions"><a class="btn" href="#planos">Conhecer os planos <span aria-hidden="true">↗</span></a><button class="btn outline" type="button" data-demo>Ver demonstração</button></div>
+  </div>
+ </div>
+</section>
+<section class="section xrm-features-section" id="recursos" aria-labelledby="xrm-features-title">
+ <div class="shell">
+  <div class="xrm-features-intro">
+   <div>
+    <div class="eyebrow">RECURSOS DO XRMOVI V3</div>
+    <h2 id="xrm-features-title">Muito mais que um cadastro de veículos.</h2>
+    <p>Do primeiro abastecimento ao relatório financeiro: conheça os principais controles que já fazem parte do painel de gestão da frota.</p>
+   </div>
+   <div class="xrm-features-count" aria-label="6 recursos principais"><strong>6</strong><span>recursos<br>principais</span></div>
+  </div>
+  <div class="cards xrm-features-grid"><article class="feature"><div class="xrm-feature-top"><span class="ico" aria-hidden="true">📊</span><span class="xrm-feature-index">01</span></div><h3>Painel gerencial</h3><p>Indicadores da frota, situação operacional, ações imediatas e vencimentos em uma visão executiva.</p></article>
+<article class="feature"><div class="xrm-feature-top"><span class="ico" aria-hidden="true">⛽</span><span class="xrm-feature-index">02</span></div><h3>Abastecimentos</h3><p>Registre litros, valores, posto, KM/H e comprovantes, com ranking de gastos por veículo.</p></article>
+<article class="feature"><div class="xrm-feature-top"><span class="ico" aria-hidden="true">🛠️</span><span class="xrm-feature-index">03</span></div><h3>Manutenção preventiva</h3><p>Programe serviços por data ou KM/horímetro e registre execução e custos realizados.</p></article>
+<article class="feature"><div class="xrm-feature-top"><span class="ico" aria-hidden="true">📁</span><span class="xrm-feature-index">04</span></div><h3>Documentos e anexos</h3><p>Consulte documentos dos ativos e anexe CRLV, CNH, notas fiscais e comprovantes aos registros.</p></article>
+<article class="feature"><div class="xrm-feature-top"><span class="ico" aria-hidden="true">🔔</span><span class="xrm-feature-index">05</span></div><h3>Alertas e vencimentos</h3><p>Identifique manutenções em atraso, prazos próximos e documentos de motoristas vencidos.</p></article>
+<article class="feature"><div class="xrm-feature-top"><span class="ico" aria-hidden="true">▦</span><span class="xrm-feature-index">06</span></div><h3>QR Code por veículo</h3><p>Motorista informa KM pelo celular com foto do painel; gestor acompanha e confere as leituras suspeitas.</p></article></div>
+  <div class="xrm-features-footer"><div><strong>Quer conhecer a experiência?</strong><span>Explore os indicadores e os módulos em uma prévia com dados fictícios.</span></div><div class="xrm-features-actions"><button type="button" class="btn" data-demo>Explorar demonstração</button><a class="btn outline" href="#planos">Ver planos</a></div></div>
+ </div>
+</section>
+
+<section class="section alt" id="planos">
+ <div class="shell">
+  <div class="section-head"><div class="eyebrow">Planos mensais</div><h2>Um plano. Suas empresas. Seus contratos.</h2><p>Escolha o total de veículos que sua operação precisa e distribua a capacidade entre empresas e contratos. Consulte a disponibilidade de contratação para sua conta antes de pagar.</p></div>
+  <div class="pricing">
+   <article class="plan"><h3>Start</h3><div class="price">R$ 19,90 <small>/mês</small></div><p>Para uma empresa com uma pequena frota.</p><ul><li>1 empresa</li><li>1 usuário / login</li><li>1 contrato</li><li>Até 5 veículos</li><li>Cadastros e controle básico</li></ul><p class="xrm-plan-example">Ex.: 1 contrato com 5 veículos.</p><a class="btn outline" href="https://wa.me/5521959092414?text=Ol%C3%A1!%20Tenho%20interesse%20no%20plano%20Start%20do%20XRMOVI.%20Gostaria%20de%20saber%20mais%20sobre%20a%20contrata%C3%A7%C3%A3o." target="_blank" rel="noopener noreferrer">Tenho interesse</a></article>
+   <article class="plan featured"><h3>Pro ★</h3><div class="price">R$ 39,90 <small>/mês</small></div><p>Para administrar contratos e empresas em crescimento.</p><ul><li>Até 3 empresas</li><li>Até 3 usuários / logins</li><li>Até 15 contratos</li><li>15 veículos no total</li><li>Visão gerencial</li></ul><p class="xrm-plan-example">Ex.: 3 empresas com 5 veículos cada, ou 1 empresa com 15.</p><a class="btn" href="https://wa.me/5521959092414?text=Ol%C3%A1!%20Tenho%20interesse%20no%20plano%20Pro%20do%20XRMOVI.%20Gostaria%20de%20saber%20mais%20sobre%20a%20contrata%C3%A7%C3%A3o." target="_blank" rel="noopener noreferrer">Tenho interesse</a></article>
+   <article class="plan"><h3>Business</h3><div class="price">R$ 64,90 <small>/mês</small></div><p>Para múltiplas empresas e operações estruturadas.</p><ul><li>Até 5 empresas</li><li>Até 5 usuários / logins</li><li>Até 30 contratos</li><li>30 veículos no total</li><li>Gestão multiempresa</li></ul><p class="xrm-plan-example">Ex.: 5 empresas com 6 veículos cada.</p><a class="btn outline" href="https://wa.me/5521959092414?text=Ol%C3%A1!%20Tenho%20interesse%20no%20plano%20Business%20do%20XRMOVI.%20Gostaria%20de%20saber%20mais%20sobre%20a%20contrata%C3%A7%C3%A3o." target="_blank" rel="noopener noreferrer">Tenho interesse</a></article>
+   <article class="plan"><h3>Advanced</h3><div class="price">R$ 99,90 <small>/mês</small></div><p>Para operações com várias frentes e contratos.</p><ul><li>Até 10 empresas</li><li>Até 10 usuários / logins</li><li>Até 60 contratos</li><li>60 veículos no total</li><li>Gestão ampliada</li></ul><p class="xrm-plan-example">Ex.: 10 empresas com 6 veículos cada.</p><a class="btn outline" href="https://wa.me/5521959092414?text=Ol%C3%A1!%20Tenho%20interesse%20no%20plano%20Advanced%20do%20XRMOVI.%20Gostaria%20de%20saber%20mais%20sobre%20a%20contrata%C3%A7%C3%A3o." target="_blank" rel="noopener noreferrer">Tenho interesse</a></article>
+   <article class="plan"><h3>Enterprise</h3><div class="price">Sob consulta</div><p>Para necessidades superiores aos planos padrão.</p><ul><li>Empresas sob medida</li><li>Usuários sob medida</li><li>Contratos sob medida</li><li>A partir de 61 veículos</li><li>Implantação personalizada</li></ul><p class="xrm-plan-example">Plano adaptado à quantidade e estrutura da operação.</p><a class="btn outline" href="https://wa.me/5521959092414?text=Ol%C3%A1!%20Tenho%20interesse%20no%20plano%20Enterprise%20do%20XRMOVI.%20Gostaria%20de%20saber%20mais%20sobre%20a%20contrata%C3%A7%C3%A3o." target="_blank" rel="noopener noreferrer">Tenho interesse</a></article>
+  </div>
+  <p class="xrm-plan-rule"><strong>Importante:</strong> o limite de veículos é compartilhado entre empresas e contratos. <a href="/perguntas-frequentes/">Entenda as regras e tire dúvidas</a>.</p>
+  
+  
+  <div class="xrm-commercial-trial" aria-labelledby="xrm-trial-title">
+    <div class="xrm-trial-content">
+      <span class="xrm-trial-eyebrow">COMECE PELO START</span>
+      <h3 id="xrm-trial-title">Crie sua conta. Escolha seu plano. Comece com controle.</h3>
+      <p>Crie sua conta sem custo inicial e escolha o plano adequado à sua frota. Na área da assinatura, consulte a disponibilidade do pagamento por cartão ou Pix. O acesso operacional depende de pagamento confirmado ou de uma liberação autorizada.</p>
+      <small>Cadastro de conta gratuito. Cartão: cobrança recorrente até o cancelamento. Pix: pagamento mensal com renovação manual.</small>
+    </div>
+    <div class="xrm-trial-actions">
+      <a class="btn" href="/?login=1">Criar conta e escolher plano</a>
+      <a class="btn outline" href="/perguntas-frequentes/">Entender as regras</a>
+    </div>
+  </div>
+  
+ </div>
+</section>
+
+<section class="section xrm-contact-section" id="contato" aria-labelledby="contact-title">
+ <div class="shell">
+  <div class="xrm-contact-layout">
+   <div class="xrm-contact-copy">
+    <div class="eyebrow">FALE COM O XRMOVI</div>
+    <h2 id="contact-title">Vamos colocar sua frota em movimento?</h2>
+    <p>Tire dúvidas sobre os planos, conte o que precisa ou conheça a plataforma antes de decidir.</p>
+   </div>
+   <div class="xrm-contact-actions">
+    <a class="btn" href="https://wa.me/5521959092414?text=Ol%C3%A1%21%20Gostaria%20de%20conversar%20sobre%20o%20XRMOVI." target="_blank" rel="noopener noreferrer">Conversar no WhatsApp <span aria-hidden="true">↗</span></a>
+    <button class="btn outline" type="button" data-demo>Explorar demonstração</button>
+   </div>
+  </div>
+ </div>
+</section>
+
+
+<section class="seo-hub" id="guias-gestao" aria-labelledby="xrm-seo-hub-title">
+ <div class="shell">
+  <div class="eyebrow">APRENDA SOBRE GESTÃO DE FROTAS</div>
+  <h2 id="xrm-seo-hub-title">Soluções para controlar veículos, manutenção e combustível.</h2>
+  <p class="seo-hub-intro">Conheça como o XRMOVI ajuda a organizar as rotinas da frota. Explore cada solução e veja quais controles fazem sentido para sua operação.</p>
+  <nav class="seo-hub-grid" aria-label="Soluções de gestão de frotas">
+   <a class="seo-hub-link" href="/gestao-de-frotas/"><strong>Software de gestão de frotas</strong><span>Veículos, motoristas, empresas, contratos e relatórios em um só lugar.</span></a>
+   <a class="seo-hub-link" href="/controle-de-manutencao/"><strong>Controle de manutenção de frotas</strong><span>Revisões por data ou KM, troca de óleo, custos e histórico de serviços.</span></a>
+   <a class="seo-hub-link" href="/controle-de-abastecimento/"><strong>Controle de abastecimento</strong><span>Registros de combustível, comprovantes, gastos por veículo e período.</span></a>
+   <a class="seo-hub-link" href="/calculadora-consumo-combustivel/"><strong>Calculadora de combustível gratuita</strong><span>Descubra consumo em km/L, litros por 100 km e custo por quilômetro.</span></a>
+   <a class="seo-hub-link" href="/planilha-controle-frotas/"><strong>Planilha de frota gratuita</strong><span>Baixe modelos CSV de veículos, abastecimentos e manutenções.</span></a>
+  </nav>
+ </div>
+</section>
+</main>
+<footer><div class="shell foot"><div>© <span id="year"></span> XRMOVI Fleet · Sua frota em movimento. Sua gestão no controle.</div><div>Versão demonstrativa · Sem dados de clientes</div><nav class="xrm-policy-links" aria-label="Políticas do serviço"><a href="/termos/">Termos de Uso</a><a href="/privacidade/">Privacidade</a><a href="/cancelamento/">Cancelamento</a></nav></div></footer>
+<div class="modal" id="demo" role="dialog" aria-modal="true" aria-label="Prévia do painel XRMOVI V3" aria-hidden="true"><div class="dialog xrm-preview-dialog"><button class="close" id="close" aria-label="Fechar">×</button><div class="eyebrow">DEMONSTRAÇÃO INTERATIVA · XRMOVI V3</div><h2>Central de gestão da frota</h2><p>Conheça a organização do painel atual. Os valores abaixo são ilustrativos e não representam dados de clientes.</p><div class="xrm-preview-tabs" role="tablist" aria-label="Explorar módulos"><button class="active" data-tab="dashboard" type="button">Visão Geral</button><button data-tab="assets" type="button">Ativos</button><button data-tab="maintenance" type="button">Manutenção</button><button data-tab="financial" type="button">Financeiro</button></div><div id="demoContent" aria-live="polite"></div><div class="demo-note">Prévia ilustrativa baseada nos módulos da V3. Para usar o painel real, entre ou crie sua conta.</div><a class="btn" href="/?login=1" id="xrm-preview-login">Entrar / Criar conta</a></div></div><style>
+.xrm-preview-dialog{width:min(1050px,95vw)!important;max-height:min(90vh,900px);overflow-y:auto}
+.xrm-preview-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0 18px}
+.xrm-preview-tabs button{border:1px solid #315466;border-radius:9px;background:#12344a;padding:10px 13px;color:#c9e4ed;cursor:pointer;font:600 12px system-ui}
+.xrm-preview-tabs button.active{background:#54e0ad;color:#062b2b;border-color:#54e0ad}
+.xrm-preview-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin:0 0 16px}
+.xrm-preview-kpi{background:#102b40;border:1px solid #315269;border-top:3px solid #42c7c0;border-radius:10px;padding:12px;display:grid;gap:11px}
+.xrm-preview-kpi span{color:#9bbcd0;font-size:11px}.xrm-preview-kpi strong{font-size:25px;color:#e8f7ff}
+.xrm-preview-panels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.xrm-preview-panel{padding:16px;background:#0b2538;border:1px solid #294c63;border-radius:12px;min-width:0}
+.xrm-preview-panel h3{font-size:13px;margin:0 0 15px;color:#e6f4fa}
+.xrm-preview-panel p{font-size:12px;color:#bdd3df;margin:10px 0;border-bottom:1px solid #254659;padding-bottom:8px}
+.xrm-preview-panel small{font-size:11px;color:#8cb8c9}
+.xrm-preview-donut{margin:0 auto 12px;width:118px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#2ecfb0 0 62.5%,#f4c56f 62.5% 75%,#ef7283 75%);position:relative}
+.xrm-preview-donut:before{content:"";position:absolute;inset:20px;background:#0b2538;border-radius:50%}
+.xrm-preview-donut strong{z-index:1;font-size:28px}
+.xrm-preview-panel meter{width:48%;height:10px;vertical-align:middle}
+@media(max-width:740px){.xrm-preview-panels{grid-template-columns:1fr}.xrm-preview-dialog{padding:18px!important}.xrm-preview-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+<script>
+document.getElementById('year').textContent=new Date().getFullYear();
+const modal=document.getElementById('demo');const close=document.getElementById('close');
+document.querySelectorAll('[data-demo]').forEach(el=>el.addEventListener('click',()=>{modal.classList.add('open');modal.setAttribute('aria-hidden','false');close.focus()}));
+function shut(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true')}close.addEventListener('click',shut);modal.addEventListener('click',e=>{if(e.target===modal)shut()});document.addEventListener('keydown',e=>{if(e.key==='Escape')shut()});
+const previewData={
+ dashboard:{cards:[['Frota Total','8'],['Operacionais','5'],['Em alerta','3'],['Itens vencidos','2'],['Revisões pendentes','4']],detail:'<div class="xrm-preview-panels"><div class="xrm-preview-panel"><h3>Ação imediata</h3><p>Revisão vencida · Veículo 002</p><p>CNH próxima do vencimento · Motorista exemplo</p></div><div class="xrm-preview-panel"><h3>Status da frota</h3><div class="xrm-preview-donut"><strong>8</strong></div><small>● 5 operacionais &nbsp; ● 1 manutenção &nbsp; ● 2 vencidos</small></div><div class="xrm-preview-panel xrm-preview-drivers"><h3>Motoristas e CNH</h3><div class="xrm-preview-driver"><span class="xrm-driver-avatar">CM</span><span class="xrm-driver-name">Carlos M. <small>CNH E</small></span><b>03/2028</b></div><div class="xrm-preview-driver"><span class="xrm-driver-avatar">AS</span><span class="xrm-driver-name">Ana S. <small>CNH D</small></span><b>11/2027</b></div><div class="xrm-preview-driver"><span class="xrm-driver-avatar">RL</span><span class="xrm-driver-name">Rafael L. <small>CNH C</small></span><b>06/2029</b></div></div><div class="xrm-preview-panel"><h3>Vencimentos próximos</h3><p>Vencidos <meter min="0" max="8" value="2"></meter> 2</p><p>Até 30 dias <meter min="0" max="8" value="3"></meter> 3</p><p>31 a 90 dias <meter min="0" max="8" value="3"></meter> 3</p></div></div>'},
+ assets:{cards:[['Ativos cadastrados','8'],['Motoristas vinculados','6'],['Em operação','5']],detail:'<div class="xrm-preview-panel"><h3>Cadastro e acompanhamento</h3><p>Veículo 001 · Caminhão · Operacional</p><p>Veículo 002 · Utilitário · Revisão vencida</p><p>Veículo 003 · Van · Em manutenção</p><small>Placa, categoria, motorista, documentos e quilometragem</small></div>'},
+ maintenance:{cards:[['Pendentes','4'],['Vencidas','2'],['Em dia','2']],detail:'<div class="xrm-preview-panel"><h3>Manutenções e despesas</h3><p>Revisão de freios · Veículo 002 · Vencida</p><p>Troca de óleo · Veículo 003 · Programada</p><p>Comprovantes vinculados ao veículo e ao serviço</p></div>'},
+ financial:{cards:[['Total','R$ 15.000'],['Combustível','R$ 12.000'],['Manutenção','R$ 2.000'],['Despesas','R$ 1.000']],detail:'<div class="xrm-preview-panel"><h3>Relatórios financeiros</h3><p>Filtros diário, quinzenal, mensal, trimestral e semestral</p><p>Despesas por veículo, lançamento e categoria</p><small>Exportação CSV e impressão em PDF</small></div>'}
+};
+function selectTab(id){const item=previewData[id]||previewData.dashboard;document.querySelectorAll('[data-tab]').forEach(b=>{const active=b.dataset.tab===id;b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active))});const root=document.getElementById('demoContent');root.innerHTML='<div class="xrm-preview-kpis">'+item.cards.map(([label,value])=>'<div class="xrm-preview-kpi"><span>'+label+'</span><strong>'+value+'</strong></div>').join('')+'</div>'+item.detail}
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>selectTab(b.dataset.tab)));selectTab('dashboard');
+document.getElementById('xrm-preview-login').addEventListener('click',shut);
+</script>
+<section class="section alt xrm-auth-modal" id="acesso" role="dialog" aria-modal="true" aria-labelledby="xrm-auth-title" aria-hidden="true"><div class="shell"><button class="xrm-auth-close" id="xrm-auth-close" type="button" aria-label="Fechar janela de acesso">×</button><div class="section-head"><div class="eyebrow">ÁREA DO CLIENTE</div><h2 id="xrm-auth-title">Entre ou crie sua conta XRMOVI</h2><p>Conheça os planos acima e acesse sua empresa com segurança.</p></div><div class="xrm-auth"><form id="xrm-public-auth"><div class="xrm-auth-tabs"><button type="button" data-auth-mode="signin" class="active">Entrar</button><button type="button" data-auth-mode="signup">Criar conta</button></div><label>E-mail<input name="email" type="email" autocomplete="email" required placeholder="seu@email.com"></label><label id="xrm-password-row">Senha<input name="password" type="password" autocomplete="current-password" minlength="8" required></label><label id="xrm-confirm-row" hidden>Confirmar senha<input name="confirmation" type="password" autocomplete="new-password"></label><button type="button" id="xrm-auth-forgot">Esqueci minha senha</button><button id="xrm-auth-submit" type="submit" class="btn">Entrar no painel</button><p class="xrm-auth-policies">Consulte os <a href="/termos/" target="_blank" rel="noopener">Termos de Uso</a>, a <a href="/privacidade/" target="_blank" rel="noopener">Política de Privacidade</a> e as <a href="/cancelamento/" target="_blank" rel="noopener">regras de cancelamento</a> antes de contratar.</p><p id="xrm-auth-message" role="status" aria-live="polite"></p></form><div class="xrm-auth-aside"><h3>Uma plataforma, toda a frota.</h3><p>Faça login com sua conta atual ou crie uma nova. Os planos Start, Pro, Business, Advanced e Enterprise continuam disponíveis para consulta nesta página.</p><a class="btn outline" href="#planos">Ver planos</a></div></div></div></section>
+<style>.xrm-auth{display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,.8fr);gap:24px;align-items:stretch;max-width:900px;margin:auto}.xrm-auth form,.xrm-auth-aside{padding:26px;border:1px solid #315366;border-radius:18px;background:#0c2638;display:grid;align-content:start;gap:16px}.xrm-auth label{display:grid;gap:7px;font-weight:600;font-size:13px;color:#c5dce8}.xrm-auth input{padding:13px;color:white;background:#071c2d;border:1px solid #496a7c;border-radius:9px;min-width:0}.xrm-auth-tabs{display:flex;gap:8px}.xrm-auth-tabs button{flex:1;border:1px solid #42657a;border-radius:9px;padding:11px;background:transparent;color:#d9eff6;cursor:pointer}.xrm-auth-tabs button.active{background:#25c7aa;color:#062b2c;font-weight:800}.xrm-auth #xrm-auth-message{font-size:12px;color:#7de9d3;margin:0}#xrm-auth-forgot{background:none;border:0;padding:0;justify-self:start;color:#82e5e0;text-decoration:underline;font-size:13px;cursor:pointer}#xrm-password-row[hidden],#xrm-auth-forgot[hidden]{display:none!important}.xrm-auth-aside h3{margin:0}.xrm-auth-aside p{color:#bdd1dc}.xrm-auth-aside .btn{justify-self:start}@media(max-width:700px){.xrm-auth{grid-template-columns:1fr}}</style>
+<style>
+/* Login/signup is a dialog, never a footer jump. */
+#xrm-confirm-row[hidden],#acesso [hidden]{display:none!important}
+#xrm-auth-close{position:absolute;top:12px;right:18px;background:transparent;color:#ecfaff;border:0;font-size:32px;line-height:1;cursor:pointer;z-index:2;padding:6px}
+#acesso.xrm-auth-modal{display:none!important;position:fixed!important;inset:0;z-index:1100;background:rgba(2,12,22,.86)!important;backdrop-filter:blur(7px);border:0!important;margin:0!important;padding:16px!important;overflow-y:auto;align-items:center;justify-content:center}
+#acesso.xrm-auth-modal.open{display:flex!important}
+#acesso.xrm-auth-modal>.shell{position:relative;width:min(940px,100%);max-width:940px;margin:auto;padding:25px 22px 22px;background:#0a2336;border:1px solid #315d73;border-radius:19px;box-shadow:0 20px 80px #0008}
+#acesso.xrm-auth-modal .section-head{margin:0 0 16px;max-width:none;padding-right:34px}
+#acesso.xrm-auth-modal .section-head h2{font-size:clamp(20px,3vw,27px);margin:4px 0 6px}
+#acesso.xrm-auth-modal .section-head p{margin:0;font-size:13px}
+#acesso.xrm-auth-modal .xrm-auth{max-width:none;gap:13px}
+#acesso.xrm-auth-modal .xrm-auth form,#acesso.xrm-auth-modal .xrm-auth-aside{padding:20px;gap:12px}
+#acesso.xrm-auth-modal .xrm-auth input{background:#071c2d!important;color:#fff!important}
+body.xrm-auth-open{overflow:hidden}
+@media(max-width:700px){#acesso.xrm-auth-modal{padding:10px!important}#acesso.xrm-auth-modal>.shell{padding:18px 13px 15px}#acesso.xrm-auth-modal .xrm-auth-aside{display:none}#acesso.xrm-auth-modal .xrm-auth form{padding:16px}#acesso.xrm-auth-modal .section-head{margin-bottom:12px}}
+</style>
+<script>
+(function(){
+ const modal=document.getElementById('acesso');
+ const close=document.getElementById('xrm-auth-close');
+ let returnFocus=null;
+ function openAuth(event){
+  if(event)event.preventDefault();
+  returnFocus=document.activeElement;
+  const preview=document.getElementById('demo');
+  if(preview){preview.classList.remove('open');preview.setAttribute('aria-hidden','true')}
+  document.querySelector('[data-auth-mode="signin"]')?.click();
+  modal.classList.add('open');modal.setAttribute('aria-hidden','false');
+  document.body.classList.add('xrm-auth-open');
+  modal.querySelector('[name="email"]')?.focus({preventScroll:true});
+ }
+ function closeAuth(){
+  modal.classList.remove('open');modal.setAttribute('aria-hidden','true');
+  document.body.classList.remove('xrm-auth-open');
+  if(returnFocus?.isConnected)returnFocus.focus({preventScroll:true});
+  const url=new URL(location.href);
+  if(url.searchParams.has('login')||url.hash==='#acesso'){url.searchParams.delete('login');if(url.hash==='#acesso')url.hash='';history.replaceState(null,'',url.pathname+url.search+url.hash)}
+ }
+ document.querySelectorAll('a[href*="login=1"],a[href="#acesso"]').forEach(a=>a.addEventListener('click',openAuth));
+ close.addEventListener('click',closeAuth);
+ // Navigating from the auth modal must dismiss the overlay before scrolling.
+ modal.querySelectorAll('a[href^="#"]').forEach(link=>link.addEventListener('click',event=>{
+  const hash=link.getAttribute('href');
+  const target=hash&&hash.length>1?document.getElementById(hash.slice(1)):null;
+  if(!target)return;
+  event.preventDefault();
+  closeAuth();
+  if(location.hash!==hash)history.pushState(null,'',hash);
+  target.scrollIntoView({behavior:'smooth',block:'start'});
+ }));
+ modal.addEventListener('click',e=>{if(e.target===modal)closeAuth()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeAuth()});
+ if(new URLSearchParams(location.search).has('login')||location.hash==='#acesso'){openAuth();if(location.hash==='#acesso')window.scrollTo(0,0)}
+ window.XrmoviOpenAuth=openAuth;
+})();
+</script>
+<script type="module" src="/auth/public-auth.js?v=20261110-login-help-1"></script>
+<style>
+/* Compact desktop preview; mobile keeps natural scrolling. */
+@media(min-width:900px) and (min-height:680px){
+#demo.modal{padding:12px;align-items:center;justify-content:center}
+#demo .xrm-preview-dialog{box-sizing:border-box;width:min(1080px,94vw)!important;max-height:calc(100dvh - 28px)!important;overflow:hidden!important;padding:16px 22px!important}
+#demo .xrm-preview-dialog h2{font-size:20px;margin:3px 0 7px}
+#demo .xrm-preview-dialog>p{font-size:12px;line-height:1.35;margin:5px 0 8px}
+#demo .xrm-preview-tabs{margin:8px 0 10px;gap:7px}
+#demo .xrm-preview-tabs button{padding:7px 10px;font-size:11px}
+#demo .xrm-preview-kpis{grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0 0 10px}
+#demo .xrm-preview-kpi{padding:9px 11px;min-height:67px;gap:5px}
+#demo .xrm-preview-kpi span{font-size:10px}
+#demo .xrm-preview-kpi strong{font-size:21px}
+#demo .xrm-preview-panels{gap:9px}
+#demo .xrm-preview-panel{padding:11px}
+#demo .xrm-preview-panel h3{margin:0 0 8px}
+#demo .xrm-preview-panel p{font-size:11px;line-height:1.3;margin:6px 0;padding-bottom:5px}
+#demo .xrm-preview-donut{width:86px;margin-bottom:7px}
+#demo .xrm-preview-donut:before{inset:15px}
+#demo .xrm-preview-donut strong{font-size:21px}
+#demo .demo-note{font-size:10px;margin:8px 0}
+#demo #xrm-preview-login{padding:9px 12px;font-size:12px}
+}
+@media(max-width:899px), (max-height:679px){
+#demo .xrm-preview-dialog{width:min(96vw,760px)!important;max-height:90dvh!important;overflow-y:auto!important}
+}
+.xrm-whatsapp-float{position:fixed;bottom:max(20px,env(safe-area-inset-bottom));right:max(20px,env(safe-area-inset-right));width:60px;height:60px;border-radius:50%;background:#25d366;display:grid;place-items:center;color:white;box-shadow:0 9px 30px rgba(0,0,0,.3);z-index:800;text-decoration:none;transition:transform .2s ease,box-shadow .2s ease}
+.xrm-whatsapp-float:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(0,0,0,.36)}
+.xrm-whatsapp-float svg{width:33px;height:33px;fill:currentColor}
+@media(max-width:680px){.xrm-whatsapp-float{right:14px;bottom:14px;width:54px;height:54px}.xrm-whatsapp-float svg{width:29px;height:29px}}
+@media(prefers-reduced-motion:reduce){.xrm-whatsapp-float{transition:none}}
+</style>
+<a class="xrm-whatsapp-float" href="https://wa.me/5521959092414?text=Ol%C3%A1%21%20Quero%20saber%20mais%20sobre%20o%20XRMOVI." target="_blank" rel="noopener noreferrer" aria-label="Falar sobre o XRMOVI pelo WhatsApp" title="Fale conosco pelo WhatsApp"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 .8A15.1 15.1 0 0 0 3 23.5L.9 31l7.7-2A15.2 15.2 0 1 0 16 .8Zm0 27.5a12.1 12.1 0 0 1-6.2-1.7l-.5-.3-4.6 1.2 1.2-4.4-.3-.5a12.3 12.3 0 1 1 10.4 5.7Zm6.7-9.1c-.4-.2-2.2-1.1-2.6-1.2-.3-.1-.6-.2-.8.2-.2.3-1 1.2-1.2 1.4-.2.3-.5.3-.8.1-.4-.2-1.6-.6-3-1.9-1.1-1-1.9-2.2-2.1-2.6-.2-.4 0-.6.2-.8l.6-.7.4-.6c.1-.2 0-.5 0-.7l-1.2-2.9c-.3-.7-.6-.6-.8-.6h-.7c-.3 0-.7.1-1.1.5-.4.4-1.4 1.4-1.4 3.4 0 2 .1 2.8 1.6 4.8 1.5 2 3.5 3.7 5.7 4.5 2 .7 2.8.8 3.8.7 1.2-.1 2.2-1 2.5-1.8.3-.8.3-1.5.2-1.7-.2-.2-.4-.3-.8-.5Z"/></svg></a><style>
+/* Definitive preview layout: fit complete dashboard on typical desktop without scroll. */
+@media(min-width:900px){
+#demo.modal.open{display:flex;align-items:center;justify-content:center;padding:12px}
+#demo .xrm-preview-dialog{width:min(1120px,96vw)!important;max-height:calc(100dvh - 24px)!important;overflow:hidden!important;box-sizing:border-box;display:flex;flex-direction:column;gap:clamp(4px,.7vh,9px);padding:clamp(12px,1.8vh,20px) clamp(16px,2vw,26px)!important}
+#demo .xrm-preview-dialog>.eyebrow{margin:0;font-size:10px}
+#demo .xrm-preview-dialog>h2{font-size:clamp(18px,2.5vh,24px);margin:0;line-height:1.15}
+#demo .xrm-preview-dialog>p{font-size:clamp(10px,1.45vh,13px);line-height:1.3;margin:0}
+#demo .xrm-preview-tabs{margin:3px 0 4px;gap:7px;flex-shrink:0}
+#demo .xrm-preview-tabs button{padding:7px 11px;font-size:11px}
+#demo #demoContent{display:grid;gap:clamp(6px,1vh,11px);min-height:0;overflow:hidden}
+#demo .xrm-preview-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0}
+#demo .xrm-preview-kpi{min-height:0;padding:clamp(7px,1.2vh,11px);gap:5px}
+#demo .xrm-preview-kpi span{font-size:10px}
+#demo .xrm-preview-kpi strong{font-size:clamp(17px,2.5vh,24px)}
+#demo .xrm-preview-panels{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#demo .xrm-preview-panel{padding:clamp(8px,1.3vh,12px)}
+#demo .xrm-preview-panel h3{font-size:12px;margin:0 0 6px}
+#demo .xrm-preview-panel p{font-size:11px;line-height:1.25;margin:5px 0;padding-bottom:4px}
+#demo .xrm-preview-panel small{font-size:10px}
+#demo .xrm-preview-donut{width:clamp(64px,10vh,92px);margin:4px auto}
+#demo .xrm-preview-donut:before{inset:16%}
+#demo .xrm-preview-donut strong{font-size:20px}
+#demo .demo-note{font-size:10px;margin:0;line-height:1.3}
+#demo #xrm-preview-login{padding:7px 12px;font-size:11px;align-self:flex-start;flex-shrink:0}
+}
+@media(min-width:900px) and (max-height:650px){#demo .xrm-preview-dialog>p{display:none}#demo .demo-note{display:none}}
+@media(max-width:899px){#demo .xrm-preview-dialog{width:min(96vw,760px)!important;max-height:90dvh!important;overflow-y:auto!important;padding:16px!important}}
+</style><style>
+/* Hero calls-to-action: equal dimensions, aligned in one row. */
+.hero .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;width:min(100%,510px)}
+.hero .actions>.btn{display:flex;width:100%;min-height:48px;padding:12px 14px;box-sizing:border-box;align-items:center;justify-content:center;text-align:center;white-space:nowrap;font-size:13px}
+@media(max-width:520px){.hero .actions{grid-template-columns:1fr}.hero .actions>.btn{min-height:46px}}
+html{scroll-padding-top:90px}
+#acesso{scroll-margin-top:90px}
+</style><style>
+/* Dashboard demo: motoristas between fleet status and next expirations. */
+#demo .xrm-preview-dialog{max-width:min(1120px,96vw)!important}
+#demo .xrm-preview-panels{grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch}
+#demo .xrm-preview-drivers{min-width:0}
+#demo .xrm-preview-driver{display:grid;grid-template-columns:25px minmax(0,1fr) auto;align-items:center;column-gap:6px;padding:6px 0;border-bottom:1px solid #254659;font-size:11px}
+#demo .xrm-preview-driver:last-child{border-bottom:0}
+#demo .xrm-driver-avatar{width:25px;height:25px;display:grid;place-items:center;background:#173d56;border-radius:7px;color:#82d8ee;font-size:10px;font-weight:700}
+#demo .xrm-driver-name{min-width:0;color:#e0f1fa;line-height:1.3}
+#demo .xrm-driver-name small{display:block;color:#95b9cc!important;font-size:9px!important;margin:0!important}
+#demo .xrm-preview-driver b{font-size:10px;font-weight:700;color:#7ae5c5;white-space:nowrap}
+@media(min-width:900px){#demo .xrm-preview-panels{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:clamp(6px,.7vw,9px)}}
+@media(min-width:741px) and (max-width:899px){#demo .xrm-preview-panels{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:740px){#demo .xrm-preview-panels{grid-template-columns:1fr}}
+</style><style>
+/* XRMOVI refinement: aligned commercial sections and balanced plan cards */
+#personalizacao{padding:clamp(48px,5.5vw,84px) 0 32px;scroll-margin-top:90px}
+#personalizacao .xrm-custom-layout{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(300px,.88fr);gap:clamp(24px,3.5vw,54px);align-items:center;padding:clamp(28px,4vw,54px);border:1px solid #31716f;border-radius:25px;background:radial-gradient(ellipse at 0 0,rgba(84,224,173,.10),transparent 53%),linear-gradient(135deg,#113646,#0b2537);box-shadow:0 20px 65px rgba(0,0,0,.12)}
+#personalizacao .xrm-custom-copy{min-width:0}
+#personalizacao .xrm-custom-copy>.eyebrow{font-size:11px;letter-spacing:1.6px;margin-bottom:16px}
+#personalizacao .xrm-custom-copy h2{font-size:clamp(32px,3.5vw,49px);line-height:1.12;letter-spacing:-1.7px;margin:0 0 20px;max-width:640px}
+#personalizacao .xrm-custom-copy h2 span{color:var(--mint)}
+#personalizacao .xrm-custom-copy p{max-width:550px;margin:0 0 14px;color:#bfd2dc;font-size:14px;line-height:1.72;text-align:left}
+#personalizacao .xrm-custom-copy p.xrm-custom-lead{font-size:clamp(15px,1.3vw,17px);font-weight:600;color:#e4f4f8;line-height:1.55}
+#personalizacao .xrm-custom-actions{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;margin:25px 0 15px}
+#personalizacao .xrm-custom-actions .btn{font-size:12px;padding:12px 15px;min-height:47px;white-space:nowrap}
+#personalizacao .xrm-custom-copy p.xrm-custom-note{font-size:11px;color:#91b0bf;line-height:1.6;margin:0}
+#personalizacao .xrm-custom-flow{min-width:0;padding:clamp(21px,2.5vw,34px);background:linear-gradient(155deg,#0e2a3c,#092131);border:1px solid #305569;border-radius:19px}
+#personalizacao .xrm-flow-head{display:flex;align-items:center;gap:8px;margin-bottom:23px}
+#personalizacao .xrm-flow-head>span:nth-child(2){color:#bcd8e1;letter-spacing:1px;font-size:10px;font-weight:800;flex:1}
+#personalizacao .xrm-flow-symbol{display:grid;place-items:center;width:33px;height:33px;border-radius:10px;color:#77ecc2;background:#164144;font-size:18px}
+#personalizacao .xrm-flow-pill{font-size:10px;white-space:nowrap;padding:5px 9px;border-radius:999px;background:#16413c;border:1px solid #347f73;color:#85ebc6}
+#personalizacao .xrm-custom-flow h3{font-size:clamp(18px,1.9vw,24px);line-height:1.25;letter-spacing:-.5px;margin:0 0 20px}
+#personalizacao .xrm-flow-step{display:grid;grid-template-columns:38px minmax(0,1fr);gap:13px;align-items:start;padding:13px 0;border-top:1px solid #2a485a}
+#personalizacao .xrm-flow-step>span{display:grid;place-items:center;width:35px;height:35px;background:#173d4b;color:#65e5b7;border-radius:11px;font-size:12px;font-weight:800}
+#personalizacao .xrm-flow-step strong{display:block;color:#e6f2f8;font-size:13px;line-height:1.35;margin:0 0 4px}
+#personalizacao .xrm-flow-step small{display:block;color:#a7bdc9;font-size:11px;line-height:1.5}
+#personalizacao .xrm-flow-foot{margin-top:6px;padding-top:16px;border-top:1px solid #2a485a;color:#91b3c0;font-size:11px}
+#personalizacao .xrm-flow-foot span{color:var(--mint);padding-right:5px}
+#contato.xrm-contact-section{padding:20px 0 clamp(54px,7vw,95px);scroll-margin-top:90px}
+#contato .xrm-contact-layout{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:25px;border:1px solid #2b4d5d;border-radius:19px;background:#0d2738;padding:clamp(26px,3.5vw,42px)}
+#contato .xrm-contact-copy .eyebrow{font-size:10px;letter-spacing:1.5px}
+#contato .xrm-contact-copy h2{font-size:clamp(23px,2.65vw,33px);line-height:1.22;letter-spacing:-1px;margin:7px 0 10px}
+#contato .xrm-contact-copy p{font-size:13px;color:#a9c2cf;max-width:530px;margin:0;line-height:1.6}
+#contato .xrm-contact-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#contato .xrm-contact-actions>.btn{min-height:46px;padding:11px 15px;font-size:12px;white-space:nowrap}
+#planos{scroll-margin-top:90px}
+#planos .pricing{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px}
+#planos .pricing>.plan{grid-column:span 2;min-width:0;display:flex;flex-direction:column}
+#planos .pricing>.plan:nth-child(4){grid-column:2/span 2}
+#planos .pricing>.plan:nth-child(5){grid-column:4/span 2}
+#planos .plan ul{flex:1}
+#planos .plan .btn{margin-top:auto}
+@media(max-width:1020px){
+#personalizacao .xrm-custom-layout{grid-template-columns:minmax(0,1fr) minmax(280px,.88fr);gap:22px;padding:30px}
+#contato .xrm-contact-layout{grid-template-columns:1fr}
+}
+@media(max-width:820px){
+#personalizacao .xrm-custom-layout{grid-template-columns:1fr;gap:24px}
+#personalizacao .xrm-custom-flow{max-width:none}
+#planos .pricing{grid-template-columns:repeat(2,minmax(0,1fr))}
+#planos .pricing>.plan,#planos .pricing>.plan:nth-child(4),#planos .pricing>.plan:nth-child(5){grid-column:auto}
+#planos .pricing>.plan:last-child{grid-column:1/-1}
+}
+@media(max-width:540px){
+#personalizacao{padding:45px 0 25px}
+#personalizacao .xrm-custom-layout{padding:23px 18px;border-radius:18px}
+#personalizacao .xrm-custom-copy h2{font-size:clamp(30px,9vw,39px)}
+#personalizacao .xrm-custom-actions{flex-direction:column}
+#personalizacao .xrm-custom-actions>.btn{width:100%;white-space:normal;text-align:center}
+#contato .xrm-contact-layout{padding:23px 18px}
+#contato .xrm-contact-actions{flex-direction:column;align-items:stretch}
+#contato .xrm-contact-actions>.btn{width:100%;white-space:normal;text-align:center}
+#planos .pricing{grid-template-columns:1fr}
+#planos .pricing>.plan:last-child{grid-column:auto}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style><style>
+/* Resource showcase reflects the actual XRMOVI V3 modules. */
+#recursos.xrm-features-section{padding:clamp(48px,5vw,72px) 0;scroll-margin-top:84px;background:radial-gradient(ellipse at 85% 8%,rgba(46,192,176,.065),transparent 40%),#061524}
+#recursos .xrm-features-intro{display:flex;align-items:end;justify-content:space-between;gap:25px;margin-bottom:22px}
+#recursos .xrm-features-intro>div:first-child{max-width:720px}
+#recursos .xrm-features-intro h2{font-size:clamp(31px,4.25vw,49px);line-height:1.13;letter-spacing:-1.5px;margin:10px 0 15px}
+#recursos .xrm-features-intro p{font-size:15px;line-height:1.65;color:#aac4d0;max-width:680px;margin:0}
+#recursos .xrm-features-count{display:flex;align-items:center;gap:12px;border-left:1px solid #2d5360;padding:10px 0 10px 23px;white-space:nowrap}
+#recursos .xrm-features-count strong{color:#54e0ad;font-size:48px;line-height:1;font-weight:850;letter-spacing:-2px}
+#recursos .xrm-features-count span{color:#b6d0d8;font-size:12px;line-height:1.5}
+#recursos .xrm-features-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+#recursos .xrm-features-grid .feature{position:relative;display:flex;flex-direction:column;min-height:169px;padding:16px 17px 18px;background:linear-gradient(155deg,#0d2a3b,#0a2334);border:1px solid #254a5b;border-radius:18px;transition:border-color .2s ease,transform .2s ease,background .2s ease}
+#recursos .xrm-features-grid .feature:hover{border-color:#428a85;transform:translateY(-2px);background:linear-gradient(155deg,#103849,#0a2637)}
+#recursos .xrm-feature-top{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:11px}
+#recursos .xrm-feature-top .ico{display:grid;place-items:center;width:36px;height:36px;font-size:19px;line-height:1;background:#133a48;border:1px solid #2c5863;border-radius:12px}
+#recursos .xrm-feature-index{font-size:11px;letter-spacing:1px;color:#668e9f;font-weight:700}
+#recursos .xrm-features-grid .feature h3{font-size:14px;line-height:1.4;letter-spacing:-.2px;color:#f2f9fc;margin:0 0 6px;font-weight:750}
+#recursos .xrm-features-grid .feature p{font-size:11.5px;line-height:1.5;color:#abc5d0;margin:0;max-width:360px}
+#recursos .xrm-features-footer{display:flex;align-items:center;justify-content:space-between;gap:22px;margin-top:20px;padding:22px 25px;border:1px solid #2b5c60;border-radius:17px;background:linear-gradient(110deg,#103746,#0b2838)}
+#recursos .xrm-features-footer>div:first-child{display:flex;flex-direction:column;gap:5px}
+#recursos .xrm-features-footer strong{font-size:14px;color:#f3fafc}
+#recursos .xrm-features-footer span{font-size:12px;color:#adc5d0;line-height:1.5}
+#recursos .xrm-features-actions{display:flex;flex-wrap:wrap;gap:10px;flex-shrink:0}
+#recursos .xrm-features-actions .btn{font-size:12px;min-height:43px;padding:10px 15px;white-space:nowrap}
+@media(max-width:1100px){#recursos .xrm-features-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:820px){#recursos .xrm-features-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#recursos .xrm-features-footer{align-items:start;flex-direction:column}}
+@media(max-width:640px){#recursos .xrm-features-intro{align-items:start;flex-direction:column}#recursos .xrm-features-count{border-left:0;border-top:1px solid #2d5360;padding:14px 0 0}#recursos .xrm-features-count strong{font-size:34px}#recursos .xrm-features-grid{grid-template-columns:1fr;gap:11px}#recursos .xrm-features-grid .feature{min-height:0;padding:19px 20px}#recursos .xrm-feature-top{margin-bottom:12px}#recursos .xrm-features-footer{padding:20px}#recursos .xrm-features-actions{width:100%;flex-direction:column}#recursos .xrm-features-actions .btn{width:100%}}
+@media(prefers-reduced-motion:reduce){#recursos .xrm-features-grid .feature{transition:none}}
+</style>
+<style>
+/* Planos multiempresa / simulador comercial XRMOVI */
+#planos .xrm-plan-concepts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 24px}
+#planos .xrm-plan-concepts>div{border:1px solid #315365;border-radius:13px;padding:16px;background:#0b2838;display:grid;gap:7px}
+#planos .xrm-plan-concepts b{font-size:13px;color:#57dfb1}
+#planos .xrm-plan-concepts span{font-size:12px;line-height:1.55;color:#c4d7df}
+#planos .plan .xrm-plan-example{min-height:0!important;border-top:1px solid #315365;padding-top:13px;margin-top:8px;color:#acd4ca;font-size:12px}
+#planos .xrm-plan-rule{margin:24px 0 26px;color:#c9dce3;font-size:13px;line-height:1.7;padding:16px 19px;border-left:3px solid #54e0ad;background:#0c2837}
+#planos .xrm-plan-rule strong{color:#54e0ad}
+#planos .xrm-plan-simulator{background:linear-gradient(135deg,#103545,#0a2333);border:1px solid #367369;border-radius:19px;padding:26px;display:grid;gap:18px}
+#planos .xrm-sim-intro h3{font-size:25px;letter-spacing:-.6px;margin:8px 0}
+#planos .xrm-sim-intro p{font-size:13px;line-height:1.7;max-width:780px;margin:0}
+#planos .xrm-sim-controls{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:12px}
+#planos .xrm-sim-controls label{display:grid;gap:8px;color:#d9ebf1;font-size:12px;font-weight:700}
+#planos .xrm-sim-controls input,#planos .xrm-sim-controls select{width:100%;font:inherit;font-size:14px;border:1px solid #51717f;border-radius:10px;background:#0a2434;color:#fff;padding:12px;min-width:0}
+#planos .xrm-sim-result{border-top:1px solid #315d65;padding-top:16px}
+#planos .xrm-sim-result>strong{color:#54e0ad;font-size:15px;display:block;margin-bottom:13px}
+#planos .xrm-sim-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+#planos .xrm-sim-company{border-radius:12px;background:#102c3d;border:1px solid #355b68;padding:13px;display:grid;gap:7px}
+#planos .xrm-sim-company strong{font-size:13px}
+#planos .xrm-sim-company span{font-size:12px;color:#bcd2da}
+#planos .xrm-sim-company meter{height:12px;width:100%}
+#planos .xrm-sim-note{font-size:12px;color:#a8c7d1;line-height:1.65;margin:0}
+#xrm-faq{scroll-margin-top:85px}
+#xrm-faq .section-head{max-width:850px}
+#xrm-faq .xrm-faq-list{display:grid;gap:10px}
+#xrm-faq details{border:1px solid #315267;background:#0c2839;border-radius:12px;overflow:hidden}
+#xrm-faq details[open]{border-color:#469e8b}
+#xrm-faq summary{cursor:pointer;padding:18px 20px;font-size:14px;font-weight:750;line-height:1.5;color:#e8f8fa}
+#xrm-faq details p{margin:0;padding:0 20px 19px;font-size:13px;line-height:1.7;color:#c2d5dd;max-width:900px}
+#xrm-faq .xrm-faq-bottom{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:22px;padding:22px 25px;background:#0d3040;border:1px solid #366a6b;border-radius:15px}
+#xrm-faq .xrm-faq-bottom>div{display:grid;gap:4px}
+#xrm-faq .xrm-faq-bottom strong{font-size:15px}
+#xrm-faq .xrm-faq-bottom span{font-size:12px;color:#bdd5de}
+@media(max-width:740px){#planos .xrm-plan-concepts{grid-template-columns:1fr}#planos .xrm-sim-controls{grid-template-columns:1fr 1fr}#planos .xrm-sim-controls label:first-child{grid-column:1/-1}#xrm-faq .xrm-faq-bottom{flex-direction:column;align-items:stretch}#xrm-faq .xrm-faq-bottom .btn{width:100%}}
+@media(max-width:480px){#planos .xrm-plan-simulator{padding:18px}#planos .xrm-sim-intro h3{font-size:21px}#xrm-faq summary{padding:16px;font-size:13px}#xrm-faq details p{padding:0 16px 16px}#xrm-faq .xrm-faq-bottom{padding:18px}}
+</style>
+<script>
+/* Simulador ilustrativo: limites de produção devem ser validados no backend. */
+(function(){
+ const LIMITS={start:{companies:1,vehicles:5,contracts:1},pro:{companies:3,vehicles:15,contracts:15},business:{companies:5,vehicles:30,contracts:30},advanced:{companies:10,vehicles:60,contracts:60}};
+ const plan=document.getElementById('xrm-sim-plan'),companies=document.getElementById('xrm-sim-companies'),contracts=document.getElementById('xrm-sim-contracts'),summary=document.getElementById('xrm-sim-summary'),list=document.getElementById('xrm-sim-list');
+ if(!plan||!companies||!contracts||!summary||!list)return;
+ const number=(input,min,max)=>{let n=Number(input.value);if(!Number.isFinite(n))n=min;n=Math.max(min,Math.min(max,Math.trunc(n)));input.value=String(n);return n;};
+ function render(){
+  const lim=LIMITS[plan.value]||LIMITS.pro;
+  companies.max=String(lim.companies);
+  const n=number(companies,1,lim.companies);
+  contracts.min=String(n);contracts.max=String(lim.contracts);
+  const c=number(contracts,n,lim.contracts);
+  const slots=Array.from({length:n},(_,i)=>({vehicles:Math.floor(lim.vehicles/n)+(i<lim.vehicles%n?1:0),contracts:1}));
+  let pending=c-n,pos=0;
+  while(pending>0){const slot=slots[pos%n];if(slot.contracts<slot.vehicles){slot.contracts++;pending--;}pos++;}
+  summary.textContent=n+' '+(n===1?'empresa':'empresas')+' · '+c+' '+(c===1?'contrato':'contratos')+' · '+lim.vehicles+' veículos inclusos';
+  list.replaceChildren();
+  slots.forEach((slot,i)=>{
+   const card=document.createElement('div');card.className='xrm-sim-company';
+   const title=document.createElement('strong');title.textContent='Empresa '+(i+1);
+   const detail=document.createElement('span');detail.textContent=slot.vehicles+' veículos · '+slot.contracts+' '+(slot.contracts===1?'contrato':'contratos');
+   const meter=document.createElement('meter');meter.min=0;meter.max=lim.vehicles;meter.value=slot.vehicles;meter.setAttribute('aria-label','Veículos da empresa '+(i+1)+' em relação ao total do plano');
+   card.append(title,detail,meter);list.append(card);
+  });
+ }
+ [plan,companies,contracts].forEach(el=>el.addEventListener('change',render));
+ [companies,contracts].forEach(el=>el.addEventListener('input',render));
+ render();
+})();
+</script><style>
+/* Convite ao cadastro de conta e assinatura mensal antes da operação */
+#planos .xrm-commercial-trial{display:flex;gap:24px;align-items:center;justify-content:space-between;margin-top:22px;padding:28px;border:1px solid #389b86;border-radius:19px;background:radial-gradient(circle at 90% 20%,rgba(84,224,173,.14),transparent 35%),linear-gradient(115deg,#12394a,#0c2636)}
+#planos .xrm-trial-content{max-width:740px}
+#planos .xrm-trial-eyebrow{display:inline-block;color:#55e3b6;font-size:11px;font-weight:850;letter-spacing:1.3px;margin-bottom:8px}
+#planos .xrm-commercial-trial h3{font-size:25px;margin:0 0 10px;line-height:1.25}
+#planos .xrm-commercial-trial p{font-size:13px;line-height:1.7;margin:0 0 12px;min-height:0;color:#c8e0e7}
+#planos .xrm-commercial-trial small{display:block;font-size:11px;color:#abc8d1;line-height:1.6}
+#planos .xrm-trial-actions{flex:0 0 auto;display:flex;flex-direction:column;gap:10px}
+#planos .xrm-trial-actions .btn{min-width:185px;font-size:12px}
+@media(max-width:760px){#planos .xrm-commercial-trial{flex-direction:column;align-items:stretch;padding:22px}#planos .xrm-trial-actions{flex-direction:row;flex-wrap:wrap}#planos .xrm-trial-actions .btn{flex:1}}
+@media(max-width:480px){#planos .xrm-commercial-trial h3{font-size:21px}#planos .xrm-trial-actions{flex-direction:column}}
+</style><style>
+/* Landing conversion refresh: QR-code fleet reporting is the signature product experience. */
+html{scroll-padding-top:92px}
+#qr-frota{scroll-margin-top:92px}
+.xrm-qr-hero{padding:clamp(49px,5.5vw,78px) 0 clamp(49px,5.5vw,74px);background:radial-gradient(ellipse at 75% 28%,rgba(45,178,166,.14),transparent 44%),radial-gradient(ellipse at 5% 86%,rgba(28,89,117,.22),transparent 44%),#061524}
+.xrm-qr-hero-grid{display:grid;grid-template-columns:minmax(0,1.01fr) minmax(0,.99fr);gap:clamp(24px,3vw,42px);align-items:center}
+.xrm-qr-hero-copy{min-width:0}
+.xrm-qr-hero-eyebrow{display:inline-flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(54,203,172,.09);border:1px solid #266a65;border-radius:999px;color:#75edcb;font-size:10px;font-weight:850;letter-spacing:1.2px;line-height:1.35}
+.xrm-qr-signal,.xrm-qr-live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#59e7ba;box-shadow:0 0 0 4px rgba(65,214,172,.13);flex-shrink:0}
+.xrm-qr-hero h1{font-size:clamp(37px,4.45vw,61px);letter-spacing:-2.6px;line-height:1.1;margin:23px 0 19px;max-width:660px}
+.xrm-qr-hero h1 em{color:#65e8b5}
+.xrm-qr-hero-lead{font-size:clamp(14px,1.18vw,16px);line-height:1.75;max-width:575px;color:#bdd3dc;margin:0}
+.xrm-qr-hero .xrm-qr-hero-actions{width:min(100%,535px);display:grid;grid-template-columns:minmax(0,1.13fr) minmax(0,.87fr);gap:10px;margin-top:27px}
+.xrm-qr-hero .xrm-qr-hero-actions>.btn{font-size:12.5px;min-height:49px;white-space:normal;padding:12px;line-height:1.3}
+.xrm-qr-action-primary{box-shadow:0 10px 30px rgba(44,211,162,.13)}
+.xrm-qr-hero-details{display:flex;gap:8px 17px;flex-wrap:wrap;margin-top:20px;color:#adc9d2;font-size:11px;line-height:1.5}
+.xrm-qr-hero-details span span{color:#57e5b5;font-weight:900;margin-right:5px}
+.xrm-qr-hero-trust{color:#90acba;font-size:11px;margin:18px 0 0;line-height:1.8}
+.xrm-qr-hero-trust a{color:#8ae4c8;font-weight:700}
+.xrm-qr-hero-trust button{background:none;border:0;padding:0;margin:0;color:#8ae4c8;font-size:11px;font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.xrm-qr-hero-trust a:hover,.xrm-qr-hero-trust button:hover{color:#fff}
+.xrm-qr-hero-showcase{position:relative;border-radius:22px;padding:14px;min-width:0;background:linear-gradient(145deg,#14374b,#091e2e);border:1px solid #36706e;box-shadow:0 25px 80px rgba(0,0,0,.32),inset 0 1px rgba(255,255,255,.06)}
+.xrm-qr-showcase-top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:4px 6px 13px;font-size:9px;letter-spacing:1.1px;font-weight:800;color:#9abfce}
+.xrm-qr-showcase-top span:first-child{display:flex;align-items:center;gap:10px}
+.xrm-qr-showcase-top span:last-child{color:#73dfc3}
+.xrm-qr-showcase-main{background:linear-gradient(155deg,#0b2537,#0b2131);border-radius:16px;border:1px solid #29495c;padding:15px}
+.xrm-qr-vehicle-tag{display:flex;align-items:center;gap:9px;padding:0 0 12px;border-bottom:1px solid #24475b}
+.xrm-qr-vehicle-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:#14433e;border:1px solid #2d756c;color:#70e2c7;font-size:23px;flex:none}
+.xrm-qr-vehicle-tag>div{display:grid;gap:2px;flex:1}
+.xrm-qr-vehicle-tag strong{font-size:15px;color:#effaff;line-height:1.2}
+.xrm-qr-vehicle-tag small{font-size:10px;color:#97bfcd}
+.xrm-qr-tag-ready{border:1px solid #347e69;background:#174139;color:#71e4ba;border-radius:999px;font-size:9px;font-weight:800;letter-spacing:.7px;padding:5px 8px}
+.xrm-qr-showcase-center{display:grid;grid-template-columns:minmax(0,.97fr) 23px minmax(0,1.03fr);gap:9px;align-items:center;padding:17px 0 16px}
+.xrm-qr-print{background:#fff;border-radius:13px;padding:12px 9px 10px;text-align:center;color:#082735;box-shadow:0 5px 18px #0002;min-width:0}
+.xrm-qr-print-label{font-weight:850;letter-spacing:.5px;font-size:8px;line-height:1.3}
+.xrm-sales-qr-code{width:min(100%,174px);aspect-ratio:1;margin:7px auto 6px;display:grid;place-items:center;overflow:hidden}
+.xrm-sales-qr-code canvas,.xrm-sales-qr-code img{display:block;max-width:100%;height:auto}
+.xrm-qr-placeholder{display:grid;place-items:center;width:96%;aspect-ratio:1;background:repeating-linear-gradient(45deg,#f1f5f6 0 11px,#fff 11px 22px);color:#0d3041;font-size:19px;font-weight:850}
+.xrm-qr-print-foot{font-weight:750;font-size:9px;color:#244b5c}
+.xrm-qr-showcase-arrow{text-align:center;font-size:24px;color:#61e0ba;font-weight:800}
+.xrm-qr-phone{border:3px solid #52768a;border-radius:23px 23px 17px 17px;background:linear-gradient(165deg,#153a4d,#0a283b);min-width:0;overflow:hidden;padding:0 11px 13px;box-shadow:5px 13px 25px rgba(0,0,0,.28)}
+.xrm-qr-phone-head{height:45px;display:grid;align-content:start;justify-items:center;gap:3px;font-size:9px;font-weight:800;color:#cfe5ec;letter-spacing:.15px}
+.xrm-qr-phone-notch{display:block;width:45px;height:9px;background:#031927;border-radius:0 0 7px 7px}
+.xrm-qr-phone-kicker{display:block;font-size:8px;letter-spacing:1px;font-weight:850;color:#85b8c9;margin:4px 0}
+.xrm-qr-phone-km{font-size:clamp(20px,2.1vw,30px);color:#f4fbff;letter-spacing:-1px;line-height:1.3;white-space:nowrap}
+.xrm-qr-phone-km small{font-size:11px;color:#8db9c7;letter-spacing:0}
+.xrm-qr-phone-proof{display:flex;align-items:center;gap:7px;margin:13px 0;padding:9px 7px;background:#123d4e;border:1px solid #2b6174;border-radius:9px}
+.xrm-qr-phone-proof>span:first-child{font-size:18px;color:#73e4c5}
+.xrm-qr-phone-proof div{flex:1;display:grid;gap:2px;min-width:0}
+.xrm-qr-phone-proof strong{font-size:9px;white-space:nowrap}
+.xrm-qr-phone-proof small{color:#a9ced5;font-size:8px;line-height:1.2}
+.xrm-qr-phone-tick{font-size:14px;color:#73f6c7}
+.xrm-qr-phone-submit{background:#50ddaf;border-radius:7px;padding:8px;color:#052a30;font-size:10px;display:flex;align-items:center;justify-content:center;gap:7px;font-weight:850}
+.xrm-qr-management{padding:13px;background:#12354a;border:1px solid #285668;border-radius:11px}
+.xrm-qr-management-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px 8px;margin-bottom:11px;font-size:9px;font-weight:800;letter-spacing:.65px;color:#a9cbd5}
+.xrm-qr-management-pill{color:#82eed0;font-size:9px;letter-spacing:0}
+.xrm-qr-management-pill span{color:#65e7b7;margin-right:3px}
+.xrm-qr-management-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.xrm-qr-management-stats>div{border:1px solid #315a6b;background:#0b2a3b;border-radius:9px;padding:9px;min-width:0}
+.xrm-qr-management-stats small{display:block;font-size:8px;letter-spacing:.45px;color:#91b5c3;font-weight:750}
+.xrm-qr-management-stats strong{display:block;font-size:clamp(13px,1.35vw,18px);color:#ecfbff;white-space:nowrap;margin-top:3px}
+.xrm-qr-management-alert{background:rgba(246,180,83,.08);border:1px solid #82683c;color:#ffdb9e;border-radius:8px;font-size:10px;padding:8px 10px;line-height:1.35;margin-top:9px;display:flex;gap:7px;align-items:center}
+.xrm-qr-management-alert>span:first-child{font-size:16px}
+.xrm-qr-showcase-note{color:#8baab9;font-size:9px;line-height:1.6;padding:10px 4px 0;text-align:center}
+#qr-frota.xrm-qr-product{background:linear-gradient(#091f30,#071725);padding:clamp(53px,6.1vw,82px) 0;border-top:1px solid #224a56;border-bottom:1px solid #224251}
+#qr-frota .xrm-qr-section-intro{max-width:790px;margin-bottom:27px}
+#qr-frota .xrm-qr-section-intro h2{font-size:clamp(29px,3.7vw,47px);letter-spacing:-1.4px;line-height:1.2;margin:12px 0 16px}
+#qr-frota .xrm-qr-section-intro h2 span{color:#68e4b7}
+#qr-frota .xrm-qr-section-intro p{max-width:790px;font-size:14px;line-height:1.75;margin:0;color:#b5ced8}
+#qr-frota .xrm-qr-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+#qr-frota .xrm-qr-steps article{position:relative;min-height:198px;border:1px solid #2e5768;border-radius:16px;background:linear-gradient(160deg,#103244,#0b2535);padding:18px 19px 19px}
+#qr-frota .xrm-qr-step-number{position:absolute;right:17px;top:16px;font-size:11px;letter-spacing:1.2px;color:#6b99aa;font-weight:850}
+#qr-frota .xrm-qr-step-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:11px;background:#164745;border:1px solid #2d7c6c;color:#6ce5c0;font-size:26px;line-height:1}
+#qr-frota .xrm-qr-steps h3{font-size:15px;line-height:1.35;margin:16px 0 8px;color:#e9fbff}
+#qr-frota .xrm-qr-steps p{font-size:12px;line-height:1.6;margin:0;color:#a5c1cc}
+#qr-frota .xrm-qr-benefits{margin-top:17px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:27px 30px;background:radial-gradient(circle at 100% 20%,rgba(69,219,166,.09),transparent 40%),#10323e;border:1px solid #33716f;border-radius:17px}
+#qr-frota .xrm-qr-benefits-copy{max-width:715px}
+#qr-frota .xrm-qr-benefits-eyebrow{font-size:10px;letter-spacing:1.2px;font-weight:850;color:#69e9bd}
+#qr-frota .xrm-qr-benefits h3{font-size:clamp(18px,2vw,24px);line-height:1.25;margin:9px 0}
+#qr-frota .xrm-qr-benefits p{font-size:12px;color:#b5d0d5;line-height:1.7;margin:0}
+#qr-frota .xrm-qr-benefits-actions{display:flex;gap:10px;flex-wrap:wrap;flex:0 0 auto}
+#qr-frota .xrm-qr-benefits-actions .btn{font-size:12px;min-height:46px;padding:10px 13px;white-space:nowrap}
+#recursos .xrm-features-grid>.feature:nth-last-child(2){grid-column:2}
+#recursos .xrm-features-grid>.feature:last-child{grid-column:3}
+@media(max-width:1050px){
+ .xrm-qr-hero-grid{gap:20px}
+ .xrm-qr-hero h1{font-size:clamp(34px,4.5vw,49px);letter-spacing:-1.8px}
+ .xrm-qr-showcase-main{padding:11px}
+ .xrm-qr-showcase-center{gap:5px;grid-template-columns:minmax(0,.96fr) 18px minmax(0,1.04fr)}
+ #qr-frota .xrm-qr-steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #qr-frota .xrm-qr-steps article{min-height:160px}
+ #qr-frota .xrm-qr-benefits{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:790px){
+ .xrm-qr-hero-grid{grid-template-columns:1fr;gap:27px}
+ .xrm-qr-hero{padding:49px 0}
+ .xrm-qr-hero h1{font-size:clamp(36px,7vw,55px)}
+ .xrm-qr-hero-showcase{max-width:570px;width:100%;margin:auto}
+ #recursos .xrm-features-grid>.feature:nth-last-child(2),#recursos .xrm-features-grid>.feature:last-child{grid-column:auto}
+}
+@media(max-width:530px){
+ .xrm-qr-hero{padding:36px 0 44px}
+ .xrm-qr-hero h1{font-size:clamp(34px,9vw,43px);letter-spacing:-1.5px;margin:20px 0 15px}
+ .xrm-qr-hero-lead{font-size:13px;line-height:1.7}
+ .xrm-qr-hero .xrm-qr-hero-actions{grid-template-columns:1fr}
+ .xrm-qr-hero .xrm-qr-hero-actions>.btn{font-size:13px}
+ .xrm-qr-hero-details{gap:7px 14px}
+ .xrm-qr-hero-showcase{padding:10px;border-radius:15px}
+ .xrm-qr-showcase-top{font-size:8px}
+ .xrm-qr-print{padding:8px 6px}
+ .xrm-sales-qr-code{width:min(100%,155px)}
+ .xrm-qr-print-label{font-size:7px}
+ .xrm-qr-phone{padding:0 7px 11px;border-radius:17px}
+ .xrm-qr-phone-km{font-size:22px}
+ .xrm-qr-phone-proof{padding:6px 5px;margin:10px 0}
+ .xrm-qr-phone-proof small{font-size:7px}
+ .xrm-qr-management{padding:10px}
+ #qr-frota .xrm-qr-steps{grid-template-columns:1fr;gap:9px}
+ #qr-frota .xrm-qr-steps article{min-height:0;padding:14px 17px}
+ #qr-frota .xrm-qr-steps h3{margin-top:12px}
+ #qr-frota .xrm-qr-benefits{padding:20px}
+ #qr-frota .xrm-qr-benefits-actions{width:100%;flex-direction:column}
+ #qr-frota .xrm-qr-benefits-actions .btn{width:100%}
+}
+@media(prefers-reduced-motion:reduce){.xrm-qr-hero,.xrm-qr-steps article{transition:none}}
+</style>
+
+<style id="xrm-sales-redesign-20261111">
+/* Sales-only layout, using the same navy/teal/mint palette as the authenticated product. */
+:root{--sales-navy:#07111f;--sales-panel:#10283c;--sales-line:#345471;--sales-mint:#54e0ad}
+body{overflow-x:clip}
+header .nav{position:relative}
+.xrm-mobile-nav{display:none}
+.xrm-qr-hero h1{max-width:680px}
+.xrm-qr-hero-actions button{font:inherit}
+.xrm-sales-overview{background:linear-gradient(180deg,#071725,#0a2030 56%,#061524);padding:30px 0 74px;border-top:1px solid #224654}
+.xrm-sales-benefit-strip{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-around;gap:10px 16px;padding:19px;border:1px solid #2b4f60;border-radius:16px;background:#10283c;color:#d7eaf0;font-size:12px;font-weight:650}
+.xrm-sales-benefit-strip span{white-space:nowrap}
+.xrm-sales-overview-grid{display:grid;grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr);align-items:center;gap:clamp(25px,5vw,64px);padding:72px 0 54px}
+.xrm-sales-overview-copy h2{font-size:clamp(29px,3.6vw,46px);line-height:1.15;letter-spacing:-1.5px;margin:14px 0}.xrm-sales-overview-copy h2 em{font-style:normal;color:var(--mint)}
+.xrm-sales-overview-copy p{color:#b4cbd7;font-size:14px;line-height:1.8}
+.xrm-sales-overview-copy ul{padding:0;list-style:none;margin:22px 0 26px}
+.xrm-sales-overview-copy li{padding:6px 0 6px 23px;position:relative;font-size:13px;color:#d5e9ef}
+.xrm-sales-overview-copy li:before{content:'✓';position:absolute;left:0;color:var(--mint);font-weight:800}
+.xrm-sales-dashboard{min-width:0;border:1px solid #386377;border-radius:19px;padding:17px;background:linear-gradient(140deg,#112e43,#091c2c);box-shadow:0 20px 65px #0005}
+.xrm-sales-dash-top{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:#e2f7ff;padding:2px 2px 15px}
+.xrm-sales-dash-top>span{font-size:9px;color:#9cb7c6;letter-spacing:1px}.xrm-sales-dot{display:inline-block;background:var(--mint);width:8px;height:8px;border-radius:50%;margin-right:7px}
+.xrm-sales-dash-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.xrm-sales-dash-kpis>div{background:#16364a;border:1px solid #32536a;border-radius:11px;padding:12px 9px;min-width:0}
+.xrm-sales-dash-kpis small{font-size:9px;color:#adc5d2;display:block}.xrm-sales-dash-kpis strong{font-size:clamp(21px,2.5vw,30px);display:block;color:#f0fbff;margin:4px 0}
+.xrm-sales-dash-kpis span{font-size:10px;color:#a7c6cf}
+.xrm-sales-dash-content{display:grid;grid-template-columns:1.05fr .95fr;gap:10px;margin-top:11px}
+.xrm-sales-dash-chart,.xrm-sales-dash-alerts{min-width:0;background:#0b283a;border:1px solid #315266;border-radius:12px;padding:15px}
+.xrm-sales-dash-content strong{font-size:12px}
+.xrm-sales-dash-bars{height:110px;display:flex;align-items:end;gap:10px;padding-top:10px}
+.xrm-sales-dash-bars i{flex:1;border-radius:5px 5px 2px 2px;background:linear-gradient(#59e4b7,#188b82)}
+.xrm-sales-dash-months{display:flex;justify-content:space-around;font-size:9px;color:#94afbd;margin-top:8px}
+.xrm-sales-dash-alerts p{border-bottom:1px solid #27485b;font-size:11px;color:#c2d8e2;line-height:1.5;margin:0;padding:17px 0 12px}
+.xrm-sales-alert-circle{color:var(--mint);margin-right:5px}
+.xrm-sales-how{border-top:1px solid #28485a;padding-top:48px}
+.xrm-sales-how>h2{text-align:center;font-size:clamp(27px,3vw,37px);letter-spacing:-1px;margin:0 0 24px}
+.xrm-sales-how-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.xrm-sales-how-grid article{padding:24px;background:#0e293a;border:1px solid #2b4e60;border-radius:15px;min-width:0}
+.xrm-sales-how-grid article>span{color:var(--mint);font-size:12px;font-weight:850;letter-spacing:1px}
+.xrm-sales-how-grid h3{font-size:16px;margin:12px 0 6px}.xrm-sales-how-grid p{font-size:12px;line-height:1.7;color:#b4cad4;margin:0}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
+@media(max-width:1000px){.xrm-sales-overview-grid{grid-template-columns:1fr;gap:30px}.xrm-sales-overview-copy{max-width:720px}.xrm-sales-dashboard{width:100%;max-width:760px}}
+@media(max-width:850px){
+ .xrm-mobile-nav{display:block;position:relative}
+ .xrm-mobile-nav summary{list-style:none;cursor:pointer;border:1px solid #426479;border-radius:10px;padding:9px 12px;font-weight:750;color:#def5f8;font-size:12px;white-space:nowrap}
+ .xrm-mobile-nav summary::-webkit-details-marker{display:none}
+ .xrm-mobile-nav nav{position:absolute;right:0;top:calc(100% + 10px);width:min(290px,calc(100vw - 32px));padding:8px;display:grid;background:#10283c;border:1px solid #3b6174;border-radius:13px;box-shadow:0 15px 30px #0009;z-index:30}
+ .xrm-mobile-nav nav a,.xrm-mobile-nav nav button{display:block;text-align:left;width:100%;border:0;background:transparent;padding:12px;border-radius:8px;color:#e1f3f8;font:600 13px system-ui;cursor:pointer}
+ .xrm-mobile-nav nav a:hover,.xrm-mobile-nav nav button:hover{background:#21475a}
+ .nav-actions{margin-top:0!important;flex-wrap:nowrap!important}
+ .xrm-sales-how-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px){
+ header .brand-logo{width:124px!important;max-width:33vw}
+ header .nav{min-height:66px;gap:6px!important}
+ .xrm-mobile-nav summary{padding:8px 9px}
+ .xrm-mobile-nav summary span{display:none}
+ .nav-actions .btn{font-size:11px!important;max-width:135px;white-space:normal;text-align:center;line-height:1.15}
+ .xrm-sales-overview{padding:20px 0 48px}
+ .xrm-sales-benefit-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));font-size:11px;gap:12px;padding:14px}
+ .xrm-sales-benefit-strip span{white-space:normal}
+ .xrm-sales-overview-grid{padding:44px 0}
+ .xrm-sales-dashboard{padding:10px;border-radius:14px}
+ .xrm-sales-dash-top{flex-wrap:wrap}
+ .xrm-sales-dash-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .xrm-sales-dash-content{grid-template-columns:1fr}
+ .xrm-sales-dash-bars{height:95px}
+ .xrm-sales-how-grid{grid-template-columns:1fr;gap:10px}
+ .xrm-sales-how-grid article{padding:18px}
+ .xrm-qr-hero h1{overflow-wrap:break-word}
+ #planos .plan{min-width:0}
+}
+@media(max-width:360px){header .brand-logo{width:108px!important}.xrm-mobile-nav summary{padding:7px}.nav-actions .btn{font-size:10px!important;padding:8px 6px!important}}
+@media(prefers-reduced-motion:reduce){.xrm-sales-dashboard *{animation:none!important;transition:none!important}}
+</style>
+<script defer src="/v3/vendor/qrcode.min.js?v=20261029-sales-qr-1"></script>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+ const root=document.getElementById('xrm-sales-qr');
+ if(!root)return;
+ try{
+  if(typeof window.QRCode!=='function')throw Error('Módulo de QR indisponível');
+  root.replaceChildren();
+  const demoUrl=new URL('/#demo-qr',location.origin).href;
+  new window.QRCode(root,{text:demoUrl,width:165,height:165,colorDark:'#082735',colorLight:'#ffffff',correctLevel:window.QRCode.CorrectLevel.M});
+  root.title='QR demonstrativo que abre esta apresentação, sem acesso a veículos reais';
+ }catch(error){
+  root.replaceChildren();
+  const fallback=document.createElement('span');fallback.className='xrm-qr-placeholder';
+  fallback.textContent='QR DEMO';root.append(fallback);
+ }
+});
+</script>
+<style>#inicio .xrm-qr-plan-price{display:flex;align-items:center;gap:7px 14px;flex-wrap:wrap;font-size:11px;line-height:1.5;margin:13px 0 0;color:#a8c7d0}#inicio .xrm-qr-plan-price strong{font-weight:850;color:#f0faff}#inicio .xrm-qr-plan-price a{color:#7eeaca;font-weight:750;text-decoration:underline;text-underline-offset:3px}</style><script type="module" src="/analytics/xrmovi-presence.js?v=20261109-1"></script>
+<script defer src="/pwa/install.js?v=20261110-menu-1"></script></body></html>
