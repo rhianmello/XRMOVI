@@ -1,0 +1,46 @@
+
+/* XRMOVI • Multas e infrações — desktop e mobile */
+.xrm-fines-wrap{display:grid;gap:14px}
+.xrm-fines-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.xrm-fines-kpis article{border:1px solid #34576a;background:#102d40;border-radius:13px;padding:16px;min-width:0}
+.xrm-fines-kpis small{display:block;color:#accbd8;font-size:11px;line-height:1.4}
+.xrm-fines-kpis strong{display:block;color:#e9ffff;font-size:clamp(17px,2vw,24px);margin-top:6px;word-break:break-word}
+.xrm-fines-controls{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.xrm-fines-controls label{display:grid;gap:5px;font-size:12px;color:#b8d4e0;min-width:130px;flex:1}
+.xrm-fines-controls input,.xrm-fines-controls select{width:100%;border:1px solid #395e73;background:#0e283a;color:#effaff;border-radius:9px;padding:10px;font:13px system-ui;min-width:0}
+.xrm-fines-buttons{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.xrm-fines-buttons button{font-size:12px}
+.xrm-fines-status{font-size:12px;color:#a9cbd6;min-height:17px}
+.xrm-fine-pill{display:inline-block;border:1px solid #526b79;padding:4px 8px;border-radius:999px;font-size:11px;white-space:nowrap}
+.xrm-fine-pill[data-state="pending"]{color:#ffe0a5;border-color:#90683c;background:#43351d}
+.xrm-fine-pill[data-state="appeal"]{color:#b7d8ff;border-color:#4c76a1;background:#1f354d}
+.xrm-fine-pill[data-state="paid"]{color:#a4efd6;border-color:#3c8874;background:#133f36}
+.xrm-fine-pill[data-state="canceled"]{color:#b5c2c9;border-color:#516b78;background:#283a44}
+.xrm-fines-table td{vertical-align:middle;font-size:12px}
+.xrm-fines-table small{display:block;color:#b8d4e0;margin-top:4px;font-size:11px;line-height:1.5}
+.xrm-fines-table .xrm-fines-row-actions{display:flex;gap:6px;flex-wrap:wrap}
+.xrm-fines-table .fleet-button{padding:7px 9px;font-size:11px;white-space:nowrap}
+.xrm-fines-empty{padding:18px;color:#bcd3df;font-size:13px}
+.xrm-fines-note{color:#b6d1db;font-size:12px;line-height:1.6}
+.xrm-fines-modal{position:fixed;inset:0;z-index:1950;display:grid;place-items:center;padding:15px;background:#020e19dc}
+.xrm-fines-modal[hidden]{display:none!important}
+.xrm-fines-modal-panel{background:#10283a;border:1px solid #4b7489;border-radius:16px;color:#effaff;width:min(850px,100%);max-height:calc(100dvh - 30px);overflow:auto;box-shadow:0 20px 80px #0009;padding:20px}
+.xrm-fines-modal-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.xrm-fines-modal-header h3{font-size:19px;margin:0}
+.xrm-fines-modal-close{font-size:23px;border:0;color:#fff;background:#25465c;border-radius:8px;padding:2px 11px}
+.xrm-fines-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:16px}
+.xrm-fines-form label{display:grid;gap:6px;font:12px system-ui;color:#c7dfe9;min-width:0}
+.xrm-fines-form .wide{grid-column:1/-1}
+.xrm-fines-form input,.xrm-fines-form select,.xrm-fines-form textarea{width:100%;min-width:0;border:1px solid #496b7d;border-radius:9px;padding:11px;background:#0c2435;color:#f5fbff;font:13px system-ui}
+.xrm-fines-form textarea{min-height:75px;resize:vertical}
+.xrm-fines-form input:focus-visible,.xrm-fines-form select:focus-visible{outline:2px solid #3ed4c0}
+.xrm-fines-actions{grid-column:1/-1;display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.xrm-fines-form p{grid-column:1/-1;font:12px/1.6 system-ui;color:#b8d4de;margin:0}
+.xrm-fines-history{grid-column:1/-1;border:1px solid #315669;padding:12px;border-radius:9px}
+.xrm-fines-history summary{cursor:pointer;font-size:12px;color:#b5ece4}
+.xrm-fines-history p{margin:8px 0;font-size:11px;overflow-wrap:anywhere}
+.xrm-fine-warning{color:#ffd79a!important}
+.xrm-fines-quick{border:1px solid #366877;background:#102c3b;padding:14px 16px;border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12px;color:#c6e5ed}
+.xrm-fines-quick strong{font-size:15px;color:#fff}
+@media(max-width:820px){.xrm-fines-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.xrm-fines-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.xrm-fines-controls label{min-width:0}.xrm-fines-modal-panel{padding:15px}}
+@media(max-width:520px){.xrm-fines-kpis{gap:8px}.xrm-fines-kpis article{padding:11px}.xrm-fines-controls{grid-template-columns:1fr}.xrm-fines-form{grid-template-columns:1fr}.xrm-fines-form label{grid-column:1/-1}.xrm-fines-modal{padding:6px}.xrm-fines-modal-panel{max-height:calc(100dvh - 12px)}.xrm-fines-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.xrm-fines-buttons button{white-space:normal}}

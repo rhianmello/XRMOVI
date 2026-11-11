@@ -1,0 +1,291 @@
+/* XRMOVI / Dashboard premium v1 — visual-only; preserves all existing report actions. */
+#view-dashboard{--dp-bg:#091b2d;--dp-line:rgba(106,184,221,.22);--dp-text:#ebf7ff;--dp-muted:#94b7cb;--dp-teal:#26d9bf;--dp-blue:#39b9ef;--dp-amber:#fbbf63}
+#view-dashboard .xrm-consumption-panel,
+#view-dashboard .fleet-insight-card{position:relative;isolation:isolate;border-radius:16px!important;border:1px solid var(--dp-line)!important;background:radial-gradient(ellipse 80% 80% at 100% 0,rgba(45,154,204,.10),transparent 75%),linear-gradient(145deg,#112c43 0%,#071827 100%)!important;box-shadow:0 16px 36px rgba(0,0,0,.21),inset 0 1px 0 rgba(173,230,255,.055)!important;overflow:hidden}
+#view-dashboard .xrm-consumption-panel:before,#view-dashboard .fleet-insight-card:before{content:"";position:absolute;top:0;left:17px;right:17px;height:2px;background:linear-gradient(90deg,var(--dp-blue),var(--dp-teal),transparent);opacity:.78;pointer-events:none;z-index:1}
+#view-dashboard .xrm-consumption-panel{margin:12px 0!important;padding:0!important}
+#view-dashboard .xrm-consumption-panel .fleet-insight-header{border-bottom:1px solid rgba(126,185,214,.14)!important;padding:15px 18px!important;min-height:68px!important}
+#view-dashboard .xrm-consumption-panel .fleet-insight-header h2,
+#view-dashboard .fleet-insight-card .fleet-insight-header h2{font-size:clamp(15px,1.3vw,18px)!important;letter-spacing:-.3px;line-height:1.3}
+#view-dashboard .xrm-consumption-panel .fleet-insight-header .eyebrow,
+#view-dashboard .fleet-insight-card .fleet-insight-header .eyebrow{color:#64dacc!important;font-size:9px!important;letter-spacing:.14em}
+#view-dashboard .xrm-consumption-panel .fleet-insight-header small{display:block;margin-top:5px;font-size:11px;line-height:1.4;color:var(--dp-muted)}
+#view-dashboard .xrm-consumption-panel .fleet-link-button,
+#view-dashboard .fleet-insight-card .fleet-link-button{display:inline-flex;align-items:center;gap:5px;padding:8px 10px;border:1px solid rgba(78,174,212,.25);border-radius:8px;color:#a7dff6;background:rgba(31,87,119,.17);text-decoration:none;transition:background .2s,border-color .2s}
+#view-dashboard .xrm-consumption-panel .fleet-link-button:hover,
+#view-dashboard .fleet-insight-card .fleet-link-button:hover{background:rgba(34,139,178,.23);border-color:rgba(74,211,225,.6)}
+#view-dashboard .xrm-consumption-summary{display:flex;align-items:center;min-height:36px;margin:12px 17px 0!important;padding:10px 13px 10px 34px!important;position:relative;border:1px solid rgba(68,194,204,.24)!important;border-radius:9px!important;background:linear-gradient(110deg,rgba(26,94,108,.26),rgba(25,63,83,.23))!important;color:#cceaf0!important;font-size:11px!important;line-height:1.5}
+#view-dashboard .xrm-consumption-summary:before{content:"i";position:absolute;left:12px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:14px;height:14px;border-radius:50%;color:#052735;background:#5ad9df;font-size:10px;font-weight:900}
+#view-dashboard .xrm-consumption-grid{padding:12px 17px 17px;grid-template-columns:repeat(auto-fit,minmax(min(100%,235px),1fr));gap:12px}
+#view-dashboard .xrm-consumption-card{position:relative;min-height:139px;display:flex;flex-direction:column;align-items:flex-start;gap:8px!important;padding:15px 16px!important;border:1px solid rgba(73,159,191,.27)!important;border-radius:13px!important;background:radial-gradient(circle at 100% 0,rgba(58,172,208,.12),transparent 52%),linear-gradient(145deg,#102d44,#0c2336)!important;box-shadow:inset 0 1px 0 rgba(158,226,255,.055);transition:transform .18s,border-color .18s,box-shadow .18s}
+#view-dashboard .xrm-consumption-card:hover{transform:translateY(-2px);border-color:rgba(56,224,200,.65)!important;box-shadow:0 10px 24px rgba(0,0,0,.2)}
+#view-dashboard .xrm-consumption-card:focus-visible{outline:2px solid var(--dp-teal);outline-offset:3px}
+#view-dashboard .xrm-consumption-card>.xrm-consumption-chip{order:0;display:inline-flex;align-self:flex-start;padding:4px 8px;border:1px solid rgba(43,213,180,.26);border-radius:999px;background:rgba(26,166,141,.13);color:#93f3db;font-size:9px;font-weight:800;letter-spacing:.02em}
+#view-dashboard .xrm-consumption-card>span:not(.xrm-consumption-chip){order:1;font-size:11px;color:#d9eefa;letter-spacing:.02em}
+#view-dashboard .xrm-consumption-card>strong{order:2;margin:1px 0;font-size:clamp(23px,2.4vw,32px)!important;letter-spacing:-.055em;line-height:1.15;color:#73efd0!important;font-weight:800}
+#view-dashboard .xrm-consumption-card>small{order:3;color:#99b9cb!important;font-size:10px!important}
+#view-dashboard .xrm-consumption-card[data-state="insufficient"]>strong,
+#view-dashboard .xrm-consumption-card[data-state="incomplete"]>strong{color:#d5e4f0!important}
+#view-dashboard .xrm-consumption-card[data-state="insufficient"]>.xrm-consumption-chip{color:#ffce82;border-color:rgba(251,191,99,.28);background:rgba(191,114,32,.12)}
+#view-dashboard .xrm-consumption-card[data-state="incomplete"]>.xrm-consumption-chip{color:#ff9cae;border-color:rgba(255,120,145,.33);background:rgba(160,47,75,.13)}
+#view-dashboard .fleet-insights-grid{gap:12px!important;margin-top:12px!important;align-items:stretch}
+#view-dashboard .fleet-insight-card .fleet-insight-header{min-height:67px!important;padding:15px 17px!important;border-bottom:1px solid rgba(126,185,214,.15)!important}
+#view-dashboard .fleet-insight-period{padding:11px 17px 2px!important;color:var(--dp-muted);font-size:10px!important}
+#view-dashboard .fleet-insight-stats{padding:12px 17px!important;gap:10px!important}
+#view-dashboard .fleet-insight-stat{position:relative;min-height:91px!important;padding:15px 13px!important;gap:9px!important;border-radius:12px!important;border:1px solid rgba(80,157,192,.28)!important;background:linear-gradient(145deg,rgba(21,66,90,.56),rgba(9,40,59,.72))!important}
+#view-dashboard .fleet-insight-stat:before{content:"";position:absolute;top:0;left:12px;right:12px;height:2px;background:linear-gradient(90deg,var(--dp-blue),transparent)}
+#view-dashboard .fleet-insight-stat:nth-child(2):before{background:linear-gradient(90deg,#fb7585,transparent)}
+#view-dashboard .fleet-insight-stat:nth-child(3):before{background:linear-gradient(90deg,#a7a1ff,transparent)}
+#view-dashboard .fleet-insight-stat:nth-child(4):before{background:linear-gradient(90deg,var(--dp-teal),transparent)}
+#view-dashboard .fleet-insight-stat span{font-size:10px!important;letter-spacing:.045em!important;color:#9dbfd1}
+#view-dashboard .fleet-insight-stat strong{font-size:clamp(20px,1.9vw,27px)!important;font-weight:800;letter-spacing:-.04em;color:#edf8ff}
+#view-dashboard .fleet-insight-subheading{margin:12px 17px 8px!important;font-size:10px!important;color:#b3d4e2;letter-spacing:.095em}
+#view-dashboard .fleet-insight-ranking{padding:0 17px 18px!important;gap:7px!important}
+#view-dashboard .fleet-insight-rank{min-height:40px!important;padding:7px 10px;grid-template-columns:minmax(75px,100px) minmax(0,1fr) auto!important;gap:12px!important;border:1px solid rgba(76,153,190,.14)!important;border-radius:9px;background:rgba(19,61,83,.34)}
+#view-dashboard .fleet-insight-rank-name{font-size:11px!important;color:#cee6f2}
+#view-dashboard .fleet-insight-rank-track{height:8px!important;background:#183a53;box-shadow:inset 0 1px 3px rgba(0,0,0,.25)}
+#view-dashboard .fleet-insight-rank-track>span{background:linear-gradient(90deg,#2895cc,#41dbc6);box-shadow:0 0 10px rgba(44,204,197,.3)}
+#view-dashboard .fleet-insight-rank strong{font-size:11px!important;color:#f3fbff}
+#view-dashboard #xrm-dashboard-fuel-quality-note{margin:0 17px 13px!important;padding:10px 12px!important;border-radius:9px!important;border:1px solid rgba(60,187,142,.28)!important;background:linear-gradient(105deg,rgba(22,91,69,.23),rgba(18,70,67,.23))!important;color:#d4f1e8;font-size:11px;line-height:1.55}
+#view-dashboard #xrm-dashboard-fuel-quality-note[data-ok="false"]{border-color:rgba(240,169,87,.35)!important;background:rgba(119,75,23,.18)!important;color:#ffe2ba}
+#view-dashboard .fleet-insight-driver-list{padding:12px 17px 18px!important;gap:10px!important;align-content:start}
+#view-dashboard .fleet-insight-driver{grid-template-columns:44px minmax(0,1fr) auto!important;gap:12px!important;padding:13px!important;min-height:78px;border:1px solid rgba(85,158,192,.25)!important;border-radius:12px;background:linear-gradient(145deg,rgba(20,66,90,.42),rgba(11,37,57,.56))}
+#view-dashboard .fleet-insight-avatar{width:42px!important;height:42px!important;border-radius:12px!important;font-size:12px!important;color:#a4efff;background:linear-gradient(145deg,#164c70,#116a77);border:1px solid rgba(92,194,219,.25);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+#view-dashboard .fleet-insight-driver-identity strong{font-size:12px!important;color:#eaf7ff;white-space:normal;overflow-wrap:anywhere}
+#view-dashboard .fleet-insight-driver-identity small{font-size:10px!important;color:#9bc3d8}
+#view-dashboard .fleet-insight-expiry{display:inline-flex;align-items:center;justify-content:center;max-width:160px;padding:6px 9px;border-radius:999px;border:1px solid rgba(53,218,163,.25);background:rgba(29,140,112,.14);color:#90edcf!important;font-size:10px!important;white-space:normal;text-align:center;line-height:1.4}
+#view-dashboard .fleet-insight-expiry.soon{border-color:rgba(251,191,99,.35);background:rgba(154,100,35,.15);color:#ffd28a!important}
+#view-dashboard .fleet-insight-expiry.overdue{border-color:rgba(251,113,133,.35);background:rgba(161,45,73,.15);color:#ffa4b1!important}
+#view-dashboard .fleet-insight-more,#view-dashboard .fleet-insight-empty{font-size:11px!important;color:#a2c1d3}
+@media(max-width:900px){#view-dashboard .fleet-insights-grid{grid-template-columns:1fr!important}}
+@media(max-width:520px){#view-dashboard .xrm-consumption-panel .fleet-insight-header,#view-dashboard .fleet-insight-card .fleet-insight-header{padding:13px!important;gap:8px}#view-dashboard .xrm-consumption-grid{padding:10px 12px 13px}#view-dashboard .xrm-consumption-summary{margin:10px 12px 0!important}#view-dashboard .fleet-insight-stats{padding:10px 12px!important;gap:7px!important}#view-dashboard .fleet-insight-stat{min-height:76px!important;padding:10px!important}#view-dashboard .fleet-insight-stat strong{font-size:19px!important}#view-dashboard .fleet-insight-driver-list{padding:10px 12px!important}#view-dashboard .fleet-insight-driver{grid-template-columns:36px minmax(0,1fr)!important;padding:11px!important}#view-dashboard .fleet-insight-avatar{width:35px!important;height:35px!important}#view-dashboard .fleet-insight-expiry{grid-column:2;justify-self:start}#view-dashboard .fleet-insight-rank{grid-template-columns:minmax(65px,90px) minmax(0,1fr) auto!important;gap:6px!important;padding:7px!important}}
+@media(prefers-reduced-motion:reduce){#view-dashboard .xrm-consumption-card,#view-dashboard .fleet-link-button{transition:none!important}}
+
+/* v2: exact surface language shared with the five executive KPI cards.
+   Override the prior extra-blue gradients to restore one coherent dashboard. */
+#view-dashboard .xrm-consumption-panel,
+#view-dashboard .fleet-insights-grid>.fleet-insight-card{
+  background:linear-gradient(150deg,#0d2033,#0a1726)!important;
+  border:1px solid rgba(82,143,181,.25)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.025),0 10px 26px rgba(0,0,0,.11)!important;
+  border-radius:12px!important;
+}
+#view-dashboard .xrm-consumption-panel:before,
+#view-dashboard .fleet-insights-grid>.fleet-insight-card:before{
+  left:0;right:0;height:2px;
+  background:linear-gradient(90deg,rgba(56,189,248,.72),rgba(45,212,191,.3),transparent);
+  opacity:.8;
+}
+#view-dashboard .xrm-consumption-card,
+#view-dashboard .fleet-insight-stat,
+#view-dashboard .fleet-insight-driver{
+  background:linear-gradient(150deg,#0d2033,#0a1726)!important;
+  border:1px solid rgba(79,137,172,.27)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.025),0 6px 14px rgba(0,0,0,.08)!important;
+}
+#view-dashboard .fleet-insight-rank{background:rgba(8,27,43,.65)!important}
+#view-dashboard .xrm-consumption-summary{
+  background:rgba(10,39,54,.72)!important;
+  border-color:rgba(56,189,248,.22)!important;
+}
+#view-dashboard #xrm-dashboard-fuel-quality-note[data-ok="true"]{
+  background:rgba(14,52,43,.7)!important;
+}
+
+/* v3: consumo compacto no resumo financeiro; superfícies iguais aos cards executivos. */
+#view-dashboard .fleet-insight-consumption{display:grid;gap:6px;padding:0 17px 18px!important}
+#view-dashboard .xrm-consumption-heading{display:flex;flex-wrap:wrap;align-items:baseline;gap:5px 9px;margin:10px 17px 8px!important}
+#view-dashboard .xrm-consumption-heading small{font-size:9px;font-weight:500;text-transform:none;letter-spacing:0;color:#8faec0}
+#view-dashboard .fleet-insight-consumption-row{appearance:none;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:9px;width:100%;min-height:35px;padding:7px 10px;border:1px solid rgba(95,151,177,.2);border-radius:9px;background:rgba(10,31,49,.72);color:#cfe2f0;cursor:pointer;text-align:left}
+#view-dashboard .fleet-insight-consumption-row:hover{border-color:rgba(56,189,248,.42);background:rgba(31,65,87,.65)}
+#view-dashboard .fleet-insight-consumption-row:focus-visible{outline:2px solid #38bdf8;outline-offset:2px}
+#view-dashboard .fleet-insight-consumption-name{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#view-dashboard .fleet-insight-consumption-value{font-size:12px;font-weight:800;white-space:nowrap;color:#7ce6d1;font-variant-numeric:tabular-nums}
+#view-dashboard .fleet-insight-consumption-value.incomplete{color:#b7c8d6}
+#view-dashboard .fleet-insights-grid>.fleet-insight-card{background:linear-gradient(150deg,#0d2033,#0a1726)!important;background-image:linear-gradient(150deg,#0d2033,#0a1726)!important;border-color:rgba(82,143,181,.25)!important}
+#view-dashboard .fleet-insight-stat,#view-dashboard .fleet-insight-driver{background:linear-gradient(150deg,#0d2033,#0a1726)!important;background-image:linear-gradient(150deg,#0d2033,#0a1726)!important}
+@media(max-width:520px){#view-dashboard .fleet-insight-consumption{padding:0 12px 13px!important}#view-dashboard .xrm-consumption-heading{margin-inline:12px!important}}
+
+/* One-line financial cost and vehicle fuel-efficiency ranking. */
+#view-dashboard .fleet-insight-ranking{gap:7px!important}
+#view-dashboard .fleet-insight-rank{
+ grid-template-columns:minmax(118px,1.1fr) minmax(45px,2fr) minmax(72px,auto) minmax(78px,auto)!important;
+ gap:9px!important;align-items:center;min-height:39px!important;
+}
+#view-dashboard .fleet-insight-rank-name{min-width:0;font-size:10px!important}
+#view-dashboard .fleet-insight-rank-efficiency{min-width:75px;justify-self:end;text-align:right;font-size:11px!important;font-weight:800;color:#69efd6;white-space:nowrap;font-variant-numeric:tabular-nums}
+#view-dashboard .fleet-insight-rank-efficiency.is-unavailable{color:#9bb1c3}
+@media(max-width:630px){
+ #view-dashboard .fleet-insight-rank{grid-template-columns:minmax(95px,1.25fr) minmax(26px,1fr) minmax(61px,auto) minmax(63px,auto)!important;gap:5px!important;padding:7px 6px!important}
+ #view-dashboard .fleet-insight-rank-name{font-size:9px!important}
+ #view-dashboard .fleet-insight-rank strong{font-size:10px!important}
+ #view-dashboard .fleet-insight-rank-efficiency{min-width:0;font-size:10px!important}
+}
+
+/* Overview v5: equal-height desktop cards; fit all three status legend items without cropping. */
+@media(min-width:1021px){
+ #view-dashboard .fleet-overview-grid{
+   align-items:stretch!important;
+   grid-auto-rows:minmax(0,1fr)!important;
+ }
+ #view-dashboard .fleet-overview-grid>.fleet-panel,
+ #view-dashboard .fleet-overview-grid>.fleet-status-panel{
+   height:236px!important;
+   min-height:236px!important;
+   max-height:236px!important;
+   overflow:hidden!important;
+   align-self:stretch!important;
+   border-radius:12px!important;
+ }
+ #view-dashboard .fleet-status-panel .fleet-donut-layout.fleet-donut-compact{
+   display:flex!important;flex-direction:column!important;align-items:stretch!important;
+   justify-content:flex-start!important;gap:4px!important;padding:5px 10px 8px!important;
+   height:calc(100% - 45px)!important;max-height:calc(100% - 45px)!important;
+   min-height:0!important;overflow:hidden!important;
+ }
+ #view-dashboard .fleet-status-panel .fleet-donut-compact>.fleet-chart-shell{
+   flex:0 0 92px!important;min-height:92px!important;height:92px!important;
+   max-height:92px!important;overflow:hidden!important;
+   display:flex!important;align-items:center!important;justify-content:center!important;
+ }
+ #view-dashboard .fleet-status-panel #v3-situation-donut{
+   width:88px!important;height:88px!important;max-width:88px!important;max-height:88px!important;
+   margin:0 auto!important;
+ }
+ #view-dashboard .fleet-status-panel #situation-legend.fleet-chart-legend{
+   flex:1 1 auto!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+   gap:4px!important;align-content:center!important;min-height:0!important;
+   padding:0!important;margin:0!important;overflow:hidden!important;
+ }
+ #view-dashboard .fleet-status-panel #situation-legend .xrm-status-legend-item{
+   min-height:25px!important;height:25px!important;padding:3px 8px!important;
+   font-size:10px!important;line-height:1.1!important;border-radius:7px!important;
+   grid-template-columns:8px minmax(0,1fr) auto!important;gap:7px!important;
+ }
+ #view-dashboard .fleet-status-panel #situation-legend .xrm-status-legend-item>strong{
+   font-size:11px!important;
+ }
+}
+@media(min-width:761px) and (max-width:1020px){
+ #view-dashboard .fleet-overview-grid>.fleet-panel,
+ #view-dashboard .fleet-overview-grid>.fleet-status-panel{height:auto!important;max-height:none!important;overflow:visible!important}
+ #view-dashboard .fleet-status-panel .fleet-donut-layout.fleet-donut-compact{padding:12px!important;gap:8px!important}
+ #view-dashboard .fleet-status-panel #v3-situation-donut{width:116px!important;height:116px!important}
+}
+@media(max-width:760px){
+ #view-dashboard .fleet-overview-grid>.fleet-panel,
+ #view-dashboard .fleet-overview-grid>.fleet-status-panel{height:auto!important;max-height:none!important;overflow:visible!important}
+}
+
+/* Overview v6: side-by-side doughnut and complete three-row legend. */
+@media(min-width:761px){
+ #view-dashboard .fleet-status-panel .fleet-donut-layout.fleet-donut-compact{
+  display:grid!important;
+  grid-template-columns:minmax(82px,104px) minmax(0,1fr)!important;
+  grid-template-rows:1fr!important;
+  align-items:center!important;
+  justify-content:stretch!important;
+  gap:9px!important;
+  padding:10px 11px!important;
+  height:calc(100% - 45px)!important;
+  max-height:none!important;
+  overflow:visible!important;
+ }
+ #view-dashboard .fleet-status-panel .fleet-donut-compact>.fleet-chart-shell{
+  grid-column:1!important;
+  grid-row:1!important;
+  flex:none!important;
+  width:100%!important;
+  height:110px!important;
+  min-height:0!important;
+  max-height:110px!important;
+  min-width:0!important;
+  overflow:visible!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+ }
+ #view-dashboard .fleet-status-panel #v3-situation-donut{
+  width:96px!important;
+  height:96px!important;
+  max-width:100%!important;
+  max-height:96px!important;
+  margin:0 auto!important;
+ }
+ #view-dashboard .fleet-status-panel #situation-legend.fleet-chart-legend{
+  grid-column:2!important;
+  grid-row:1!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:repeat(3,minmax(29px,auto))!important;
+  align-content:center!important;
+  align-self:center!important;
+  justify-self:stretch!important;
+  gap:7px!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important;
+ }
+ #view-dashboard .fleet-status-panel #situation-legend .xrm-status-legend-item{
+  display:grid!important;
+  grid-template-columns:8px minmax(0,1fr) auto!important;
+  gap:7px!important;
+  align-items:center!important;
+  min-height:29px!important;
+  height:auto!important;
+  padding:6px 7px!important;
+  font-size:10px!important;
+  line-height:1.2!important;
+  white-space:normal!important;
+ }
+}
+@media(min-width:761px) and (max-width:1100px){
+ #view-dashboard .fleet-status-panel .fleet-donut-layout.fleet-donut-compact{grid-template-columns:86px minmax(0,1fr)!important;gap:6px!important;padding:8px!important}
+ #view-dashboard .fleet-status-panel #v3-situation-donut{width:82px!important;height:82px!important}
+ #view-dashboard .fleet-status-panel #situation-legend .xrm-status-legend-item{font-size:9px!important;padding:6px 5px!important}
+}
+@media(max-width:760px){
+ #view-dashboard .fleet-status-panel .fleet-donut-layout.fleet-donut-compact{
+  display:grid!important;grid-template-columns:minmax(90px,125px) minmax(0,1fr)!important;align-items:center!important;
+  gap:10px!important;padding:12px!important;overflow:visible!important;height:auto!important;
+ }
+ #view-dashboard .fleet-status-panel .fleet-donut-compact>.fleet-chart-shell{grid-column:1!important;min-height:110px!important}
+ #view-dashboard .fleet-status-panel #v3-situation-donut{width:105px!important;height:105px!important;max-width:100%!important}
+ #view-dashboard .fleet-status-panel #situation-legend.fleet-chart-legend{grid-column:2!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:6px!important;height:auto!important;max-height:none!important;overflow:visible!important}
+ #view-dashboard .fleet-status-panel #situation-legend .xrm-status-legend-item{min-height:30px!important;height:auto!important;padding:6px!important;font-size:10px!important}
+}
+@media(max-width:390px){
+ #view-dashboard .fleet-status-panel .fleet-donut-layout.fleet-donut-compact{grid-template-columns:85px minmax(0,1fr)!important;gap:6px!important;padding:8px!important}
+ #view-dashboard .fleet-status-panel #v3-situation-donut{width:80px!important;height:80px!important}
+ #view-dashboard .fleet-status-panel #situation-legend .xrm-status-legend-item{font-size:9px!important;padding:5px!important}
+}
+
+/* XRMOVI unified dashboard surfaces: the same paint for upper and lower panel shells.
+   This selector is the only authoritative dashboard panel background override. */
+#view-dashboard .fleet-overview-grid > .fleet-panel,
+#view-dashboard .fleet-insights-grid > .fleet-panel.fleet-insight-card{
+  background-color:#0c1b2c!important;
+  background-image:linear-gradient(145deg,rgba(56,189,248,.035),transparent 55%)!important;
+  background-clip:padding-box!important;
+  border-color:rgba(139,167,201,.16)!important;
+  border-radius:11px!important;
+  box-shadow:0 10px 26px rgba(0,0,0,.11),inset 0 1px rgba(255,255,255,.025)!important;
+}
+#view-dashboard .fleet-insights-grid > .fleet-panel.fleet-insight-card::before{
+  content:none!important;
+  display:none!important;
+}
+#view-dashboard .fleet-insights-grid .fleet-insight-stat,
+#view-dashboard .fleet-insights-grid .fleet-insight-driver{
+  background-color:rgba(10,31,49,.72)!important;
+  background-image:none!important;
+  border-color:rgba(95,151,177,.2)!important;
+}
+#view-dashboard .fleet-insights-grid .fleet-insight-rank{
+  background-color:rgba(10,31,49,.72)!important;
+  background-image:none!important;
+}

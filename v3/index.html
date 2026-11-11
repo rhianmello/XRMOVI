@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta name="robots" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <title>XRMOVI V3 — Gestão de Frotas</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/frota.css?v=20261030-mobile-company-support-35">
+  <link rel="stylesheet" href="./xrmovi-local-assistant.css?v=20261030-v4-3">
+<link rel="stylesheet" href="mileage.css?v=20261029-km-audit-33">
+<link rel="stylesheet" href="./onboarding-premium.css?v=20261110-company-plan-1">
+<link rel="stylesheet" href="./renewal-reminder.css?v=20261103-renewal-1">
+<link rel="stylesheet" href="./fines.css?v=20261106-fines-1">
+<link rel="stylesheet" href="./vehicle-export.css?v=20261106-export-1">
+<link rel="stylesheet" href="./fuel-dashboard.css?v=20261106-consumption-1">
+
+<style>.fleet-ranking-filters{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.fleet-ranking-filters select{max-width:240px;min-width:165px}.fleet-fuel-ranking-panel{margin-block:18px}.fleet-fuel-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}.fleet-fuel-summary>div{padding:15px;border:1px solid rgba(56,189,248,.23);border-radius:12px;background:rgba(17,42,67,.65)}.fleet-fuel-summary small{display:block;color:#95bdd4;margin-bottom:7px}.fleet-fuel-summary strong{font-size:clamp(15px,2vw,24px);color:#e3f7ff}.fleet-fuel-bars{display:grid;gap:9px}.fleet-fuel-bar,.fleet-ptran-entry{font:inherit;cursor:pointer;text-align:left;border:1px solid rgba(56,189,248,.17);border-radius:10px;background:rgba(14,34,54,.68);color:#d6eeff;padding:11px 13px}.fleet-fuel-bar{display:grid;grid-template-columns:minmax(155px,1.35fr) minmax(85px,2fr) minmax(105px,.7fr);gap:12px;align-items:center}.fleet-fuel-bar:hover,.fleet-ptran-entry:hover{border-color:#38bdf8;background:rgba(27,66,91,.72)}.fleet-fuel-name{font-size:13px;overflow-wrap:anywhere}.fleet-fuel-name b{color:#38bdf8;margin-right:6px}.fleet-fuel-bar>strong{text-align:right;white-space:nowrap}.fleet-fuel-track{display:block;background:rgba(56,189,248,.09);height:12px;border-radius:6px;overflow:hidden}.fleet-fuel-track span{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#1764ae,#23c6ec);transition:width .35s ease}.fleet-ptran-list{display:grid;gap:10px}.fleet-ptran-entry{display:grid;gap:6px;width:100%}.fleet-ptran-entry>span{font-size:13px}.fleet-ptran-highlight{outline:2px solid #fb7185;outline-offset:2px}@media(max-width:680px){.fleet-fuel-summary{grid-template-columns:1fr}.fleet-fuel-bar{grid-template-columns:1fr auto;gap:7px}.fleet-fuel-track{grid-column:1/-1;grid-row:2}.fleet-fuel-bar>strong{grid-column:2;grid-row:1}}</style>
+<style>.v3-banner{background:#143149;border-bottom:1px solid #3d627d;color:#dbf3ff;font:12px system-ui;padding:9px 22px;text-align:center}.v3-banner a{color:#64ddca;font-weight:700}.fleet-sidebar .fleet-sidebar-visual{background-image:linear-gradient(180deg,rgba(5,16,29,.06),rgba(5,15,25,.2) 54%,rgba(5,15,25,.92) 93%),url("assets/frota/sidebar-fleet-scene.svg")}</style><style>.fleet-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:10px}.xrm-header-contract{display:flex;align-items:center;gap:8px;margin-left:16px;color:#91afc6;font:600 11px system-ui}.xrm-header-contract select{max-width:min(290px,38vw);min-width:150px;background:#10283c;color:#e3f5ff;border:1px solid #345471;border-radius:7px;padding:8px 11px;font:12px system-ui}@media(max-width:660px){.xrm-header-contract{margin-left:0;width:100%}.xrm-header-contract select{max-width:100%;flex:1}}</style><link rel="stylesheet" href="./mobile-experience.css?v=20261105-mobile-v41-2">
+<link rel="stylesheet" href="./mobile-refinement.css?v=20261105-mobile-v41-2">
+<link rel="stylesheet" href="/legal/policies.css">
+<link rel="stylesheet" href="./dashboard-premium.css?v=20261106-unified-card-paint-7">
+<link rel="manifest" href="/manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="icon" href="/pwa/icon.svg?v=20261110-brand-v2" type="image/svg+xml" sizes="any"><style id="xrmovi-fleet-brand-logo-style">
+.fleet-page .fleet-sidebar .fleet-brand{display:flex;justify-content:center;align-items:center;padding:4px 4px 20px;gap:0;min-width:0}
+.fleet-page .fleet-sidebar .fleet-brand .xrmovi-fleet-logo{display:block;width:205px;max-width:100%;height:auto;max-height:76px;object-fit:contain;object-position:center;background:transparent;border:0;border-radius:0;padding:0;box-shadow:none}
+@media (min-width:761px) and (max-width:1020px){.fleet-page .fleet-sidebar .fleet-brand .xrmovi-fleet-logo{width:66px;max-height:50px}}
+@media (max-width:760px){.fleet-page .fleet-sidebar .fleet-brand{justify-content:flex-start;padding:2px 0 12px}.fleet-page .fleet-sidebar .fleet-brand .xrmovi-fleet-logo{width:182px;max-height:64px}}
+</style>
+<style>
+.fleet-company-name-row{display:flex;align-items:center;gap:9px;min-width:0}
+.fleet-company-name-row h1{min-width:0;overflow-wrap:anywhere}
+#company-name-edit{flex:none;width:36px;height:36px}
+#company-name-edit[hidden]{display:none}
+#company-name-dialog{width:min(440px,calc(100vw - 32px));box-sizing:border-box;padding:22px;border:1px solid #426980;border-radius:15px;background:#10273c;color:#edf7ff}
+#company-name-dialog::backdrop{background:#07111fbd}
+#company-name-form{display:grid;gap:10px}
+#company-name-form h2,#company-name-error{margin:0}
+#company-name-input{width:100%;box-sizing:border-box;padding:10px;border:1px solid #43647a;border-radius:8px;background:#091b2e;color:#fff;font:inherit}
+#company-name-error{color:#ffd1a0}
+#company-name-error:empty{display:none}
+.company-name-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body class="fleet-page">
+  <a class="fleet-skip" href="#fleet-main">Ir para o conteúdo</a>
+  <div class="app-shell fleet-shell">
+    <aside class="sidebar fleet-sidebar" aria-label="Navegação principal">
+      <a class="sidebar-brand fleet-brand" href="./" aria-label="XRMOVI — visão geral da frota">
+        <img class="xrmovi-fleet-logo" src="/assets/xrmovi-logo-oficial.svg?v=20261110-v2" alt="XRMOVI — gestão de frotas" width="210" height="70" decoding="async">
+      </a>
+      <nav class="main-nav fleet-main-nav">
+        <p class="nav-group-label">NAVEGAÇÃO</p>
+        <button class="fleet-subnav active" data-view="dashboard"><i data-lucide="house"></i><span>Visão Geral</span></button>
+        <button class="fleet-subnav" data-view="assets"><i data-lucide="truck"></i><span>Ativos / Veículos</span></button>
+        <button class="fleet-subnav" id="xrm-mileage-nav" type="button" data-view="mileage"><i data-lucide="gauge"></i><span>KM e Troca de Óleo</span></button>
+        <button class="fleet-subnav" data-view="maintenance"><i data-lucide="wrench"></i><span>Manutenção / Despesas</span></button>
+        <button class="fleet-subnav" data-view="drivers"><i data-lucide="contact-round"></i><span>Motoristas</span></button>
+        <button class="fleet-subnav" data-view="documents"><i data-lucide="file-check-2"></i><span>Central de Documentos</span></button>
+        <button class="fleet-subnav" data-view="fuel"><i data-lucide="fuel"></i><span>Abastecimentos</span></button>
+        <button class="fleet-subnav" data-view="fines"><i data-lucide="file-warning"></i><span>Multas e Infrações</span></button>
+        <button class="fleet-subnav" data-view="alerts"><i data-lucide="bell"></i><span>Alertas</span><span id="nav-alert-count" class="fleet-nav-count">—</span></button>
+        <button class="fleet-subnav" data-view="history"><i data-lucide="history"></i><span>Histórico</span></button>
+        <button class="fleet-subnav" data-view="financial"><i data-lucide="chart-no-axes-combined"></i><span>Relatórios financeiros</span></button>
+        <button class="fleet-subnav" data-view="subscription" id="xrm-subscriptions-nav"><i data-lucide="credit-card"></i><span>Minha assinatura</span></button>
+        <a class="fleet-subnav" href="../cliente/" style="text-decoration:none"><i data-lucide="messages-square"></i><span>Mensagens / Suporte</span></a>
+        <button type="button" class="fleet-subnav" id="xrm-fleet-logout" style="color:#ffd2c6"><i data-lucide="log-out"></i><span>Sair da conta</span></button>
+        </nav>
+      <div class="fleet-sidebar-visual" aria-hidden="true">
+        <div class="fleet-sidebar-visual-copy">
+          <span>OPERAÇÃO CONECTADA</span>
+          <strong>Frota eficiente move grandes resultados.</strong>
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <span>GESTÃO OPERACIONAL</span>
+        <span>Banco de dados + histórico auditável</span>
+      </div>
+    </aside>
+
+    <main class="fleet-main" id="fleet-main">
+      <header class="fleet-topbar">
+        <div class="fleet-breadcrumb"><strong>Gestão de Frota</strong><span>/</span><span id="fleet-view-label">Visão Geral</span><label class="xrm-header-contract">Contrato <select id="xrm-contract-filter" aria-label="Filtrar contrato"><option value="">Todos os contratos</option></select></label></div>
+        <label class="fleet-mobile-navigation">Tela<select id="fleet-mobile-view" aria-label="Abrir tela"><option value="dashboard">Visão Geral</option><option value="assets">Ativos / Veículos</option><option value="mileage">KM e Troca de Óleo</option><option value="maintenance">Manutenção / Despesas</option><option value="drivers">Motoristas</option><option value="documents">Central de Documentos</option><option value="fuel">Abastecimentos</option><option value="fines">Multas e Infrações</option><option value="alerts">Alertas</option><option value="history">Histórico</option><option value="financial">Relatórios financeiros</option><option value="subscription">Minha assinatura</option></select></label><div class="fleet-top-actions"><label class="xrm-mobile-company-switch" for="v3-company-mobile">Empresa <select id="v3-company-mobile" aria-label="Trocar empresa ativa"></select></label><a class="xrm-mobile-support-link" href="../cliente/" aria-label="Abrir mensagens e suporte">Suporte</a>
+          <span class="fleet-connection fleet-top-connection" id="connection-status" data-status="loading"><span class="fleet-dot"></span> Consultando banco</span>
+          
+          <button class="fleet-icon-button" id="xrm-fleet-logout-mobile" title="Sair da conta" aria-label="Sair da conta"><i data-lucide="log-out"></i></button>
+          <button class="fleet-icon-button" id="refresh-button" title="Atualizar dados do banco" aria-label="Atualizar dados do banco"><i data-lucide="refresh-cw"></i></button>
+          
+        </div>
+      </header>
+
+      <div class="fleet-content">
+        <section id="xrm-renewal-banner" aria-live="polite" role="status" hidden>
+          <div class="xrm-renewal-copy">
+            <strong id="xrm-renewal-title"></strong>
+            <span id="xrm-renewal-detail"></span>
+          </div>
+          <button id="xrm-renewal-action" type="button">Abrir Minha assinatura</button>
+        </section>
+        <section class="fleet-hero xrm-company-header">
+          <div id="company-logo-area" class="fleet-company-logo" aria-busy="false">
+            <img id="company-logo" class="fleet-company-logo-image" alt="Logo da empresa ativa" hidden>
+            <span id="company-logo-placeholder" class="fleet-company-logo-placeholder">Logo / Foto</span>
+            <button id="company-logo-edit" class="fleet-company-logo-edit" type="button" aria-label="Alterar logo ou foto da empresa" title="Alterar logo ou foto da empresa" aria-describedby="company-logo-status" hidden><i data-lucide="pencil" aria-hidden="true"></i></button>
+            <input id="company-logo-file" type="file" accept="image/png,image/jpeg,image/webp" aria-label="Selecionar logo ou foto da empresa" hidden>
+          </div>
+          <div class="fleet-hero-copy">
+            <p class="eyebrow">CENTRAL OPERACIONAL</p>
+            <div class="fleet-company-name-row">
+              <h1 id="company-name">Empresa ativa</h1>
+              <button id="company-name-edit" class="fleet-icon-button" type="button" aria-label="Alterar nome da empresa ou seu nome" title="Alterar nome" hidden><i data-lucide="pencil" aria-hidden="true"></i></button>
+            </div>
+            <dialog id="company-name-dialog" aria-labelledby="company-name-dialog-title">
+              <form id="company-name-form">
+                <h2 id="company-name-dialog-title">Alterar nome</h2>
+                <label for="company-name-input">Nome da empresa ou seu nome</label>
+                <input id="company-name-input" required minlength="2" maxlength="160">
+                <p id="company-name-error" role="status"></p>
+                <div class="company-name-actions">
+                  <button class="fleet-button" type="button" id="company-name-cancel">Cancelar</button>
+                  <button class="fleet-button primary" type="submit" id="company-name-save">Salvar</button>
+                </div>
+              </form>
+            </dialog>
+            <p class="fleet-company-subtitle">Operação, manutenção e conformidade</p>
+            <p id="company-logo-status" class="fleet-company-logo-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          </div>
+          <div class="xrm-hero-filters"><section class="fleet-filterbar fleet-commandbar" aria-label="Filtros de veículos">
+            <label class="fleet-search fleet-command-search"><i data-lucide="search"></i><input id="fleet-search" type="search" placeholder="Buscar placa, marca, modelo ou unidade..." aria-label="Buscar veículos"></label>
+            <label class="fleet-command-filter"><span>Categoria</span><select id="xrm-filter-category"><option value="">Todas</option></select></label>
+            <label class="fleet-command-filter"><span>Situação</span><select id="xrm-filter-status"><option value="">Todas</option><option value="Ativo">Ativos</option><option value="Manutenção">Em manutenção</option><option value="Inativo">Inativos</option><option value="alerta">Com revisão vencida</option></select></label>
+            <label class="fleet-command-filter"><span>Vencimento da revisão</span><select id="xrm-filter-expiry"><option value="">Todos</option><option value="overdue">Vencidas</option><option value="7">Até 7 dias</option><option value="30">Até 30 dias</option><option value="90">Até 90 dias</option></select></label>
+            <button class="fleet-button" id="xrm-clear-filters" type="button">Limpar todos</button><button class="fleet-button" id="view-clear-filters" type="button" hidden>Limpar filtros desta tela</button>
+          </section></div>
+          <div class="fleet-data-source">
+            <small>Fonte: Banco de Dados</small>
+            <small id="last-update">Última atualização: —</small>
+          </div>
+        </section>
+
+        <div id="page-notice" class="fleet-notice hidden" role="status"></div>
+
+          
+
+        <div id="active-filter-summary" class="fleet-filter-summary" role="status" aria-live="polite"></div>
+        <section id="view-dashboard" class="fleet-view" role="tabpanel" aria-label="Visão Geral">
+
+
+          <div class="fleet-section-label fleet-section-heading">
+            <div><span>VISÃO EXECUTIVA</span><strong>O que precisa de atenção agora</strong></div>
+            <small id="filter-result">Aguardando dados do banco</small>
+          </div>
+          <div id="fleet-kpis" class="fleet-kpis fleet-kpis-executive" aria-live="polite"></div>
+          <section id="xrm-mileage-dashboard" class="fleet-panel xrm-mileage-dashboard" aria-label="Alertas de quilometragem e troca de óleo"></section>
+
+          <div class="fleet-overview-grid">
+            <section class="fleet-panel fleet-expiry-panel" id="expiry-panel">
+              <header><div><p class="eyebrow">PRÓXIMOS 90 DIAS</p><h2>Vencimentos próximos</h2><small>Revisões com data de vencimento</small></div></header>
+              <div class="fleet-chart-shell fleet-bar-shell fleet-expiry-shell"><canvas id="expiry-chart" aria-label="Vencimentos em até 90 dias" role="img"></canvas><div id="expiry-empty" class="fleet-chart-empty">Nenhum prazo cadastrado nos próximos 90 dias</div></div>
+            </section>
+
+            <section class="fleet-panel fleet-status-panel">
+              <header><div><p class="eyebrow">PRONTIDÃO OPERACIONAL</p><h2>Status da frota</h2></div></header>
+              <div class="fleet-donut-layout fleet-donut-compact"><div class="fleet-chart-shell"><canvas id="situation-chart" aria-label="Situação da frota" role="img"></canvas><div id="situation-empty" class="fleet-chart-empty">Aguardando dados do banco</div><div id="situation-center" class="fleet-donut-center"><strong>—</strong><span>ativos</span></div></div><div id="situation-legend" class="fleet-chart-legend"></div></div>
+            </section>
+
+            <section class="fleet-panel fleet-alert-preview fleet-action-panel">
+              <header><div class="fleet-inline-title"><i data-lucide="zap"></i><div><p class="eyebrow">PRIORIDADE</p><h2>Ação imediata</h2></div><span id="alert-preview-count" class="fleet-chip">—</span></div><button class="fleet-link-button" data-view="alerts">Ver todos <i data-lucide="arrow-right"></i></button></header>
+              <div id="alert-preview" class="fleet-alert-preview-grid"></div>
+            </section>
+          </div>
+
+          
+          
+
+          
+          
+        
+ <div class="fleet-insights-grid" aria-label="Custos e motoristas da frota">
+            <section class="fleet-panel fleet-insight-card fleet-cost-insight" aria-labelledby="fleet-cost-title">
+              <header class="fleet-insight-header">
+                <div><p class="eyebrow">RESUMO FINANCEIRO</p><h2 id="fleet-cost-title">Painel da frota</h2></div>
+                <button type="button" class="fleet-link-button" data-view="financial">Ver relatório <i data-lucide="arrow-right"></i></button>
+              </header>
+              <p class="fleet-insight-period" id="fleet-insight-period">Mês atual · dados da empresa</p>
+              <div class="fleet-insight-stats" aria-live="polite">
+                <div class="fleet-insight-stat"><span>Serviços abertos</span><strong id="fleet-insight-open">—</strong></div>
+                <div class="fleet-insight-stat"><span>Serviços vencidos</span><strong id="fleet-insight-overdue">—</strong></div>
+                <div class="fleet-insight-stat"><span>Manutenção realizada</span><strong id="fleet-insight-maint-cost">—</strong></div>
+                <div class="fleet-insight-stat"><span>Abastecimentos</span><strong id="fleet-insight-fuel-cost">—</strong></div>
+              </div>
+              <div class="fleet-insight-subheading">Veículos com maior custo no período e média de consumo</div>
+              <div id="fleet-insight-cost-ranking" class="fleet-insight-ranking" aria-live="polite"><p class="fleet-insight-empty">Consultando os lançamentos…</p></div>
+            </section>
+            <section class="fleet-panel fleet-insight-card fleet-drivers-insight" aria-labelledby="fleet-drivers-title">
+              <header class="fleet-insight-header">
+                <div><p class="eyebrow">EQUIPE &amp; DOCUMENTAÇÃO</p><h2 id="fleet-drivers-title">Motoristas e CNH</h2></div>
+                <button type="button" class="fleet-link-button" data-view="drivers">Ver motoristas <i data-lucide="arrow-right"></i></button>
+              </header>
+              <p class="fleet-insight-period" id="fleet-insight-drivers-period">Próximos vencimentos dos motoristas ativos</p>
+              <div id="fleet-insight-drivers" class="fleet-insight-driver-list" aria-live="polite"><p class="fleet-insight-empty">Consultando motoristas…</p></div>
+            </section>
+          </div>
+
+</section>
+
+<section id="view-assets" class="fleet-view hidden" aria-label="Ativos / Veículos"><div class="fleet-workspace-heading"><div><p class="eyebrow">GESTÃO DE FROTA</p><h2 tabindex="-1">Ativos / Veículos</h2><p>Consulte os veículos, cadastre ativos e mantenha a identificação da frota atualizada.</p></div><div class="xrm-assets-heading-actions"><button id="xrm-export-vehicles" type="button" class="fleet-button primary"><i data-lucide="file-spreadsheet"></i> Baixar relatório Excel</button></div></div><div id="assets-actions" class="v3-write-actions"></div><section class="fleet-panel fleet-table-panel" id="fleet-assets-panel">
+            <header>
+              <div><p class="eyebrow">ATIVOS</p><h2>Principais ativos <span id="table-count" class="fleet-chip">—</span></h2><small>Consulta rápida da situação operacional e próximos prazos</small></div>
+              
+            </header>
+            <div id="fleet-table-empty" class="fleet-empty hidden"></div>
+            <div class="fleet-table-wrap" id="fleet-table-wrap">
+              <table class="fleet-table fleet-table-executive">
+                <thead><tr><th scope="col">Veículo / identificação</th><th scope="col">Tipo</th><th scope="col">Motorista</th><th scope="col">Status</th><th scope="col">Próxima revisão</th><th scope="col">KM / Horímetro</th><th scope="col">Ações</th></tr></thead>
+                <tbody id="fleet-table-body"></tbody>
+              </table>
+            </div>
+            <footer class="fleet-table-footer"><span id="table-page-info">—</span></footer>
+          </section>
+</section>
+<section id="view-mileage" class="fleet-view hidden" role="tabpanel" aria-label="KM e Troca de Óleo">
+ <div class="fleet-workspace-heading"><div><p class="eyebrow">GESTÃO DE FROTA • MANUTENÇÃO</p><h2 tabindex="-1">KM e Troca de Óleo</h2><p>Controle o hodômetro, histórico de leituras, QR Codes e próximas trocas de óleo sem misturar com o cadastro de veículos.</p></div><button type="button" class="fleet-button" data-view="assets">Ver veículos</button></div>
+ <section id="xrm-mileage-console" class="fleet-panel xrm-mileage-console" aria-label="Controle de quilometragem por veículo"></section>
+</section>
+<section id="view-maintenance" class="fleet-view hidden" aria-label="Manutenção / Despesas"><div class="fleet-workspace-heading"><div><p class="eyebrow">GESTÃO DE FROTA</p><h2 tabindex="-1">Manutenção / Despesas</h2><p>Planeje serviços e controle IPVA, multas e outras despesas dos veículos.</p></div></div><div class="fleet-entry-actions"><div><button id="expense-new" type="button" class="fleet-button primary">+ Registrar despesa ou serviço</button><small>IPVA, multa, lavagem, borracharia e outros gastos do veículo.</small></div><div><button id="maintenance-new" type="button" class="fleet-button primary">+ Programar manutenção</button><small>Serviços planejados com vencimento por data ou KM/horímetro.</small></div></div><div class="fleet-workspace-tabs" aria-label="Consultas de manutenção e despesas"><button type="button" data-maintenance-mode="services" aria-pressed="true">Consultar manutenções</button><button type="button" data-maintenance-mode="expenses" aria-pressed="false">Consultar despesas e serviços</button></div><section id="expense-panel" class="fleet-panel" hidden><header><div><h2>Despesas dos veículos</h2><small>IPVA, multas, seguro, licenciamento, pedágio e outras despesas.</small></div></header><div class="fleet-maintenance-filters"><label>Pesquisar<input id="expense-search" type="search" placeholder="Placa ou descrição"></label><label>Tipo<select id="expense-category"><option value="">Todos</option><option value="ipva">IPVA</option><option value="multa">Multa</option><option value="seguro">Seguro</option><option value="licenciamento">Licenciamento</option><option value="pedagio">Pedágio</option><option value="outros">Outros</option></select></label><label>Pagamento<select id="expense-status"><option value="all">Todos</option><option value="open">Em aberto</option><option value="overdue">Vencidas</option><option value="paid">Pagas</option></select></label><label>Mês da despesa<input id="expense-month" type="month"></label></div><div id="expense-summary" class="fleet-financial-caption"></div><div id="expense-list" class="fleet-table-wrap"></div></section><section id="maintenance-panel" class="fleet-panel"><header><div><h2>Plano de manutenção</h2><small>Programe por data ou KM/horímetro, acompanhe prazos e registre a execução.</small></div></header><div id="maintenance-summary" class="fleet-maintenance-summary" aria-live="polite"></div><div class="fleet-maintenance-filters"><label>Pesquisar serviço ou veículo<input id="maintenance-search" type="search" placeholder="Placa ou serviço"></label><label>Serviços<select id="maintenance-status"><option value="open">Pendentes</option><option value="overdue">Vencidas</option><option value="soon">Próximas</option><option value="scheduled">Programadas</option><option value="done">Concluídas</option><option value="all">Todos</option></select></label><button id="maintenance-clear" type="button" class="fleet-button">Limpar</button></div><div id="v3-maintenance-list" class="fleet-maintenance-table"></div><p id="maintenance-result" class="fleet-workspace-note" role="status"></p></section></section>
+<section id="view-drivers" class="fleet-view hidden" aria-label="Motoristas"><div class="fleet-workspace-heading"><div><p class="eyebrow">CADASTRO DA FROTA</p><h2 tabindex="-1">Motoristas</h2><p>Cadastre os motoristas e vincule-os aos veículos da empresa.</p></div><button id="driver-new" type="button" class="fleet-button primary">+ Novo motorista</button></div><section class="fleet-panel"><div class="fleet-maintenance-filters"><label>Pesquisar motorista<input id="driver-search" type="search" placeholder="Nome ou categoria da CNH"></label><label>Situação<select id="driver-status"><option value="active">Ativos</option><option value="all">Todos</option><option value="inactive">Inativos</option></select></label><button id="driver-clear" type="button" class="fleet-button">Limpar filtros</button></div><p id="driver-count" class="fleet-financial-caption" role="status"></p><div id="driver-list" class="fleet-table-wrap"></div></section></section><section id="view-documents" class="fleet-view hidden" aria-label="Central de Documentos">
+  <div class="fleet-workspace-heading">
+   <div><p class="eyebrow">DOCUMENTAÇÃO E ARQUIVOS</p><h2 tabindex="-1">Central de Documentos</h2>
+   <p>Consulte os documentos da empresa ativa. Cada veículo e motorista também tem seus arquivos no próprio cadastro.</p></div>
+  </div>
+  <section id="document-panel" class="fleet-panel">
+   <header><div><h2>Arquivos da frota e da equipe</h2><small>Visualização temporária, download e exclusão com auditoria para proprietários e gestores.</small></div></header>
+   <div class="xrm-doc-filters" aria-label="Filtros da Central de Documentos">
+    <label>Pesquisar documento<input type="search" id="xrm-doc-search" placeholder="Arquivo, placa, nome do motorista..."></label>
+    <label>Categoria<select id="xrm-doc-kind">
+      <option value="">Todas</option><option value="vehicle">Veículo / CRLV</option>
+      <option value="driver">Motorista / CNH</option><option value="maintenance">Manutenção</option>
+      <option value="fuel">Abastecimento</option><option value="fine">Multa / infração</option><option value="expense">Despesa</option>
+    </select></label>
+    <label>Cadastro<select id="xrm-doc-link"><option value="">Todos os cadastros</option></select></label>
+    <label>Vencimento<select id="xrm-doc-expiry">
+      <option value="">Todos</option><option value="expired">Vencidos</option>
+      <option value="soon">Até 30 dias</option><option value="valid">Mais de 30 dias</option>
+      <option value="unknown">Sem vencimento informado</option>
+    </select></label>
+   </div>
+   <div class="xrm-doc-actions">
+     <button type="button" id="xrm-doc-clear" class="fleet-button">Limpar filtros</button>
+     <span id="xrm-doc-total" class="xrm-doc-summary" role="status">Consultando documentos...</span>
+   </div>
+   <div id="vehicle-documents" aria-live="polite"></div>
+   <section id="xrm-doc-history" class="xrm-doc-history" hidden>
+     <button type="button" id="xrm-doc-history-button" class="fleet-button" aria-expanded="false">Histórico de exclusões</button>
+     <div id="xrm-doc-history-list" hidden></div>
+   </section>
+  </section>
+</section>
+<section id="view-fuel" class="fleet-view hidden" aria-label="Abastecimentos"><div class="fleet-workspace-heading"><div><p class="eyebrow">GESTÃO DE FROTA</p><h2 tabindex="-1">Abastecimentos</h2><p>Registre abastecimentos e acompanhe o consumo financeiro da frota.</p></div></div><div id="fuel-actions" class="v3-write-actions"></div><section id="fuel-panel" class="fleet-panel fleet-fuel-ranking-panel"><header><div><p class="eyebrow">CONTROLE FINANCEIRO</p><h2>RANKING — COMBUSTÍVEL DOS VEÍCULOS FILTRADOS NO MÊS</h2><small>Despesas reais com combustível, por ativo</small></div><div class="fleet-ranking-filters"><label class="fleet-inline-filter">Categoria <select id="fuel-ranking-category" aria-label="Categoria de veículos no ranking"><option value="">Todas as categorias</option></select></label><label class="fleet-inline-filter">Mês <input id="fuel-ranking-month" type="month" aria-label="Mês do ranking de abastecimento"></label></div></header><div id="fleet-fuel-ranking" aria-live="polite"><p class="fleet-history-note">Carregando dados do banco…</p></div></section></section>
+
+<section id="view-fines" class="fleet-view hidden" role="tabpanel" aria-label="Multas e Infrações">
+  <div class="fleet-workspace-heading">
+    <div><p class="eyebrow">GESTÃO DE FROTA • CONFORMIDADE</p><h2 tabindex="-1">Multas e Infrações</h2>
+    <p>Controle autos, prazos, motoristas, pagamentos, recursos e documentos vinculados aos veículos.</p></div>
+  </div>
+  <div class="xrm-fines-wrap">
+    <div class="xrm-fines-buttons">
+      <button type="button" class="fleet-button primary" id="xrm-fines-add">+ Registrar multa</button>
+      <button type="button" class="fleet-button" id="xrm-fines-refresh">Atualizar</button>
+      <button type="button" class="fleet-button" id="xrm-fines-csv">Excel (CSV)</button>
+      <button type="button" class="fleet-button" id="xrm-fines-pdf">PDF — Resumo</button>
+      <button type="button" class="fleet-button" id="xrm-fines-pdf-docs">PDF — Com fotos anexadas</button>
+    </div>
+    <div class="xrm-fines-kpis" aria-label="Resumo de multas">
+      <article><small>Registros filtrados</small><strong id="xrm-fines-total">—</strong></article>
+      <article><small>Pendentes / em recurso</small><strong id="xrm-fines-open">—</strong></article>
+      <article><small>Valor pendente registrado</small><strong id="xrm-fines-value">—</strong></article>
+      <article><small>Prazos em atenção (7 dias)</small><strong id="xrm-fines-soon">—</strong></article>
+    </div>
+    <section class="fleet-panel">
+      <div class="xrm-fines-controls">
+        <label>Pesquisar auto, placa ou infração<input type="search" id="xrm-fines-search" placeholder="Pesquisar..."></label>
+        <label>Veículo<select id="xrm-fines-vehicle"><option value="">Todos os veículos</option></select></label>
+        <label>Situação<select id="xrm-fines-status-filter">
+          <option value="">Todas</option><option value="pending">Pendente</option>
+          <option value="appeal">Em defesa/recurso</option><option value="paid">Paga</option>
+          <option value="canceled">Cancelada</option>
+        </select></label>
+        <label>Infração de<input type="date" id="xrm-fines-from"></label>
+        <label>Infração até<input type="date" id="xrm-fines-to"></label>
+      </div>
+      <p id="xrm-fines-status" class="xrm-fines-status" role="status" aria-live="polite">Consultando multas...</p>
+      <div id="xrm-fines-list"></div>
+    </section>
+    <p class="xrm-fines-note">Prazos são informados a partir de documentos oficiais e devem ser conferidos no órgão autuador. Marcar como paga cria uma única despesa vinculada em Manutenção / Despesas; não cadastre a mesma multa novamente nessa tela.</p>
+  </div>
+</section>
+<section id="view-financial" class="fleet-view hidden" aria-label="Relatórios financeiros"><div class="xrm-period-filters fleet-panel"><label>Período<select id="xrm-report-period"><option value="daily">Diário</option><option value="fortnight">Quinzenal</option><option value="monthly" selected>Mensal</option><option value="quarterly">Trimestral</option><option value="semiannual">Semestral</option><option value="custom">Personalizado</option></select></label><label>Data de referência<input id="xrm-report-anchor" type="date"></label><label>De<input id="xrm-report-from" type="date"></label><label>Até<input id="xrm-report-to" type="date"></label><button id="xrm-report-apply" type="button" class="fleet-button primary">Consultar período</button><span id="xrm-report-range-label" role="status"></span></div><div class="fleet-workspace-heading"><div><p class="eyebrow">GESTÃO DE FROTA</p><h2 tabindex="-1">Relatórios financeiros</h2><p>Consulte combustível e manutenção realizada por período e veículos filtrados.</p></div></div><div id="financial-period-slot" hidden></div><div class="fleet-report-actions" aria-label="Formatos de relatório">
+ <button type="button" id="financial-export-csv" class="fleet-button primary">Exportar CSV</button>
+ <button type="button" id="financial-print" class="fleet-button">PDF — Somente valores</button>
+ <button type="button" id="financial-print-evidence" class="fleet-button primary">PDF — Valores + comprovantes</button>
+</div>
+<p id="financial-print-status" class="fleet-workspace-note" role="status" aria-live="polite">
+ O segundo formato inclui as fotos e páginas de PDF anexadas aos abastecimentos, organizadas por veículo.
+</p></section>
+        <section id="view-subscription" class="fleet-view hidden" role="tabpanel" aria-label="Minha assinatura"><div id="xrm-subscription-content"></div></section>
+<section id="view-alerts" class="fleet-view hidden" role="tabpanel" aria-label="Alertas"><div class="fleet-view-heading"><div><p class="eyebrow">AÇÃO &amp; PREVENÇÃO</p><h2>Central de Alertas</h2><p>Manutenções dos veículos correspondentes aos filtros selecionados.</p></div><div class="fleet-inline-title"><span id="alerts-total" class="fleet-chip">—</span></div></div><section id="xrm-mileage-alerts" class="xrm-mileage-alerts" aria-label="Alertas de óleo e quilometragem"></section><div id="alerts-content" class="fleet-alert-groups"></div></section>
+        <section id="view-history" class="fleet-view hidden" role="tabpanel" aria-label="Histórico"><div class="fleet-view-heading"><div><p class="eyebrow">RASTREABILIDADE &amp; AUDITORIA</p><h2>Histórico da Frota</h2><p>Registros de manutenção, abastecimento e despesas pagas dos veículos filtrados.</p></div><i data-lucide="history"></i></div><form id="history-filters" class="fleet-history-filters fleet-panel"><label>De<input type="date" name="from"></label><label>Até<input type="date" name="to"></label><label>Tipo<select name="kind"><option value="">Todos</option><option value="maintenance">Manutenção</option><option value="fuel">Abastecimento</option><option value="expense">Despesas pagas</option></select></label><button class="fleet-button" type="submit">Consultar</button><button class="fleet-link-button" type="reset">Limpar</button></form><section class="fleet-panel"><header><h2>Eventos registrados</h2><span id="history-count" class="fleet-chip">—</span></header><div id="history-content" class="fleet-timeline"></div></section></section>
+        <footer class="fleet-page-footer"><span>XRMOVI • GESTÃO DE FROTA</span><span>Operação • manutenção • conformidade</span><nav class="xrm-policy-links" aria-label="Políticas do serviço"><a href="/termos/">Termos de Uso</a><a href="/privacidade/">Privacidade</a><a href="/cancelamento/">Cancelamento</a></nav></footer>
+      </div>
+    </main>
+  </div>
+
+  <div id="fleet-toasts" class="fleet-toasts" aria-live="polite" aria-atomic="false"></div>
+  
+
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script defer src="./vendor/qrcode.min.js?v=20261029-qr-31"></script>
+<script defer src="./xrmovi-guide-course.js?v=20261030-course-1"></script>
+<script defer src="./xrmovi-assistant-brain.js?v=20261030-v4-3"></script>
+<script defer src="./xrmovi-local-model.js?v=20261030-v4-3"></script>
+<script defer src="./xrmovi-local-assistant.js?v=20261030-v4-3"></script>
+<script defer src="/analytics/xrmovi-analytics.js?v=20261105-ga4-purchase-1"></script>
+ <script type="module" src="/analytics/xrmovi-bridge.js?v=20261105-1"></script>
+ <script type="module" src="./xrmovi-adapter.js?v=20261110-company-name-1"></script>
+ <script defer src="./mobile-experience.js?v=20261106-mileage-separate-1"></script>
+<script type="module" src="/analytics/xrmovi-presence.js?v=20261109-1"></script>
+</body>
+</html>

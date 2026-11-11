@@ -1,0 +1,15 @@
+/* Consumo por veículo no painel gerencial; cards usam somente dados do usuário autenticado. */
+.xrm-consumption-panel{margin:14px 0 18px;padding:18px}
+.xrm-consumption-panel header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.xrm-consumption-panel h2{margin:4px 0 3px}
+.xrm-consumption-panel small{color:#a8bfd0}
+.xrm-consumption-summary{margin:10px 0 13px;padding:10px 12px;background:rgba(19,61,77,.42);border:1px solid rgba(70,177,201,.25);border-radius:9px;color:#d1e7eb;font-size:12px;line-height:1.5}
+.xrm-consumption-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:10px}
+.xrm-consumption-card{appearance:none;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:7px;padding:14px;min-width:0;color:#eaf6ff;background:rgba(14,42,63,.7);border:1px solid rgba(91,151,175,.34);border-radius:12px;cursor:pointer}
+.xrm-consumption-card:hover,.xrm-consumption-card:focus-visible{border-color:#2dd4bf;outline-offset:2px}
+.xrm-consumption-card span{font-size:12px;overflow-wrap:anywhere}
+.xrm-consumption-card strong{font-size:clamp(18px,2vw,25px);color:#8df0d8;font-variant-numeric:tabular-nums}
+.xrm-consumption-card small{font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+#xrm-fines-quick{margin:12px 0 15px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;padding:14px;border:1px solid rgba(249,183,90,.3);border-radius:12px;background:rgba(65,50,32,.22)}
+#xrm-fines-quick>div{display:flex;flex-wrap:wrap;align-items:center;gap:5px;font-size:12px}
+@media(max-width:600px){.xrm-consumption-panel{padding:12px}.xrm-consumption-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,155px),1fr))}}
