@@ -68,7 +68,7 @@ footer{padding:20px;text-align:center;color:#849eae;font-size:11px}
     <li>Em <a href="https://resend.com/api-keys" target="_blank" rel="noopener noreferrer">Resend → API Keys</a>, crie uma chave com permissão apenas para envio (Sending access).</li>
     <li>Na <a href="https://supabase.com/dashboard/project/ztqtcbzjesrkuaijmylm/functions/secrets" target="_blank" rel="noopener noreferrer">área de Secrets do Supabase</a>, cadastre <code>XRMOVI_RESEND_API_KEY</code> com a chave privada e <code>XRMOVI_SUPPORT_MAIL_FROM</code> com um remetente do domínio verificado, por exemplo <code>XRMOVI &lt;avisos@nospassa.com.br&gt;</code>.</li>
     <li>Para o cliente recuperar a senha, habilite o SMTP personalizado em Supabase → Authentication → SMTP Settings, usando host <code>smtp.resend.com</code>, porta <code>465</code>, usuário <code>resend</code> e a chave de envio como senha. Remetente sugerido: <code>acesso@nospassa.com.br</code>, após verificação do domínio.</li>
-    <li>Em Supabase → Authentication → URL Configuration, autorize exatamente <code>https://frota.nospassa.com.br/redefinir-senha.html</code> e teste com uma conta de homologação.</li>
+    <li>Em Supabase → Authentication → URL Configuration, autorize exatamente <code>https://xrmovi.com.br/redefinir-senha.html</code> e teste com uma conta de homologação.</li>
    </ol>
    <p>Os novos avisos de suporte serão enviados para o e-mail do proprietário já configurado no servidor. A configuração não gera cobrança Mercado Pago.</p>
   </details>
