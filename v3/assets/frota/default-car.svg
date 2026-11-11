@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 96">
+<defs>
+  <linearGradient id="body" x1="0" x2="1">
+    <stop stop-color="#eef5f9"/>
+    <stop offset=".58" stop-color="#c4d2dc"/>
+    <stop offset="1" stop-color="#91a7b9"/>
+  </linearGradient>
+  <linearGradient id="glass" x1="0" x2="1">
+    <stop stop-color="#24445a"/>
+    <stop offset="1" stop-color="#102739"/>
+  </linearGradient>
+  <filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity=".38"/></filter>
+</defs>
+<g filter="url(#shadow)" transform="translate(16 12) scale(.82)">
+  <path fill="url(#body)" d="M23 66l8-18c3-7 8-11 17-12l38-2c10 0 17 4 24 12l8 9 21 3c8 1 13 6 13 13v6H20v-5c0-3 1-5 3-6z"/>
+  <path fill="url(#glass)" d="M51 41l31-2c7 0 12 3 17 9l6 7H42l5-9c1-3 2-4 4-5z"/>
+  <path fill="#7890a2" d="M27 61h116v4H27z" opacity=".65"/>
+  <path fill="#f5b72e" d="M143 61h7v7h-7z"/>
+  <path fill="#e9f2f7" d="M25 61h7v7h-7z"/>
+  <circle cx="49" cy="76" r="12" fill="#08111a"/>
+  <circle cx="121" cy="76" r="12" fill="#08111a"/>
+  <circle cx="49" cy="76" r="5" fill="#8c9daa"/>
+  <circle cx="121" cy="76" r="5" fill="#8c9daa"/>
+</g>
+</svg>
