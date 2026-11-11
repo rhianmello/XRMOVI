@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<title>Calculadora de Consumo de Combustível: km/L e Custo por KM | XRMOVI</title>
+<meta name="description" content="Calcule grátis o consumo médio em km/L, litros por 100 km e custo por quilômetro do seu veículo. Veja como conferir os gastos de uma frota.">
+<link rel="canonical" href="https://frota.nospassa.com.br/calculadora-consumo-combustivel/">
+<meta property="og:type" content="website"><meta property="og:locale" content="pt_BR"><meta property="og:site_name" content="XRMOVI">
+<meta property="og:title" content="Calculadora de Consumo de Combustível | XRMOVI"><meta property="og:description" content="Faça o cálculo de km/L, litros/100 km e custo/km com dados do abastecimento. Ferramenta gratuita.">
+<meta property="og:url" content="https://frota.nospassa.com.br/calculadora-consumo-combustivel/">
+<meta name="theme-color" content="#061723">
+<link rel="stylesheet" href="/seo/comercial.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://frota.nospassa.com.br/"},{"@type":"ListItem","position":2,"name":"Calculadora de consumo de combustível","item":"https://frota.nospassa.com.br/calculadora-consumo-combustivel/"}]}</script>
+<script defer src="/analytics/xrmovi-analytics.js?v=20261103-1"></script>
+<style>
+.seo-page .calc-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+.seo-page .calc-form,.seo-page .calc-results{background:#0e3040;border:1px solid #416776;border-radius:18px;padding:26px}
+.seo-page .calc-fields{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.seo-page .calc-fields label{display:grid;gap:8px;font-size:13px;font-weight:700;color:#d7ebee}
+.seo-page .calc-fields input{width:100%;padding:13px 15px;border:1px solid #608291;border-radius:9px;background:#071f2c;color:#fff;font:inherit}
+.seo-page .calc-fields input:focus-visible{outline:2px solid #69e4bd;outline-offset:2px}
+.seo-page .calc-results output{display:block;font-size:32px;color:#69e4bd;font-weight:900;line-height:1.3}
+.seo-page .calc-results .metric{padding:13px 0;border-bottom:1px solid #355b66}
+.seo-page .calc-results .metric span{display:block;font-size:12px;color:#bad2db}
+.seo-page .calc-error{color:#ffcfaa;min-height:1.6em;font-size:13px;margin:8px 0}
+.seo-page .calc-note{color:#a8c4ce;font-size:12px}
+@media(max-width:750px){.seo-page .calc-grid,.seo-page .calc-fields{grid-template-columns:1fr}.seo-page .calc-form,.seo-page .calc-results{padding:19px}}
+</style>
+</head>
+<body class="seo-page">
+<header class="top"><div class="shell"><a class="brand" href="/" aria-label="XRMOVI início">XR<span>MOVI</span><small>GESTÃO DE FROTAS</small></a><nav aria-label="Navegação principal"><a href="/gestao-de-frotas/">Gestão de frotas</a><a href="/controle-de-abastecimento/">Abastecimento</a><a href="/planilha-controle-frotas/">Planilha grátis</a><a class="btn" href="/#planos">Planos</a></nav></div></header>
+<main>
+<div class="shell"><nav class="crumbs" aria-label="Trilha de navegação"><a href="/">Início</a><span aria-hidden="true">/</span>Calculadora de consumo de combustível</nav></div>
+<section class="hero"><div class="shell"><p class="eyebrow">FERRAMENTA GRATUITA PARA GESTORES E MOTORISTAS</p><h1>Calculadora de consumo de combustível: km/L e custo por KM.</h1><p class="lead">Informe as leituras do hodômetro e a quantidade de litros para estimar a média de consumo. Se informar também o custo do abastecimento, veja quanto gastou por quilômetro. O cálculo acontece no seu navegador; os valores não são enviados ao XRMOVI.</p><a class="btn secondary" href="#calculadora">Calcular agora</a></div></section>
+<section id="calculadora" class="section stripe"><div class="shell"><div class="calc-grid">
+<form id="calc-form" class="calc-form" novalidate><h2>Informe os dados</h2><p class="section-intro">Use dois abastecimentos consecutivos com tanque cheio para uma estimativa mais confiável.</p><div class="calc-fields">
+<label>KM no início do período<input type="number" inputmode="decimal" min="0" step="any" name="start" placeholder="Ex.: 45000" required></label>
+<label>KM no final do período<input type="number" inputmode="decimal" min="0" step="any" name="end" placeholder="Ex.: 45420" required></label>
+<label>Litros consumidos no período<input type="number" inputmode="decimal" min="0.01" step="any" name="liters" placeholder="Ex.: 35" required></label>
+<label>Valor gasto no período (R$, opcional)<input type="number" inputmode="decimal" min="0" step="any" name="cost" placeholder="Ex.: 210"></label>
+</div><p class="calc-error" id="calc-error" role="alert"></p><button class="btn" type="submit">Calcular consumo</button></form>
+<div class="calc-results" aria-live="polite" aria-atomic="true"><h2>Resultado</h2><p class="calc-note">Exibido após calcular.</p><div class="metric"><span>Distância percorrida</span><output id="distance">—</output></div><div class="metric"><span>Consumo médio</span><output id="kml">—</output></div><div class="metric"><span>Consumo em litros por 100 km</span><output id="l100">—</output></div><div class="metric"><span>Custo por quilômetro</span><output id="costkm">—</output></div></div>
+</div></div></section>
+<section class="section"><div class="shell two"><div><p class="eyebrow">COMO INTERPRETAR</p><h2>Como calcular o consumo médio de um veículo?</h2><p class="subtext">Divida a distância percorrida pelos litros consumidos. Por exemplo: 420 km rodados e 35 litros consumidos representam <strong>12 km/L</strong>. Quanto maior o número em km/L, menor o volume consumido para percorrer uma mesma distância.</p><ol class="step-list"><li><strong>KM rodados</strong><span>KM final − KM inicial.</span></li><li><strong>Consumo médio (km/L)</strong><span>Distância percorrida ÷ litros consumidos.</span></li><li><strong>Litros/100 km</strong><span>(Litros consumidos ÷ distância) × 100.</span></li><li><strong>Custo por km</strong><span>Valor total gasto ÷ distância percorrida.</span></li></ol></div><aside class="example"><h3>Cuidados com a comparação</h3><p>Registros com abastecimento parcial, diferença de nível no tanque, trânsito intenso ou carga variável podem distorcer a estimativa. Para acompanhar tendências, mantenha critérios consistentes e compare veículos de perfil semelhante.</p><p>O valor não é uma medida de consumo instantâneo nem substitui aferição técnica.</p></aside></div></section>
+<section class="section stripe"><div class="shell"><p class="eyebrow">PRÓXIMOS PASSOS</p><h2>Controle o consumo de toda a frota</h2><p class="section-intro">Uma calculadora ajuda a conferir um veículo. Quando a operação tem vários veículos, o importante é guardar histórico de abastecimento, quilometragem, comprovantes e despesas por período.</p><nav class="related" aria-label="Conteúdos relacionados"><a href="/planilha-controle-frotas/">Modelo de planilha grátis<span>Baixe tabelas de veículos, manutenção e abastecimentos.</span></a><a href="/controle-de-abastecimento/">Controle de abastecimento<span>Como organizar despesas de combustível por veículo.</span></a><a href="/gestao-de-frotas/">Software de gestão de frotas<span>Conheça os recursos e planos do XRMOVI.</span></a></nav></div></section>
+<section class="section"><div class="shell"><div class="final-cta"><div><h2>Quer acompanhar os registros em um painel?</h2><p>Conheça o XRMOVI para organizar quilometragem, manutenção, abastecimento e despesas.</p></div><a class="btn" href="/#planos">Conhecer planos</a></div></div></section>
+</main><footer><div class="shell"><span>© 2026 XRMOVI · Ferramenta gratuita</span><span><a href="/">Início</a> · <a href="/#contato">Contato</a></span></div></footer>
+<script>
+(function(){
+const form=document.getElementById('calc-form'), err=document.getElementById('calc-error');
+const fmt=(v,d=2)=>v.toLocaleString('pt-BR',{maximumFractionDigits:d,minimumFractionDigits:d});
+form.addEventListener('submit',function(event){
+ event.preventDefault();err.textContent='';
+ const raw=n=>form.elements[n].value.trim();
+ const start=Number(raw('start')),end=Number(raw('end')),liters=Number(raw('liters')),cost=raw('cost')===''?null:Number(raw('cost'));
+ const valid=raw('start')!==''&&raw('end')!==''&&raw('liters')!==''&&
+ Number.isFinite(start)&&Number.isFinite(end)&&Number.isFinite(liters)&&start>=0&&end>start&&liters>0&&
+ (cost===null||(Number.isFinite(cost)&&cost>=0));
+ if(!valid){err.textContent='Confira os valores: o KM final precisa ser maior que o inicial, os litros devem ser positivos e o gasto não pode ser negativo.';['distance','kml','l100','costkm'].forEach(id=>document.getElementById(id).textContent='—');return;}
+ const distance=end-start;
+ document.getElementById('distance').textContent=fmt(distance,1)+' km';
+ document.getElementById('kml').textContent=fmt(distance/liters)+' km/L';
+ document.getElementById('l100').textContent=fmt(liters/distance*100)+' L/100 km';
+ document.getElementById('costkm').textContent=cost===null?'Não informado':fmt(cost/distance)+' R$/km';
+});
+})();
+</script></body></html>
