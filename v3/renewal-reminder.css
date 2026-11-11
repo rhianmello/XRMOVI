@@ -1,0 +1,18 @@
+#xrm-renewal-banner[hidden],#xrm-bill-renewal[hidden]{display:none!important}
+#xrm-renewal-banner{
+ display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+ border:1px solid #5c987f;background:linear-gradient(100deg,#163c3a,#123045);
+ border-radius:13px;margin:0 0 19px;padding:13px 17px;color:#e8f7f6;
+ box-shadow:0 10px 30px rgba(0,0,0,.12);
+}
+#xrm-renewal-banner[data-tone="critical"]{border-color:#d9a365;background:linear-gradient(100deg,#4b342b,#182f42)}
+.xrm-renewal-copy{display:grid;gap:3px;flex:1;min-width:180px}
+.xrm-renewal-copy strong{font-size:13px;line-height:1.3;color:#f1fff7}
+.xrm-renewal-copy span{font-size:11px;color:#c3dada;line-height:1.55}
+#xrm-renewal-action{border:1px solid #8cdac8;background:#0b3d3b;color:#d7fff4;padding:10px 14px;border-radius:9px;font:700 11px system-ui;cursor:pointer;white-space:normal}
+#xrm-renewal-action:hover{background:#165b51}
+#xrm-bill-renewal{display:grid;gap:7px;padding:14px 17px;border-radius:12px;background:rgba(30,103,95,.23);border:1px solid #4d9c89;color:#e9fff9}
+#xrm-bill-renewal[data-tone="critical"]{border-color:#d7a16d;background:rgba(114,72,46,.27)}
+#xrm-bill-renewal strong{font-size:14px;line-height:1.35}
+#xrm-bill-renewal p{margin:0;font-size:12px;line-height:1.6;color:#cee6e0}
+@media(max-width:650px){#xrm-renewal-banner{align-items:stretch;flex-direction:column;gap:9px}#xrm-renewal-action{width:100%}}
