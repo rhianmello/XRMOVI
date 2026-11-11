@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://frota.nospassa.com.br/sitemap.xml
+Sitemap: https://xrmovi.com.br/sitemap.xml
