@@ -76,6 +76,7 @@ footer{padding:20px;text-align:center;color:#849eae;font-size:11px}
   <nav class="tabs" aria-label="Áreas da administração">
    <button data-tab="overview" aria-selected="true">Visão executiva</button><button data-tab="customers" aria-selected="false">Clientes</button><button data-tab="signups" aria-selected="false">Todos os cadastros</button><button data-tab="messages" aria-selected="false">Mensagens <span id="nav-unread"></span></button><button data-tab="payments" aria-selected="false">Pagamentos</button><button data-tab="requests" aria-selected="false">Solicitações</button><button data-tab="seo" aria-selected="false">SEO no Google</button><button data-tab="conversions" aria-selected="false">Vendas e conversões</button>
   </nav>
+  <div class="notice" id="commercial-filter-notice" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:10px 0 14px"><span id="commercial-filter-label">Visão de produção: empresas de teste ocultas dos indicadores. Os dados continuam preservados.</span><button class="btn ghost" id="commercial-filter-toggle" type="button">Mostrar testes</button></div>
   <div id="view-overview" class="tab-view">
    <div class="two-col">
     <section class="panel"><div class="panel-head"><h2>Receita confirmada por mês</h2><small id="revenue-total"></small></div><div id="revenue-chart" class="chart" aria-label="Receita confirmada por mês"></div></section>
@@ -101,6 +102,15 @@ const cell=(tr,value)=>{tr.append(node('td',value??'—'))};
 const pill=(tr,text,tone='')=>{const td=node('td'),span=node('span',text,'pill '+tone);td.append(span);tr.append(td)};
 const show=id=>{for(const x of ['loading','unauthorized','content'])el(x).hidden=x!==id};
 let db,info={accounts:[],summary:{},revenue:[],payments:[],requests:[]},signups=[],threadId=null,tab='overview';
+let showTestAccounts=false;
+const isTestAccount=a=>(a.companies||[]).some(company=>/^empresa\s+teste(?:\b|\s|\d)/i.test(String(company.name||'').trim()));
+const isOwnerAccount=a=>String(a.email||'').trim().toLowerCase()==='rhian.udm@gmail.com';
+function excludedTestEmails(){return new Set((info.accounts||[]).filter(isTestAccount).map(a=>String(a.email||'').trim().toLowerCase()))}
+function visiblePayments(){const excluded=excludedTestEmails();return (info.payments||[]).filter(p=>showTestAccounts||!excluded.has(String(p.email||'').trim().toLowerCase()))}
+function refreshFilterLabel(){const hidden=(info.accounts||[]).filter(a=>!isOwnerAccount(a)&&isTestAccount(a)).length;
+ el('commercial-filter-label').textContent=showTestAccounts?'Visão completa: empresas e pagamentos de teste visíveis.':'Visão de produção: '+hidden+' conta(s) de teste ocultas. Nenhum dado foi excluído.';
+ el('commercial-filter-toggle').textContent=showTestAccounts?'Ocultar testes':'Mostrar testes';
+}
 function status(text,type=''){el('feedback').textContent=text;el('feedback').className='status '+type}
 async function rpc(fn,args){const {data,error}=await db.rpc('xrmovi_'+fn,args);if(error)throw Error(error.message);return data}
 function rowCustomer(c,full=false){
@@ -150,23 +160,27 @@ function rowCustomer(c,full=false){
 }
 function commercialAccounts(){
  // A conta proprietária é administrativa, não um cliente comercial.
- return (info.accounts||[]).filter(a=>String(a.email||'').trim().toLowerCase()!=='rhian.udm@gmail.com');
+ return (info.accounts||[]).filter(a=>!isOwnerAccount(a)&&(showTestAccounts||!isTestAccount(a)));
 }
 function render(){
+ refreshFilterLabel();
+ const customerList=commercialAccounts();
+ const payments=visiblePayments();
  const s={...(info.summary||{})};
- const owner=(info.accounts||[]).find(a=>String(a.email||'').trim().toLowerCase()==='rhian.udm@gmail.com');
- if(owner){
-  s.accounts=Math.max(0,Number(s.accounts||0)-1);
-  if(owner.status==='pending')s.trial=Math.max(0,Number(s.trial||0)-1);
-  if(owner.status==='active')s.active=Math.max(0,Number(s.active||0)-1);
-  if(owner.blocked)s.blocked=Math.max(0,Number(s.blocked||0)-1);
-  if(owner.status==='canceled'||owner.status==='expired')s.expired=Math.max(0,Number(s.expired||0)-1);
- }
+ s.accounts=customerList.length;
+ s.trial=customerList.filter(a=>a.status==='pending'||a.status==='trial').length;
+ s.active=customerList.filter(a=>a.status==='active').length;
+ s.expired=customerList.filter(a=>a.status==='canceled'||a.status==='expired').length;
+ s.blocked=customerList.filter(a=>a.blocked).length;
+ s.unread=customerList.reduce((sum,a)=>sum+Number(a.unread||0),0);
+ s.mrr=customerList.filter(a=>a.status==='active').reduce((sum,a)=>sum+Number(a.price||0),0);
+ s.paid_total=payments.reduce((sum,p)=>sum+Number(p.amount||0),0);
  for(const [key,id] of [['accounts','k-accounts'],['trial','k-trial'],['active','k-active'],['expired','k-expired'],['blocked','k-blocked']])el(id).textContent=number(s[key]);
  el('k-paid').textContent=money(s.paid_total);
  el('nav-unread').textContent=s.unread?'('+s.unread+')':'';
  const chart=el('revenue-chart');chart.replaceChildren();
- const monthly=new Map((info.revenue||[]).map(row=>[row.period,Number(row.amount)||0]));
+ const monthly=new Map();
+ for(const p of payments){const dt=new Date(p.date);if(!Number.isFinite(dt.getTime()))continue;const k=dt.toISOString().slice(0,7);monthly.set(k,(monthly.get(k)||0)+Number(p.amount||0));}
  const months=Array.from({length:12},(_,i)=>{const now=new Date();now.setDate(1);now.setMonth(now.getMonth()-(11-i));return now.toISOString().slice(0,7)});
  const max=Math.max(1,...months.map(x=>monthly.get(x)||0));
  for(const month of months){const value=monthly.get(month)||0;const col=node('div','','chart-col'),space=node('div','','chart-space'),bar=node('div','','chart-bar');bar.style.height=Math.max(2,value/max*100)+'%';bar.title=month+': '+money(value);space.append(bar);col.append(space,node('span',month.slice(5),'chart-label'),node('span',value?money(value):'—','chart-value'));chart.append(col)}
@@ -196,7 +210,7 @@ function renderSignups(){
  }
  if(!rows.length)emptyRows(root,5,'Nenhum cadastro encontrado.');
 }
-function renderPayments(){const root=el('payments-body');root.replaceChildren();for(const p of info.payments||[]){const r=node('tr');cell(r,date(p.date));cell(r,p.email);cell(r,money(p.amount));cell(r,p.provider);root.append(r)}if(!root.children.length)emptyRows(root,4,'Nenhum pagamento confirmado registrado.')}
+function renderPayments(){const root=el('payments-body');root.replaceChildren();for(const p of visiblePayments()){const r=node('tr');cell(r,date(p.date));cell(r,p.email);cell(r,money(p.amount));cell(r,p.provider);root.append(r)}if(!root.children.length)emptyRows(root,4,'Nenhum pagamento confirmado registrado.')}
 function renderRequests(){const root=el('requests-body');root.replaceChildren();for(const p of info.requests||[]){const r=node('tr');cell(r,date(p.date));cell(r,p.company);cell(r,p.plan);pill(r,p.status,p.status==='pending'?'pending':'');root.append(r)}if(!root.children.length)emptyRows(root,4,'Nenhuma solicitação registrada.')}
 function renderContacts(){
  const root=el('contacts');root.replaceChildren();
@@ -310,6 +324,7 @@ function openTab(name){
 }
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>openTab(b.dataset.tab));
 document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>openTab(b.dataset.goto));
+el('commercial-filter-toggle').onclick=()=>{showTestAccounts=!showTestAccounts;render()};
 el('customer-search').oninput=renderCustomers;
 el('signup-search').oninput=renderSignups;
 el('message-form').onsubmit=async event=>{
