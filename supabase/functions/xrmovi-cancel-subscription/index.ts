@@ -2,7 +2,7 @@
 // Does NOT refund, create invoices, or cancel other tenants. The paid period remains accessible.
 import {createClient} from "npm:@supabase/supabase-js@2.58.0";
 
-const allowedOrigins=new Set(["https://frota.nospassa.com.br","https://www.frota.nospassa.com.br"]);
+const allowedOrigins=new Set(["https://frota.nospassa.com.br","https://www.frota.nospassa.com.br","https://xrmovi.com.br","https://www.xrmovi.com.br"]);
 const respond=(value:unknown,status=200,origin:string|null=null)=>{
  const headers:Record<string,string>={
   "content-type":"application/json; charset=utf-8","cache-control":"private, no-store","vary":"Origin"
