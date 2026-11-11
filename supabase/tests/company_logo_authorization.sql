@@ -1,0 +1,43 @@
+begin;
+do $test$
+declare
+  uid uuid; cid uuid := gen_random_uuid(); other_cid uuid := gen_random_uuid();
+  path text; result jsonb; denied boolean;
+begin
+  select user_id into uid from xrmovi.memberships where role='owner' limit 1;
+  if uid is null then raise exception 'Test requires an existing owner'; end if;
+  insert into xrmovi.companies(id,name) values(cid,'Temporary logo verification'),(other_cid,'Temporary isolated company');
+  insert into xrmovi.memberships(company_id,user_id,role) values(cid,uid,'owner');
+  path := cid::text || '/' || gen_random_uuid()::text || '.png';
+  insert into storage.objects(bucket_id,name,metadata) values('xrmovi-company-logos',path,'{"mimetype":"image/png","size":68}'::jsonb);
+  perform set_config('request.jwt.claims',jsonb_build_object('sub',uid,'role','authenticated')::text,true);
+  if not public.xrmovi_logo_access(path,true) then raise exception 'Owner upload policy failed'; end if;
+  result := public.xrmovi_company_logo_save(cid,path);
+  if result->>'logo_path' <> path or result->>'logo_url' <> 'https://ztqtcbzjesrkuaijmylm.supabase.co/storage/v1/object/authenticated/xrmovi-company-logos/' || path then raise exception 'Owner save or URL sync failed'; end if;
+  update xrmovi.memberships set role='manager' where company_id=cid and user_id=uid;
+  result := public.xrmovi_company_logo_save(cid,path);
+  if result->>'logo_path' <> path then raise exception 'Manager save failed'; end if;
+  update xrmovi.memberships set role='driver' where company_id=cid and user_id=uid;
+  if public.xrmovi_logo_access(path,true) or not public.xrmovi_logo_access(path,false) then raise exception 'Driver read/write policy failed'; end if;
+  denied := false;
+  begin perform public.xrmovi_company_logo_save(cid,path); exception when insufficient_privilege then denied := true; end;
+  if not denied then raise exception 'Driver save was allowed'; end if;
+  update xrmovi.memberships set role='owner' where company_id=cid and user_id=uid;
+  denied := false;
+  begin perform public.xrmovi_company_logo_save(other_cid,path); exception when insufficient_privilege then denied := true; end;
+  if not denied then raise exception 'Cross-company save was allowed'; end if;
+  denied := false;
+  begin perform public.xrmovi_company_logo_save(cid,cid::text || '/' || gen_random_uuid()::text || '.png'); exception when invalid_parameter_value then denied := true; end;
+  if not denied then raise exception 'Missing object was accepted'; end if;
+  if public.xrmovi_logo_access(cid::text || '/../../foreign.png',true) then raise exception 'Invalid path allowed'; end if;
+  result := public.xrmovi_company_identity(cid);
+  if result->>'logo_path' <> path or not result ? 'logo_url' then raise exception 'Identity logo not exposed'; end if;
+  update xrmovi.companies set logo_path=null where id=cid;
+  if exists(select 1 from xrmovi.companies where id=cid and logo_url is not null) then raise exception 'Legacy path sync failed'; end if;
+  perform set_config('request.jwt.claims','{}',true);
+  denied := false;
+  begin perform public.xrmovi_company_logo_save(cid,path); exception when insufficient_privilege then denied := true; end;
+  if not denied then raise exception 'Unauthenticated save was allowed'; end if;
+end $test$;
+rollback;
+select 'passed; all temporary rows rolled back' as company_logo_authorization_tests;
