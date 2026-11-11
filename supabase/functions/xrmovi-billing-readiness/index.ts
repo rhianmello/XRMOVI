@@ -1,6 +1,6 @@
 // Public, non-sensitive XRMOVI billing readiness flag. Never returns credentials.
 import {createClient} from 'npm:@supabase/supabase-js@2.58.0';
-const allowed = new Set(['https://frota.nospassa.com.br','https://www.frota.nospassa.com.br']);
+const allowed = new Set(['https://frota.nospassa.com.br','https://www.frota.nospassa.com.br','https://xrmovi.com.br','https://www.xrmovi.com.br']);
 Deno.serve(async (request:Request)=>{
  const origin=request.headers.get('origin');
  const headers:Record<string,string>={
