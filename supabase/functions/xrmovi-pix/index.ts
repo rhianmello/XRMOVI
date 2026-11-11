@@ -1,7 +1,7 @@
 import {createClient} from "npm:@supabase/supabase-js@2.58.0";
 import {cancelPreapproval, preapprovalPath, isCancelled} from "./preapproval-transport.js";
 import {buildPixPaymentPayload} from "./pix-payment-payload.js";
-const ORIGINS=new Set(["https://frota.nospassa.com.br","https://www.frota.nospassa.com.br"]);
+const ORIGINS=new Set(["https://frota.nospassa.com.br","https://www.frota.nospassa.com.br","https://xrmovi.com.br","https://www.xrmovi.com.br"]);
 function respond(data:unknown,status=200,origin=""){
  const headers:Record<string,string>={"content-type":"application/json; charset=utf-8","cache-control":"no-store","vary":"Origin"};
  if(ORIGINS.has(origin))headers["access-control-allow-origin"]=origin;
