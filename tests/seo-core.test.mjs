@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
-const site='https://frota.nospassa.com.br';
+const site='https://xrmovi.com.br';
 const sitemap=read('sitemap.xml');
 const robots=read('robots.txt');
 
