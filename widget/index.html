@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#1f1f22">
+<title>Instalar XRMOVI Monitor no iPhone</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;padding:23px 14px;background:#090a0c;color:#f5f7f8;font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:560px;margin:auto}.sub{color:#b4b5bc;font-size:13px}h1{margin:12px 0 4px;font-size:25px}h2{font-size:18px;margin:20px 0 10px}.banner{border-radius:18px;border:1px solid #3c3e43;padding:18px;background:linear-gradient(135deg,#292a2d,#17181a);box-shadow:0 20px 45px #0006}.header{display:flex;align-items:center;justify-content:space-between;gap:14px;font-weight:750;font-size:19px}.tag{font-size:11px;border-radius:99px;padding:6px 11px;background:#174029;color:#41e47a}.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:17px 0 10px}.metric{background:#050505;padding:12px;border-radius:12px}.metric span{display:block;font-size:12px;color:#bbc0c6}.metric b{display:block;font-size:27px;margin-top:3px}.money{background:#050505;border-radius:12px;padding:13px}.money span{display:block;color:#bbc0c6;font-size:12px}.money b{color:#40df75;font-size:25px}.cta{display:flex;flex-direction:column;gap:10px;margin:17px 0}.button{border:0;border-radius:12px;padding:14px 16px;background:#36dc70;color:#07170d;font-size:15px;font-weight:800;text-align:center;text-decoration:none;cursor:pointer}.button.secondary{background:#24262a;color:#f3f3f4;border:1px solid #44474d}ol{padding-left:24px}li{padding-left:4px;margin-bottom:13px}strong{color:#fff}a{color:#70eea0}#message{font-size:13px;min-height:20px;color:#a1ebba}small{font-size:12px;color:#aaafb6}code{color:#c0eccf;font-size:12px;overflow-wrap:anywhere}textarea{width:100%;height:110px;background:#111;border:1px solid #555;color:white;border-radius:10px;padding:9px;font-size:11px}details{margin:14px 0}details summary{cursor:pointer}
+</style></head>
+<body><main>
+  <div class="sub">XRMOVI • CONFIGURAÇÃO PARA iPHONE</div><h1>Seu painel do dono na tela inicial</h1><p class="sub">Indicadores reais e atualização periódica. O widget requer login administrativo no seu iPhone.</p>
+  <div class="banner"><div class="header"><span>↗ XRMOVI Monitor</span><span class="tag">Privado</span></div><div class="metrics"><div class="metric"><span>Visitantes hoje</span><b>—</b></div><div class="metric"><span>Online agora</span><b>—</b></div><div class="metric"><span>Novos cadastros</span><b>—</b></div><div class="metric"><span>Assinaturas ativas</span><b>—</b></div></div><div class="money"><span>Faturamento do mês</span><b>—</b></div><p class="sub" style="margin-bottom:0">O desenho é ilustrativo. Os dados aparecem após o login.</p></div>
+  <h2>Instalação</h2>
+  <ol>
+    <li>Instale o <a href="https://apps.apple.com/br/app/scriptable/id1405459188" target="_blank" rel="noopener">Scriptable na App Store</a> e abra-o uma vez.</li>
+    <li>Toque em <strong>Copiar código do widget</strong> aqui embaixo.</li>
+    <li>Abra o Scriptable, toque em <strong>+</strong>, cole o código e salve como <strong>XRMOVI Monitor</strong>.</li>
+    <li>Execute o script uma vez no Scriptable e entre com seu <strong>login de administrador do XRMOVI</strong>.</li>
+    <li>Na tela inicial do iPhone, mantenha o dedo pressionado, toque em <strong>Editar → Adicionar Widget</strong>, escolha <strong>Scriptable</strong> no tamanho <strong>grande</strong> e selecione o script <strong>XRMOVI Monitor</strong>.</li>
+  </ol>
+  <div class="cta"><button id="copy" class="button">Copiar código do widget</button><a class="button secondary" href="./XRMOVI%20Monitor.js" download>Ver código completo</a></div>
+  <p id="message" role="status"></p>
+  <details><summary>Se o botão copiar não funcionar</summary><p>Abra o código completo, selecione tudo, copie e cole em um script novo no Scriptable.</p><textarea id="manual" readonly hidden></textarea></details>
+  <small>Para visitas e pessoas online, o site contabiliza apenas navegadores com consentimento para a contagem interna. O iOS controla o intervalo real das atualizações, que não são contínuas. A senha não fica salva no arquivo JavaScript.</small>
+</main>
+<script>
+document.getElementById('copy').addEventListener('click',async()=>{
+ const out=document.getElementById('message'),ta=document.getElementById('manual');
+ out.textContent='Carregando arquivo...';
+ try{
+  const r=await fetch('./XRMOVI%20Monitor.js',{cache:'no-store'});
+  if(!r.ok)throw Error('O arquivo ainda não está publicado.');
+  const code=await r.text();
+  try {await navigator.clipboard.writeText(code);out.textContent='Código copiado! Abra o Scriptable, toque em + e cole.';}
+  catch {
+   ta.hidden=false;ta.value=code;ta.focus();ta.select();
+   if(document.execCommand('copy'))out.textContent='Código copiado! Cole no Scriptable.';
+   else out.textContent='Copie manualmente o código selecionado abaixo.';
+  }
+ }catch(e){out.textContent='Falha ao carregar o código: '+e.message;}
+});
+</script></body></html>
