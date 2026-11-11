@@ -23,7 +23,7 @@ form.addEventListener('submit',async event=>{
   }
   if(mode==='signup'){
    if(password!==data.get('confirmation'))throw Error('As senhas não coincidem.');
-   const {data:created,error}=await client.auth.signUp({email,password,options:{emailRedirectTo:new URL('./?login=1#acesso',location.href).href,data:{signup_product:'xrmovi',signup_origin:'frota.nospassa.com.br'}}});
+   const {data:created,error}=await client.auth.signUp({email,password,options:{emailRedirectTo:new URL('./?login=1#acesso',location.href).href,data:{signup_product:'xrmovi',signup_origin:'xrmovi.com.br'}}});
    if(error)throw error;
    window.XrmoviAnalytics?.track('sign_up',{location:'registration'});
    if(!created.session){msg.textContent='Conta criada. Confirme seu e-mail e depois faça login.';return}
