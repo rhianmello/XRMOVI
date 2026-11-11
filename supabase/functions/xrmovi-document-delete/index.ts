@@ -3,7 +3,7 @@ import {createClient} from "npm:@supabase/supabase-js@2.58.0";
 // Deleting private documents is a two-phase server operation:
 // 1) authenticated, owner/manager-only prepare; 2) Storage API removal;
 // 3) service-only metadata removal + immutable audit record.
-const allowedOrigins=new Set(["https://frota.nospassa.com.br","https://www.frota.nospassa.com.br"]);
+const allowedOrigins=new Set(["https://frota.nospassa.com.br","https://www.frota.nospassa.com.br","https://xrmovi.com.br","https://www.xrmovi.com.br"]);
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 function output(body:unknown,status:number,origin:string){
  const headers:Record<string,string>={
