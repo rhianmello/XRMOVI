@@ -1,0 +1,173 @@
+/* XRMOVI Mobile V4.1: readable responsive tables, side drawer, accessible actions.
+   Additive stylesheet. Never changes desktop grids or business logic. */
+@media (max-width:760px) {
+  .fleet-page .xrm-mobile-header-menu{
+    display:grid!important;place-items:center!important;flex:0 0 38px!important;
+    width:38px!important;height:38px!important;min-width:38px!important;
+    padding:0!important;border-radius:11px!important;
+    border:1px solid #426e82;background:#14364a;color:#def5fb;
+    cursor:pointer;
+  }
+  .xrm-mobile-header-menu svg{width:20px;height:20px}
+  .fleet-page .fleet-topbar .fleet-top-actions{min-width:0!important}
+  .fleet-page .xrm-mobile-company-switch{max-width:170px!important}
+  .fleet-page .xrm-mobile-company-switch select{width:100%!important}
+  .fleet-page .xrm-mobile-more-panel{
+    top:0!important;bottom:0!important;left:0!important;right:auto!important;
+    width:min(365px,92vw)!important;height:100dvh!important;max-height:100dvh!important;
+    box-sizing:border-box;padding:19px 14px calc(25px + env(safe-area-inset-bottom,0px))!important;
+    border-radius:0 19px 19px 0!important;border:0;border-right:1px solid #426b80!important;
+    box-shadow:18px 0 55px #0009!important;
+    overscroll-behavior:contain;
+  }
+  .xrm-mobile-menu-caption{font-size:13px;font-weight:600;color:#e0f5fa;margin:0 0 10px}
+  .xrm-mobile-menu-section-label{font-size:10px;letter-spacing:.12em;font-weight:800;text-transform:uppercase;color:#83b5cb;margin:17px 0 9px}
+  .xrm-mobile-quick-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .xrm-mobile-quick-action{
+    display:flex;align-items:center;gap:7px;min-width:0;min-height:57px;
+    text-align:left;white-space:normal;overflow-wrap:anywhere;
+    padding:9px 8px;border:1px solid #437b7b;border-radius:11px;
+    color:#e1f9f6;background:linear-gradient(115deg,#165256,#153b50);
+    font:650 11px/1.3 system-ui;
+  }
+  .xrm-mobile-quick-action svg{width:19px;height:19px;flex:0 0 auto;color:#6de5d0}
+  .xrm-mobile-quick-actions>p{font-size:12px;color:#bed1dc;grid-column:1/-1}
+  .xrm-mobile-more-panel .xrm-mobile-more-links{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .xrm-mobile-more-panel .xrm-mobile-more-links button,
+  .xrm-mobile-more-panel .xrm-mobile-more-links a{
+    font-size:11px!important;line-height:1.3!important;white-space:normal!important;
+    overflow-wrap:anywhere;min-height:54px;
+  }
+  .xrm-mobile-more-panel :is(button,a):focus-visible{outline:2px solid #6ce6d4;outline-offset:2px}
+  .fleet-page .fleet-hero.xrm-company-header{margin:0 0 11px!important}
+  .fleet-page #view-dashboard .fleet-section-heading{margin-top:0!important}
+  .fleet-page #view-dashboard .fleet-section-heading small{display:none}
+  .fleet-page .fleet-panel, .fleet-page .fleet-view,
+  .fleet-page .fleet-workspace-heading,
+  .fleet-page #xrm-mileage-console,
+  .fleet-page .fleet-content, .fleet-page .fleet-main{
+    min-width:0!important;max-width:100%!important;
+    overflow-wrap:anywhere;
+  }
+  .fleet-page .fleet-view button, .fleet-page .fleet-view select,
+  .fleet-page .fleet-view input, .fleet-page .fleet-view textarea{
+    max-width:100%;
+    box-sizing:border-box;
+  }
+  .fleet-page .fleet-workspace-heading{display:flex;flex-wrap:wrap;gap:10px}
+  .fleet-page .fleet-workspace-heading h2{font-size:clamp(17px,5vw,23px)}
+  .fleet-page .fleet-workspace-heading p{white-space:normal;overflow-wrap:anywhere}
+  .fleet-page .fleet-entry-actions{display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
+  .fleet-page .fleet-maintenance-filters,
+  .fleet-page .fleet-history-filters,
+  .fleet-page .xrm-period-filters,
+  .fleet-page .fleet-report-actions{
+    min-width:0!important;max-width:100%!important;
+  }
+  .fleet-page .fleet-report-actions{display:grid!important;grid-template-columns:1fr!important}
+  .fleet-page .fleet-report-actions button{white-space:normal!important;overflow-wrap:anywhere;min-height:42px}
+
+  /* Convert the live dashboard's tabular data into stacked information cards.
+     Original buttons, checkbox inputs and live events remain in their own TDs. */
+  .fleet-page .fleet-table-wrap:has(.xrm-mobile-card-table),
+  .fleet-page .xrm-mileage-table-wrap:has(.xrm-mobile-card-table){
+    min-width:0!important;max-width:100%!important;width:100%!important;
+    overflow:visible!important;
+  }
+  .fleet-page table.xrm-mobile-card-table,
+  .fleet-page .xrm-mobile-card-table tbody{
+    display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;
+    table-layout:auto!important;border-collapse:separate!important;
+  }
+  .fleet-page .xrm-mobile-card-table thead{display:none!important}
+  .fleet-page .xrm-mobile-card-table tbody tr{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    align-items:start;gap:0 10px;margin:0 0 10px!important;padding:8px 11px!important;
+    width:100%!important;max-width:100%!important;min-width:0!important;
+    border:1px solid #34566e!important;border-radius:12px!important;
+    background:linear-gradient(120deg,#102a3d,#0b1e30)!important;
+    box-sizing:border-box!important;
+  }
+  .fleet-page .xrm-mobile-card-table tbody td{
+    display:flex!important;flex-direction:column!important;gap:5px!important;
+    width:auto!important;min-width:0!important;max-width:100%!important;
+    height:auto!important;min-height:0!important;
+    padding:9px 3px!important;margin:0!important;border:0!important;
+    overflow:visible!important;white-space:normal!important;overflow-wrap:anywhere!important;
+    line-height:1.4!important;font-size:12px!important;box-sizing:border-box!important;
+  }
+  .fleet-page .xrm-mobile-card-table tbody td::before{
+    content:attr(data-xrm-label);display:block;color:#92b8ca;
+    font:800 10px/1.2 system-ui;letter-spacing:.025em;
+  }
+  .fleet-page .xrm-mobile-card-table tbody td:first-child{
+    grid-column:1/-1;border-bottom:1px solid #2c4a60!important;
+    font-weight:700!important;font-size:14px!important;
+  }
+  .fleet-page .xrm-mobile-card-table tbody td:last-child:has(button),
+  .fleet-page .xrm-mobile-card-table tbody td:last-child:has(input),
+  .fleet-page .xrm-mileage-table tbody td:last-child{
+    grid-column:1/-1!important;
+  }
+  .fleet-page .xrm-mobile-card-table tbody td[colspan]{grid-column:1/-1!important}
+  .fleet-page .xrm-mobile-card-table tbody td div,
+  .fleet-page .xrm-mobile-card-table tbody td span,
+  .fleet-page .xrm-mobile-card-table tbody td strong,
+  .fleet-page .xrm-mobile-card-table tbody td small{
+    min-width:0;max-width:100%;overflow-wrap:anywhere;white-space:normal;
+  }
+  .fleet-page .xrm-mobile-card-table tbody td input{min-height:41px;width:100%!important;max-width:100%!important}
+  .fleet-page .xrm-mobile-card-table tbody td input[type=checkbox]{width:20px!important;height:20px!important;min-height:20px}
+  .fleet-page .xrm-mobile-card-table tbody td:last-child .xrm-mileage-actions,
+  .fleet-page .xrm-mobile-card-table tbody td:last-child .xrm-doc-actions,
+  .fleet-page .xrm-mobile-card-table tbody td:last-child>div{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;min-width:0;
+  }
+  .fleet-page .xrm-mobile-card-table tbody td:last-child button{
+    white-space:normal!important;overflow-wrap:anywhere!important;
+    min-height:40px!important;min-width:0!important;padding:8px 5px!important;
+    line-height:1.3!important;font-size:11px!important;
+  }
+  .fleet-page .xrm-mileage-tools,
+  .fleet-page .xrm-mileage-actions{flex-wrap:wrap;max-width:100%;gap:7px}
+  .fleet-page .xrm-mileage-tools>*,.fleet-page .xrm-mileage-common,
+  .fleet-page .xrm-mileage-common input{max-width:100%!important;min-width:0!important}
+  .fleet-page .xrm-mileage-console{padding:12px!important}
+  .fleet-page .xrm-mileage-dash-head{flex-wrap:wrap!important}
+  .fleet-page .fleet-panel header{flex-wrap:wrap!important;min-width:0!important}
+  .fleet-page .fleet-panel header>div{min-width:0!important}
+  /* The existing edit drawer is recreated after page load; use high-specificity
+     overrides so it is always bounded by the actual handset width. */
+  body.fleet-page #v3-edit-overlay{padding:8px!important;place-items:center!important;overflow:hidden!important}
+  body.fleet-page #v3-edit-overlay .v3-edit-dialog{
+    box-sizing:border-box!important;width:100%!important;max-width:100%!important;
+    min-width:0!important;height:auto!important;max-height:calc(100dvh - 16px)!important;
+    padding:15px!important;overflow-x:hidden!important;overflow-y:auto!important;
+    border-radius:13px!important;
+  }
+  body.fleet-page #v3-edit-overlay[data-layout="drawer"] .v3-edit-dialog{
+    width:100%!important;max-width:100%!important;height:calc(100dvh - 16px)!important;
+    border-radius:13px!important;
+  }
+  body.fleet-page #v3-edit-overlay .v3-edit-dialog form{grid-template-columns:minmax(0,1fr)!important;gap:11px!important}
+  body.fleet-page #v3-edit-overlay .v3-edit-dialog :is(label,button,input,select,textarea){
+    max-width:100%!important;min-width:0!important;overflow-wrap:anywhere;
+    box-sizing:border-box;
+  }
+  body.fleet-page #v3-edit-overlay .v3-edit-heading h2{font-size:18px;overflow-wrap:anywhere}
+  body.fleet-page #v3-edit-overlay .v3-edit-heading button{flex:0 0 40px;min-height:40px}
+}
+@media(max-width:390px){
+  .fleet-page .xrm-mobile-brand-title small{display:none}
+  .fleet-page .xrm-mobile-company-switch{max-width:132px!important}
+  .fleet-page .xrm-mobile-support-link{display:none!important}
+  .fleet-page .xrm-mobile-quick-actions{gap:7px}
+  .fleet-page .xrm-mobile-card-table tbody tr{gap:0 6px;padding:8px}
+}
+@media(min-width:761px){
+  .fleet-page .xrm-mobile-header-menu{display:none!important}
+}
+@media print{
+  .xrm-mobile-header-menu,.xrm-mobile-more-sheet,.xrm-mobile-bottom-nav{display:none!important}
+}

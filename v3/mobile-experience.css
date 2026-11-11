@@ -1,0 +1,262 @@
+
+/* XRMOVI Mobile V4 — additive mobile shell, desktop layout untouched. */
+.xrm-mobile-brand,.xrm-mobile-dashboard-toolbar,.xrm-mobile-bottom-nav,.xrm-mobile-more-sheet,.xrm-mobile-load-status{display:none}
+@media(max-width:760px){
+  :root{color-scheme:dark}
+  html{scroll-padding-top:12px}
+  .fleet-page{overflow-x:hidden}
+  .fleet-page .fleet-topbar{
+    position:relative!important;z-index:2;
+    min-height:62px!important;height:auto!important;
+    padding:10px 14px!important;gap:8px!important;
+    flex-wrap:nowrap!important;align-items:center!important;
+    background:rgba(7,20,33,.97)!important;
+    border-bottom:1px solid rgba(111,182,199,.18)!important;
+  }
+  .fleet-page .fleet-breadcrumb,.fleet-page .fleet-mobile-navigation{display:none!important}
+  .fleet-page .xrm-mobile-brand{
+    display:flex;gap:9px;align-items:center;min-width:0;
+    font:700 15px/1.2 system-ui;letter-spacing:.015em;color:#effaff;
+  }
+  .xrm-mobile-brand-mark{
+    width:37px;height:37px;display:grid;place-items:center;flex-shrink:0;
+    color:#6ae2d1;background:#113244;border:1px solid #305d68;border-radius:11px;
+  }
+  .xrm-mobile-brand-mark svg{width:21px;height:21px}
+  .xrm-mobile-brand-title{display:grid;gap:2px}
+  .xrm-mobile-brand-title small{font-size:10px;letter-spacing:0;font-weight:500;color:#a4c7d4}
+  .fleet-page .fleet-top-actions{
+    display:flex!important;flex:1 1 auto!important;min-width:0!important;width:auto!important;
+    justify-content:flex-end!important;align-items:center!important;
+    flex-wrap:nowrap!important;gap:7px!important;
+  }
+  .fleet-page .xrm-mobile-company-switch{
+    display:grid!important;flex:1 1 110px!important;min-width:0!important;max-width:190px;
+    gap:2px!important;font-size:10px!important;color:#b2cbd7!important;
+  }
+  .fleet-page #v3-company-mobile{
+    width:100%!important;min-width:0!important;max-width:100%!important;
+    height:35px!important;min-height:35px!important;padding:4px 23px 4px 9px!important;
+    border-radius:10px!important;font-size:12px!important;color:#eaf8ff!important;
+    background:#112b40!important;border:1px solid #365e73!important;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .fleet-page .xrm-mobile-support-link{
+    flex:0 0 36px!important;display:grid!important;place-items:center!important;
+    width:36px!important;min-width:36px!important;height:36px!important;min-height:36px!important;
+    padding:0!important;border-radius:10px!important;font-size:0!important;
+    border-color:#32677a!important;color:#b7f5e9!important;background:#0e283b!important;
+  }
+  .xrm-mobile-support-link svg{width:19px;height:19px}
+  .fleet-page #xrm-fleet-logout-mobile{display:none!important}
+  .fleet-page #refresh-button{flex:0 0 36px!important;width:36px!important;height:36px!important;min-width:36px!important;border-radius:10px!important}
+  .fleet-page #refresh-button svg{width:17px;height:17px;stroke:currentColor}
+  .fleet-page .fleet-content{
+    padding:12px 13px calc(99px + env(safe-area-inset-bottom,0px))!important;
+    width:100%;box-sizing:border-box;
+  }
+  .fleet-page .fleet-hero.xrm-company-header{
+    display:grid!important;grid-template-columns:46px minmax(0,1fr);
+    align-items:center!important;column-gap:11px!important;row-gap:8px!important;
+    margin:0 0 12px!important;min-height:52px;
+  }
+  .fleet-page .xrm-company-header #company-logo-area{
+    grid-column:1!important;grid-row:1!important;width:46px!important;height:46px!important;
+    border-radius:11px!important;font-size:10px!important;
+  }
+  .fleet-page .xrm-company-header .fleet-hero-copy{
+    grid-column:2!important;grid-row:1!important;
+    flex:initial!important;min-width:0!important;min-height:0!important;
+  }
+  .fleet-page .xrm-company-header .fleet-hero-copy .eyebrow{display:none!important}
+  .fleet-page .xrm-company-header #company-name{
+    font-size:clamp(15px,4vw,19px)!important;line-height:1.2!important;
+    margin:0 0 3px!important;white-space:normal;overflow-wrap:anywhere;
+  }
+  .fleet-page .xrm-company-header .fleet-company-subtitle{
+    font-size:10px!important;line-height:1.25!important;margin:0!important;color:#a5c1d0!important;
+  }
+  .fleet-page .xrm-company-header .fleet-company-logo-status{
+    font-size:10px!important;margin:3px 0 0!important;color:#a7bdce!important;
+    max-height:30px;overflow:hidden;
+  }
+  .fleet-page .xrm-company-header .fleet-data-source{display:none!important}
+  .fleet-page .xrm-hero-filters{
+    grid-column:1/-1!important;grid-row:2!important;
+    margin:2px 0 0!important;min-width:0!important;width:100%!important;
+    flex:none!important;order:unset!important;
+  }
+  .fleet-page .xrm-hero-filters[hidden],
+  .fleet-page:not(.xrm-mobile-filters-open) .xrm-hero-filters{display:none!important}
+  .fleet-page.xrm-mobile-filters-open .xrm-hero-filters:not([hidden]){display:block!important}
+  .fleet-page.xrm-mobile-filters-open .xrm-hero-filters .fleet-commandbar:not(.hidden){
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;margin:0!important;padding:12px!important;
+    border-radius:12px!important;background:#0d2436!important;
+    border:1px solid #315264!important;
+  }
+  .fleet-page .xrm-hero-filters .xrm-header-contract{
+    grid-column:1/-1!important;display:flex!important;gap:7px!important;
+    flex-direction:column;align-items:stretch!important;width:100%;margin:0!important;
+    font-size:11px!important;color:#c0d9e5!important;
+  }
+  .fleet-page .xrm-hero-filters .xrm-header-contract select{
+    width:100%!important;max-width:100%!important;
+    min-width:0!important;height:41px!important;min-height:41px!important;
+    background:#081a29!important;border-color:#34536a!important;font-size:13px!important;
+  }
+  .fleet-page .xrm-hero-filters .fleet-command-search{grid-column:1/-1!important}
+  .fleet-page .xrm-hero-filters .fleet-command-filter{min-width:0}
+  .fleet-page .xrm-hero-filters .fleet-command-filter span{
+    font-size:10px!important;color:#a4bdcb!important;
+  }
+  .fleet-page .xrm-hero-filters .fleet-filterbar input,
+  .fleet-page .xrm-hero-filters .fleet-filterbar select{
+    height:42px!important;min-height:42px!important;font-size:13px!important;
+    border:1px solid #365167!important;border-radius:9px!important;color:#edf8ff!important;
+  }
+  .fleet-page .xrm-hero-filters #xrm-clear-filters{grid-column:1/-1!important;min-height:40px!important;font-size:12px!important}
+  .fleet-page .xrm-mobile-dashboard-toolbar{
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    margin:0 0 11px;
+  }
+  .xrm-mobile-dashboard-toolbar h2{font-size:19px;line-height:1.2;color:#eaf6ff;margin:0;font-weight:750}
+  .xrm-mobile-filter-toggle{
+    display:flex;align-items:center;justify-content:center;gap:7px;
+    padding:9px 11px;min-height:40px;border:1px solid #385d70;border-radius:10px;
+    background:#122b3c;color:#d8f2fc;font:650 12px system-ui;white-space:nowrap;cursor:pointer;
+  }
+  .xrm-mobile-filter-toggle[aria-expanded="true"]{
+    background:#153e49;border-color:#5ad9c6;color:#a5f6e9;
+  }
+  .xrm-mobile-filter-toggle svg{width:16px;height:16px}
+  .xrm-mobile-filter-count{display:none;min-width:16px;height:16px;padding:0 4px;
+    background:#54d5c4;color:#052d33;border-radius:9px;font:750 10px/16px system-ui;text-align:center}
+  .xrm-mobile-filter-count:not([hidden]){display:inline-block}
+  .fleet-page .fleet-section-heading{margin:5px 0 10px!important;gap:5px!important;flex-wrap:wrap}
+  .fleet-page .fleet-section-heading>div>span{font-size:9px!important;color:#b0a064!important}
+  .fleet-page .fleet-section-heading strong{font-size:14px!important;color:#d9eaf3!important}
+  .fleet-page .fleet-section-heading small{font-size:11px!important;color:#9cbacb!important}
+  .fleet-page #fleet-kpis.fleet-kpis-executive{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:9px!important;margin:0 0 15px!important;align-items:stretch;
+  }
+  .fleet-page #fleet-kpis .fleet-kpi{
+    display:flex!important;flex-direction:column;justify-content:space-between;
+    min-width:0!important;min-height:111px!important;
+    margin:0!important;padding:12px 11px 11px!important;
+    border-radius:13px!important;border:1px solid #2d5064!important;
+    background:linear-gradient(135deg,#133247,#0d2336)!important;
+    text-align:left!important;box-shadow:none!important;
+  }
+  .fleet-page #fleet-kpis .fleet-kpi::before{top:11px;bottom:11px;width:3px!important}
+  .fleet-page #fleet-kpis .fleet-kpi-label{
+    min-height:0!important;display:flex!important;align-items:center!important;
+    justify-content:space-between!important;gap:5px!important;
+    color:#c1d8e4!important;font-size:10px!important;line-height:1.3!important;
+  }
+  .fleet-page #fleet-kpis .fleet-kpi-label svg{
+    width:20px!important;height:20px!important;color:var(--tone-color,#52c8ed)!important;
+    flex:0 0 auto;stroke-width:1.9;opacity:1;
+  }
+  .fleet-page #fleet-kpis .fleet-kpi-value{
+    font-size:clamp(26px,8vw,36px)!important;line-height:1.05!important;
+    margin:9px 0 5px!important;font-weight:800!important;color:#f2fcff!important;
+  }
+  .fleet-page #fleet-kpis .fleet-kpi-sub{font-size:10px!important;color:#92b5c6!important;margin:0!important}
+  .fleet-page #fleet-kpis .fleet-kpi:last-child:nth-child(odd){grid-column:1/-1;min-height:86px!important}
+  .fleet-page #fleet-kpis .fleet-kpi[data-tone="purple"]{--tone-color:#b7a3f4}
+  .fleet-page #fleet-kpis .fleet-kpi[data-tone="cyan"]{--tone-color:#69c9ee}
+  .fleet-page #fleet-kpis .fleet-kpi:focus-visible,.xrm-mobile-filter-toggle:focus-visible,
+  .xrm-mobile-bottom-nav button:focus-visible,.xrm-mobile-more-sheet button:focus-visible,
+  .xrm-mobile-more-sheet a:focus-visible{outline:2px solid #68ead5;outline-offset:2px}
+  .fleet-page .fleet-overview-grid{display:flex!important;flex-direction:column!important;gap:12px!important}
+  .fleet-page .fleet-overview-grid>.fleet-alert-preview{order:-1!important}
+  .fleet-page .fleet-overview-grid>.fleet-expiry-panel{order:1!important}
+  .fleet-page .fleet-overview-grid>.fleet-status-panel{order:2!important}
+  .fleet-page .fleet-panel{border-radius:13px}
+  .fleet-page .fleet-panel>header{padding:12px 13px!important;min-height:0!important}
+  .fleet-page .fleet-panel>header h2{font-size:14px!important}
+  .fleet-page .fleet-insights-grid{display:grid!important;grid-template-columns:1fr!important;gap:12px!important}
+  .fleet-page .fleet-chart-shell{max-width:100%}
+  .fleet-page .fleet-section-heading,.fleet-page #active-filter-summary{overflow-wrap:anywhere}
+  .fleet-page .fleet-section-heading strong,.fleet-page .fleet-workspace-heading h2{color:#e8f6ff}
+  .fleet-page .fleet-content :is(.eyebrow, .fleet-kpi-sub){opacity:1}
+  .fleet-page .fleet-workspace-note,.fleet-page .fleet-history-note{color:#a9c8d8}
+  .fleet-page .xrm-mobile-load-status{
+    display:block;max-width:100%;font-size:12px;line-height:1.5;
+    color:#b3d1e1;background:#102b3d;border:1px solid #31566b;
+    border-radius:10px;padding:9px 12px;margin:0 0 10px;
+  }
+  .fleet-page .xrm-mobile-load-status[hidden]{display:none!important}
+  .fleet-page .xrm-mobile-load-status button{background:transparent;color:#6ae3d1;border:0;text-decoration:underline;font:600 12px system-ui}
+  .xrm-mobile-bottom-nav{
+    position:fixed;z-index:150;bottom:0;left:0;right:0;
+    display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:2px;align-items:stretch;
+    padding:7px max(8px,env(safe-area-inset-left,0px))
+      calc(7px + env(safe-area-inset-bottom,0px))
+      max(8px,env(safe-area-inset-right,0px));
+    background:rgba(7,21,34,.97);
+    border-top:1px solid #315064;
+    box-shadow:0 -9px 32px #0007;
+    backdrop-filter:blur(16px);
+  }
+  .xrm-mobile-bottom-nav button{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    min-width:0;min-height:51px;padding:6px 2px;border:0;
+    color:#a4bece;background:none;border-radius:10px;
+    font:600 clamp(9px,2.5vw,11px)/1.1 system-ui;
+    cursor:pointer;white-space:normal;
+  }
+  .xrm-mobile-bottom-nav button svg{width:21px;height:21px;stroke-width:1.9}
+  .xrm-mobile-bottom-nav button[aria-current="page"],.xrm-mobile-bottom-nav button[aria-expanded="true"]{
+    color:#6ae7d5;background:rgba(63,202,183,.12);
+  }
+  .xrm-mobile-more-sheet[hidden]{display:none!important}
+  .xrm-mobile-more-sheet{display:block;position:fixed;inset:0;z-index:180}
+  .xrm-mobile-more-backdrop{position:absolute;inset:0;background:rgba(2,10,18,.68);border:0;width:100%;cursor:pointer}
+  .xrm-mobile-more-panel{
+    position:absolute;left:0;right:0;bottom:0;max-height:min(78dvh,720px);
+    overflow-y:auto;overscroll-behavior:contain;
+    padding:18px 15px calc(20px + env(safe-area-inset-bottom,0px));
+    border:1px solid #406175;border-bottom:0;border-radius:20px 20px 0 0;
+    background:linear-gradient(155deg,#123146,#091c2d);
+    color:#f1fbff;box-shadow:0 -20px 50px #0009;
+  }
+  .xrm-mobile-more-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}
+  .xrm-mobile-more-title strong{font-size:18px}
+  .xrm-mobile-more-title button{background:#153c4d;border:1px solid #487083;color:#e5f4fc;width:37px;height:37px;border-radius:10px;font-size:22px}
+  .xrm-mobile-more-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .xrm-mobile-more-links button,.xrm-mobile-more-links a{
+    display:flex;align-items:center;gap:9px;text-decoration:none;text-align:left;
+    font:600 12px/1.4 system-ui;border:1px solid #31536a;
+    background:#102b3c;color:#e0f1fa;border-radius:11px;
+    min-width:0;min-height:52px;padding:10px 11px;cursor:pointer;
+  }
+  .xrm-mobile-more-links svg{width:19px;height:19px;flex:0 0 auto;color:#7cdacb}
+  .xrm-mobile-more-links .xrm-mobile-logout{color:#ffd7cc;border-color:#7b4f58}
+  .xrm-mobile-more-links .xrm-mobile-logout svg{color:#ffb1a6}
+  .xrm-mobile-menu-open{overflow:hidden!important}
+  .fleet-page .fleet-page-footer{margin-bottom:10px}
+  /* Avoid accidental swipe overflow from desktop-width controls. */
+  .fleet-page .fleet-view,.fleet-page .fleet-panel,
+  .fleet-page .fleet-content,.fleet-page .fleet-main{min-width:0;max-width:100%}
+  .fleet-page .fleet-table-wrap{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+}
+@media(max-width:380px){
+  .fleet-page .xrm-mobile-brand-title small{display:none}
+  .fleet-page .xrm-mobile-brand{font-size:13px}
+  .fleet-page .xrm-mobile-company-switch{max-width:148px}
+  .fleet-page #fleet-kpis .fleet-kpi{min-height:106px!important}
+}
+@media(min-width:761px){
+  .fleet-page .xrm-mobile-brand,.fleet-page .xrm-mobile-dashboard-toolbar,
+  .xrm-mobile-bottom-nav,.xrm-mobile-more-sheet,.xrm-mobile-load-status{display:none!important}
+}
+@media print{
+  .xrm-mobile-bottom-nav,.xrm-mobile-more-sheet,.xrm-mobile-dashboard-toolbar,.xrm-mobile-load-status{display:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .xrm-mobile-bottom-nav *,.xrm-mobile-more-sheet *{transition:none!important;animation:none!important}
+}
