@@ -57,3 +57,17 @@ test('mobile access fits viewport and copy distinguishes manual Pix renewal',asy
  const {page,errors}=await open({viewport:{width:390,height:844}});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  await page.locator('#xrm-auth-close').click();assert.match(await page.locator('body').innerText(),/Pix.*renovação manual/);assert.deepEqual(errors,[]);await page.close();
 });
+
+
+test('new vehicle-price simulator updates the total and CTA without reloading',async()=>{
+ const {page,errors}=await open({viewport:{width:390,height:844}});
+ await page.locator('#xrm-auth-close').click();
+ const simulator=page.locator('[data-fleet-calculator]');
+ await simulator.locator('[data-fleet-count]').fill('10');
+ await page.getByText('R$ 59,40',{exact:true}).first().waitFor();
+ const link=await simulator.locator('[data-fleet-cta]').first().getAttribute('href');
+ assert.match(link,/vehicles=10/);
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+ assert.deepEqual(errors,[]);
+ await page.close();
+});
