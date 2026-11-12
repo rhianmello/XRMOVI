@@ -30,7 +30,7 @@ Deno.serve(async request=>{
    const body={
     from, to:[adminEmail],reply_to:undefined,
     subject:"[XRMOVI] Nova mensagem de suporte — "+label,
-    html:'<div style="font-family:Arial,sans-serif;color:#132735;max-width:600px"><h2>Nova mensagem recebida no suporte XRMOVI</h2><p><b>Empresa:</b> '+escapeHtml(label)+'</p><p><b>Cliente:</b> '+escapeHtml(sender)+'</p><p>Uma nova mensagem aguarda sua resposta. Para proteger a privacidade, o conteúdo completo fica disponível somente na Central do Proprietário.</p><p><a href="https://frota.nospassa.com.br/admin/" style="background:#0c7669;color:white;padding:12px 18px;border-radius:8px;text-decoration:none">Abrir caixa de mensagens</a></p><small>Notificação automática. Não responda a este email.</small></div>'
+    html:'<div style="font-family:Arial,sans-serif;color:#132735;max-width:600px"><h2>Nova mensagem recebida no suporte XRMOVI</h2><p><b>Empresa:</b> '+escapeHtml(label)+'</p><p><b>Cliente:</b> '+escapeHtml(sender)+'</p><p>Uma nova mensagem aguarda sua resposta. Para proteger a privacidade, o conteúdo completo fica disponível somente na Central do Proprietário.</p><p><a href="https://xrmovi.com.br/admin/" style="background:#0c7669;color:white;padding:12px 18px;border-radius:8px;text-decoration:none">Abrir caixa de mensagens</a></p><small>Notificação automática. Não responda a este email.</small></div>'
    };
    let ok=false,providerId="",err="";
    try{
