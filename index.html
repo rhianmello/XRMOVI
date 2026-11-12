@@ -89,6 +89,38 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
 <link rel="stylesheet" href="/legal/policies.css">
 <link rel="manifest" href="/manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="icon" href="/pwa/icon.svg?v=20261110-brand-v2" type="image/svg+xml" sizes="any"><link rel="stylesheet" href="/pricing/fleet-pricing.css?v=20261112"></head><body>
 <header><div class="shell nav"><a class="brand" href="#inicio" aria-label="XRMOVI — voltar ao início"><img class="brand-logo" src="/assets/xrmovi-logo-oficial.svg?v=20261110-v2" alt="XRMOVI" width="248" height="61" decoding="async"></a><nav class="links" aria-label="Navegação principal"><a href="/recursos/">Recursos</a><a href="#planos">Nova tabela</a><button type="button" class="xrm-install-nav-link" data-demo>Demonstração</button><a href="/perguntas-frequentes/">Perguntas frequentes</a><button class="xrm-install-nav-link" type="button" data-xrm-install>Baixar App</button></nav><div class="actions nav-actions"><details class="xrm-mobile-nav"><summary aria-label="Abrir menu de navegação">☰ <span>Menu</span></summary><nav aria-label="Menu do celular"><a href="/recursos/">Recursos</a><a href="#planos">Planos</a><button type="button" data-demo>Demonstração</button><a href="/perguntas-frequentes/">Perguntas frequentes</a><a href="/recursos/#contato">Contato</a><button type="button" data-xrm-install>Baixar App</button></nav></details><a class="btn small" id="xrm-header-auth-link" href="/?login=1" aria-label="Entrar ou criar conta">Entrar / Criar conta</a></div></div></header>
+<style>
+/* Mantém o menu mobile dentro da largura da tela. */
+@media(max-width:850px){
+  header .nav .xrm-mobile-nav{position:static}
+  header .nav .xrm-mobile-nav nav{right:0;left:auto;max-width:calc(100vw - 32px)}
+}
+</style>
+<script>
+/* Fecha o menu após selecionar um destino, ao tocar fora ou pressionar Escape. */
+(function(){
+  const menu = document.querySelector('header .xrm-mobile-nav');
+  if(!menu) return;
+  const trigger = menu.querySelector('summary');
+  const closeMenu = function(){menu.open = false;};
+  menu.addEventListener('click', function(event){
+    if(event.target instanceof Element && event.target.closest('nav a, nav button')) closeMenu();
+  });
+  document.addEventListener('pointerdown', function(event){
+    if(menu.open && !menu.contains(event.target)) closeMenu();
+  });
+  document.addEventListener('keydown', function(event){
+    if(event.key === 'Escape' && menu.open){
+      closeMenu();
+      if(trigger) trigger.focus();
+    }
+  });
+  menu.addEventListener('toggle', function(){
+    if(trigger) trigger.setAttribute('aria-label', menu.open ? 'Fechar menu de navegação' : 'Abrir menu de navegação');
+  });
+  window.addEventListener('hashchange', closeMenu);
+})();
+</script>
 <main id="inicio">
 <div class="hero xrm-qr-hero">
  <div class="shell xrm-qr-hero-grid">
