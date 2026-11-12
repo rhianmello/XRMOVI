@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'supabase/migrations/**'
+      - 'supabase/tests/xrmovi-ci-baseline.sql'
+      - 'supabase/tests/xrmovi-fleet-local-smoke.sql'
       - '.github/workflows/xrmovi-local-database.yml'
   workflow_dispatch:
 
@@ -28,12 +30,24 @@ jobs:
           mkdir -p "${RUNNER_TEMP}/xrmovi-db-check"
           cd "${RUNNER_TEMP}/xrmovi-db-check"
           supabase init
-          cp -R "${GITHUB_WORKSPACE}/supabase/migrations" supabase/migrations
+          # Existing XRMOVI migrations are incremental and need the production schema.
+          # Boot an isolated structural fixture instead of importing customer data.
+          mkdir -p supabase/migrations
+          cp "${GITHUB_WORKSPACE}/supabase/tests/xrmovi-ci-baseline.sql" supabase/migrations/00000000000000_ci_base.sql
+          cp "${GITHUB_WORKSPACE}/supabase/migrations/20261112060000_xrmovi_fleet_pricing_trial_24h.sql" supabase/migrations/20261112060000_xrmovi_fleet_pricing_trial_24h.sql
 
       - name: Start only a local Postgres database and apply migrations
         working-directory: ${{ runner.temp }}/xrmovi-db-check
         run: |
           supabase db start
+
+      - name: Validate real SQL price quotes, one-time trial and expiry
+        working-directory: ${{ runner.temp }}/xrmovi-db-check
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql -X -v ON_ERROR_STOP=1 -h 127.0.0.1 -p 54322 -U postgres -d postgres \\
+            -f "${GITHUB_WORKSPACE}/supabase/tests/xrmovi-fleet-local-smoke.sql"
 
       - name: Verify migrations installed
         working-directory: ${{ runner.temp }}/xrmovi-db-check
