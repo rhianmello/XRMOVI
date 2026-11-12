@@ -6,7 +6,7 @@ export function setupMileage({client,getCompany,getVehicles,getFilteredIds,onRel
  const day=date=>{if(!date)return 'Nunca';const text=String(date);return new Date(/^\d{4}-\d{2}-\d{2}$/.test(text)?text+'T12:00:00':text).toLocaleDateString('pt-BR')};
  const dateTime=date=>date?new Date(date).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):'Não registrado';
  const days=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
- let state=null,stateCompanyId=null,companyId=null,request=0,loadError='',busy=false,flash='',flashKind='';
+ let state=null,stateCompanyId=null,companyId=null,request=0,loadError='',busy=false,flash='',flashKind='',serviceState={cid:null,rows:[],error:''};
  const rpc=async(name,args)=>{const {data,error}=await client.rpc('xrmovi_'+name,args);if(error)throw Error(error.message);return data};
  const add=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e};
  const btn=(label,fn,cls='')=>{const b=add('button','xrm-mileage-btn '+cls,label);b.type='button';b.onclick=fn;return b};
@@ -22,8 +22,17 @@ export function setupMileage({client,getCompany,getVehicles,getFilteredIds,onRel
  async function refresh(cid=company()?.id){
   if(!cid)return;
   const current=++request;companyId=cid;
+  if(owned())void refreshServiceQueue(cid,current);
   try{const data=await rpc('mileage_dashboard',{cid});if(current!==request||company()?.id!==cid)return;stateCompanyId=cid;state=data||{vehicles:[],pending:[],weekday:1};loadError='';render();onAlertsChange?.()}
   catch(error){if(current!==request||company()?.id!==cid)return;loadError=error.message;stateCompanyId=cid;state={vehicles:[],pending:[],weekday:1};render();onAlertsChange?.();status('Falha ao consultar KM: '+error.message,'error')}
+ }
+ async function refreshServiceQueue(cid,ticket){
+  let rows=[],error='';
+  try{rows=await rpc('driver_service_pending',{cid})||[]}
+  catch(e){error=e.message}
+  if(ticket!==request||company()?.id!==cid)return;
+  serviceState={cid,rows,error};
+  renderConsole();
  }
  function oilAlerts(){return scoped().filter(v=>v.oil_status==='overdue'||v.oil_status==='soon')}
  function planFor(vid){return rows().find(v=>v.id===vid)||null}
@@ -171,6 +180,24 @@ export function setupMileage({client,getCompany,getVehicles,getFilteredIds,onRel
    box.append(list);
    if(owned())updateSelection();
    root.append(box);
+  }
+  if(owned()){
+   const current=serviceState.cid===company()?.id?serviceState:null;
+   const filtered=getFilteredIds();
+   const relevant=(current?.rows||[]).filter(r=>!filtered||filtered.has(r.vehicle_id));
+   const section=add('section','xrm-mileage-pending');section.style.cssText='margin:16px 0;padding:16px;border:1px solid #396c79;border-radius:12px;background:#102b3b';
+   section.append(add('h3','','Abastecimentos e trocas de óleo · aguardando aprovação'));
+   if(!current)section.append(add('p','','Consultando registros do motorista…'));
+   else if(current.error)section.append(add('p','','Não foi possível carregar os registros do motorista: '+current.error));
+   else if(!relevant.length)section.append(add('p','','Nenhum registro de abastecimento ou troca de óleo aguardando aprovação.'));
+   for(const r of relevant){
+    const line=add('div','');line.style.cssText='border-top:1px solid #37546b;padding:12px 0;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between';
+    const details=add('div','');details.append(add('strong','',r.plate+' · '+(r.kind==='fuel'?'Abastecimento':'Troca de óleo')+' · '+km(r.meter)+' km'),add('p','',r.driver+' · '+day(r.date)+(r.kind==='fuel'?' · '+r.liters+' L · '+money(r.cost)+' · '+r.station:' · '+r.oil_type)+(r.notes?' · '+r.notes:'')));
+    const actions=add('div','');actions.style.cssText='display:flex;gap:8px;flex-wrap:wrap';
+    actions.append(btn('Ver comprovante',()=>void openProof(r.photo_path),'subtle small'),btn('Aprovar',()=>void reviewService(r,'approve'),'primary small'),btn('Rejeitar',()=>void reviewService(r,'reject'),'danger small'));
+    line.append(details,actions);section.append(line);
+   }
+   root.append(section);
   }
   root.append(add('p','xrm-mileage-message',flash));const notice=root.lastChild;notice.id='xrm-mileage-message';notice.dataset.type=flashKind;
  }
@@ -418,6 +445,19 @@ export function setupMileage({client,getCompany,getVehicles,getFilteredIds,onRel
    finally{saving=false;if(modal.isConnected){reject.disabled=false;validate()}}
   }
   actions.append(reject,accept);form.append(actions);modal.append(form);
+ }
+ async function reviewService(item,decision){
+  if(!owned()||busy)return;
+  const cid=company()?.id;
+  if(!cid||cid!==serviceState.cid)return;
+  const reason=window.prompt(decision==='approve'?'Justificativa da aprovação:':'Motivo da rejeição:');
+  if(reason===null)return;
+  if(reason.trim().length<4){status('Informe uma justificativa com pelo menos 4 caracteres.','error');return}
+  busy=true;
+  try{await rpc('driver_service_review',{cid,submission_id:item.id,decision,reason:reason.trim()});if(company()?.id!==cid)return;
+   await onReload?.();status(decision==='approve'?'Registro aprovado e lançado.':'Registro rejeitado e preservado no histórico.')}
+  catch(error){status('Não foi possível concluir a revisão: '+error.message,'error')}
+  finally{busy=false}
  }
  async function openProof(path){
   try{const {data,error}=await client.storage.from('xrmovi-odometer-proof').createSignedUrl(path,90);
