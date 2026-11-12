@@ -180,7 +180,9 @@ test('financial period reloads both costs and records; failure never retains ano
  await page.evaluate(()=>{brandingTest.costMultiplier=3});
  await page.locator('#fuel-ranking-month').fill('2026-09');await page.locator('#fuel-ranking-month').dispatchEvent('change');
  await page.waitForFunction(()=>document.querySelector('#xrm-contract-finance').innerText.includes('350,00'));
- const args=await page.evaluate(()=>brandingTest.costRequests.at(-1));assert.equal(args.from_date,'2026-09-01');assert.equal(args.to_date,'2026-09-30');
+ // Parallel background cost queries may occur; validate the requested month rather than the last network call.
+ const args=await page.evaluate(()=>brandingTest.costRequests.find(x=>x.from_date==='2026-09-01'&&x.to_date==='2026-09-30'));
+ assert.ok(args,'O relatório deve consultar setembro completo');
  await page.evaluate(()=>{brandingTest.costError=true});await page.locator('#fuel-ranking-month').fill('2026-08');await page.locator('#fuel-ranking-month').dispatchEvent('change');
  await page.waitForFunction(()=>document.querySelector('#xrm-contract-finance').innerText.includes('Não foi possível'));
  assert.doesNotMatch(await page.locator('#xrm-contract-finance').innerText(),/350,00/);assert.equal(await page.locator('#fleet-fuel-records tbody tr').count(),0);
