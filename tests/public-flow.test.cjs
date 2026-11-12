@@ -12,6 +12,9 @@ async function open({configFailure=false,viewport={width:1280,height:900}}={}){
  await page.exposeFunction('recordAuthCall',call=>calls.push(call));
  await page.addInitScript(()=>{
   window.mockClient={auth:{
+   getUser:async()=>({data:{user:null},error:null}),
+   getSession:async()=>({data:{session:null},error:null}),
+   onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),
    signUp:async args=>{await window.recordAuthCall({method:'signup',args});return {data:{session:null},error:null};},
    signInWithPassword:async args=>{await window.recordAuthCall({method:'signin',args});return {data:{session:{}},error:null};},
    resetPasswordForEmail:async(email,args)=>{await window.recordAuthCall({method:'recover',email,args});return {error:null};}
