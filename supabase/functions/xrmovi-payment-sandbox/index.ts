@@ -66,158 +66,191 @@ Deno.serve(async(req:Request)=>{
    return reply(origin,publicTestOrder(data));
   }catch{return reply(origin,{error:"Não foi possível consultar o ambiente de teste"},502)}
  }
- if(action==="create_card_hml"||action==="inspect_card_hml"){
-   // Test subscriptions only: no real payer, no production checkout or ledger writes.
-   const liveKey=Deno.env.get("XRMOVI_MP_ACCESS_TOKEN")||Deno.env.get("MP_ACCESS_TOKEN")||"";
-   if(!mpToken.startsWith("APP_USR-")||mpToken===liveKey)
-     return reply(origin,{error:"Credencial de teste não está separada da produção"},503);
-   const serviceKey=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")||"";
-   if(!serviceKey)return reply(origin,{error:"Armazenamento de homologação indisponível"},503);
-   const service=createClient(url,serviceKey,{auth:{autoRefreshToken:false,persistSession:false}});
-   const {data:record,error:recordError}=await service.from("xrmovi_hml_card_subscriptions")
-     .select("id,provider_id,status,checkout_url").eq("id","card-sandbox-only").single();
-   if(recordError||!record)return reply(origin,{error:"Registro isolado indisponível"},503);
+ if(["create_card_hml","inspect_card_hml","diagnose_card_hml"].includes(String(action))){
+   // Homologation only. A verified platform administrator is required above this branch.
+   const liveToken=Deno.env.get("XRMOVI_MP_ACCESS_TOKEN")||Deno.env.get("MP_ACCESS_TOKEN")||"";
+   if(!mpToken.startsWith("APP_USR-")||mpToken===liveToken)
+     return reply(origin,{error:"Credenciais de teste e produção não estão separadas."},503);
+   const key=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")||"";
+   if(!key)return reply(origin,{error:"Persistência da homologação indisponível."},503);
+   const service=createClient(url,key,{auth:{autoRefreshToken:false,persistSession:false}});
+   const table=()=>service.from("xrmovi_hml_card_subscriptions");
+   const {data:record,error:readError}=await table().select("*").eq("id","card-sandbox-only").single();
+   if(readError||!record)return reply(origin,{error:"Registro isolado de cartão indisponível."},503);
    const mpHeaders={Authorization:"Bearer "+mpToken,Accept:"application/json"};
-   const validateTestBuyer=async()=>{
-     // Test buyer ID is from the user's Mercado Pago developer test-account dashboard.
-     const res=await fetch("https://api.mercadopago.com/users/3674938694",{
-       headers:mpHeaders,signal:AbortSignal.timeout(12000)});
-     const account=await res.json().catch(()=>({}));
-     const email=String(account.email||"").trim().toLowerCase();
-     const verified=res.ok&&String(account.id)==="3674938694"&&
-       email.endsWith("@testuser.com")&&!email.includes(" ")&&email.length>15;
-     return {verified,email:verified?email:null,http_status:res.status};
-   };
+   const reference="xrmovi_hml_card_sandbox_only";
    const safeCheckout=(value:unknown)=>{
      if(typeof value!=="string")return null;
-     try{const u=new URL(value);const host=u.hostname.toLowerCase();
-      return u.protocol==="https:"&&["mercadopago.com","mercadopago.com.br"].some(d=>host===d||host.endsWith("."+d))?u.href:null;
+     try{const u=new URL(value),h=u.hostname.toLowerCase();
+       return u.protocol==="https:"&&["mercadopago.com.br","mercadopago.com"]
+         .some(d=>h===d||h.endsWith("."+d))?u.href:null;
      }catch{return null}
+   };
+   const safeText=(value:unknown)=>{
+     const v=typeof value==="string"?value:"";
+     return v.replace(/[^\x20-\x7eÀ-ÿ]/g," ").replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,"[redacted]")
+       .replace(/\b\d{11,16}\b/g,"[redacted]").replace(/(?:APP_USR|TEST)-[A-Za-z0-9-]+/g,"[redacted]")
+       .slice(0,180);
+   };
+   const mpError=(raw:any,status:number)=>{
+     const cause=Array.isArray(raw?.cause)?raw.cause.slice(0,5).map((v:any)=>({
+       code:safeText(v?.code),description:safeText(v?.description)
+     })):[];
+     return {status,error:safeText(raw?.error),message:safeText(raw?.message),cause};
+   };
+   const patch=async(fields:Record<string,unknown>,status?:string)=>{
+     const query=table().update({...fields,updated_at:new Date().toISOString()}).eq("id","card-sandbox-only");
+     const {data,error}=await (status?query.eq("status",status):query).select("id,status,provider_id").maybeSingle();
+     if(error||!data)throw Error("database_update_failed");
+     return data;
+   };
+   const mpGet=async(path:string)=>{
+     const response=await fetch("https://api.mercadopago.com"+path,{
+       headers:mpHeaders,signal:AbortSignal.timeout(12000)});
+     const data=await response.json().catch(()=>({}));
+     return {response,data};
+   };
+   const identities=async()=>{
+     const [buyerResult,sellerResult]=await Promise.allSettled([
+       mpGet("/users/3674938694"),mpGet("/users/me")
+     ]);
+     const buyer=buyerResult.status==="fulfilled"?buyerResult.value:null;
+     const seller=sellerResult.status==="fulfilled"?sellerResult.value:null;
+     const buyerEmail=String(buyer?.data?.email||"").trim().toLowerCase();
+     const sellerEmail=String(seller?.data?.email||"").trim().toLowerCase();
+     const buyerTest=buyer?.response?.ok===true&&String(buyer.data?.id)==="3674938694"&&
+       buyerEmail.endsWith("@testuser.com");
+     const sellerTest=seller?.response?.ok===true&&
+       (sellerEmail.endsWith("@testuser.com")||String(seller.data?.nickname||"").toUpperCase().startsWith("TEST"));
+     return {buyerTest,sellerTest,buyerEmail:buyerTest?buyerEmail:null,
+       buyerHttp:buyer?.response?.status||null,sellerHttp:seller?.response?.status||null};
+   };
+   // Full recovery across provider pages: never treat page-one absence as definitive.
+   const recover=async()=>{
+     const found:any[]=[];let offset=0;let complete=false;
+     for(let page=0;page<100;page++){
+       const params=new URLSearchParams({limit:"50",offset:String(offset)});
+       const {response,data}=await mpGet("/preapproval/search?"+params);
+       if(!response.ok||!Array.isArray(data.results))return {complete:false,reason:"search_failed"};
+       found.push(...data.results.filter((item:any)=>String(item.external_reference||"")===reference));
+       const total=Number(data.paging?.total);
+       if(!Number.isFinite(total))return {complete:false,reason:"paging_unknown"};
+       offset+=data.results.length;
+       if(offset>=total||data.results.length===0){complete=true;break}
+     }
+     return {complete,found};
    };
    if(action==="diagnose_card_hml"){
      try{
-       const buyer=await validateTestBuyer();
-       const sellerResponse=await fetch("https://api.mercadopago.com/users/me",{
-         headers:mpHeaders,signal:AbortSignal.timeout(12000)});
-       const seller=await sellerResponse.json().catch(()=>({}));
-       const email=String(seller.email||"").toLowerCase();
-       const sellerIsTest=sellerResponse.ok&&(email.endsWith("@testuser.com")||String(seller.nickname||"").toUpperCase().startsWith("TEST"));
-       return reply(origin,{test:true,diagnostic:true,buyer_verified:buyer.verified,
-         buyer_http_status:buyer.http_status,seller_is_test:sellerIsTest,
-         seller_http_status:sellerResponse.status,record_status:record.status,
+       const info=await identities();
+       return reply(origin,{test:true,diagnostic:true,buyer_verified:info.buyerTest,
+         seller_is_test:info.sellerTest,buyer_http_status:info.buyerHttp,
+         seller_http_status:info.sellerHttp,record_status:record.status,
          provider_id_exists:!!record.provider_id,
-         can_safely_prepare:sellerIsTest&&buyer.verified&&!record.provider_id,
-         note:"Somente inspeção das contas Mercado Pago. Nenhuma assinatura foi criada."});
-     }catch{return reply(origin,{test:true,diagnostic:true,error:"Falha ao consultar contas de teste"},502)}
+         can_safely_prepare:info.buyerTest&&info.sellerTest&&record.status==="not_created",
+         note:"Leitura das identidades, sem criar assinatura."});
+     }catch{return reply(origin,{error:"Não foi possível diagnosticar as contas.",test:true},502)}
    }
    if(action==="inspect_card_hml"){
-     if(!record.provider_id){
-       // Read-only recovery before any retry: an earlier POST may have reached Mercado Pago.
+     if(record.provider_id){
        try{
-         // Exhaust paginated provider results; never infer absence from page one.
-         const found:any[]=[];
-         let offset=0,total=0,complete=false;
-         for(let page=0;page<20;page++){
-           const params=new URLSearchParams({payer_email:"test_payer@example.com",limit:"50",offset:String(offset)});
-           const response=await fetch("https://api.mercadopago.com/preapproval/search?"+params,{
-             headers:mpHeaders,signal:AbortSignal.timeout(12000)});
-           const data=await response.json().catch(()=>({}));
-           if(!response.ok)return reply(origin,{test:true,created:false,status:record.status,
-             recovery:"provider_search_failed",http_status:response.status,
-             note:"Consulta inconclusiva. Não crie outra assinatura."});
-           if(!Array.isArray(data.results))return reply(origin,{test:true,created:false,status:record.status,
-             recovery:"invalid_search_response"});
-           found.push(...data.results.filter((x:any)=>String(x.external_reference||"")==="xrmovi_hml_card_sandbox_only"));
-           total=Number(data.paging?.total||0);
-           offset+=data.results.length;
-           if(data.results.length===0||offset>=total){complete=true;break}
+         const {response,data}=await mpGet("/preapproval/"+encodeURIComponent(record.provider_id));
+         if(!response.ok)return reply(origin,{error:"Consulta da assinatura falhou.",http_status:response.status},502);
+         if(String(data.external_reference||"")!==reference||
+            Math.abs(Number(data.auto_recurring?.transaction_amount)-19.90)>0.009)
+            return reply(origin,{error:"Assinatura de outra referência ou valor.",test:true},403);
+         if(record.status!=="created"){
+           await patch({status:"created",provider_status:String(data.status||"pending"),
+             checkout_url:safeCheckout(data.init_point),error_id:null,error_details:null});
          }
-         if(!complete)return reply(origin,{test:true,created:false,status:record.status,
-           recovery:"search_incomplete",note:"Busca paginada incompleta. Nenhuma nova assinatura criada."});
-         if(found.length!==1)return reply(origin,{test:true,created:false,status:record.status,
-           recovery:found.length>1?"multiple_matches":"not_found",
-           search_complete:true,
-           note:"Busca concluída sem criar assinatura. A tentativa anterior continua bloqueada; investigar a rejeição 400 antes de reabrir."});
-         const item=found[0],checkout=safeCheckout(item.init_point);
-         if(Math.abs(Number(item.auto_recurring?.transaction_amount)-19.90)>0.009)
-           return reply(origin,{test:true,created:false,recovery:"amount_mismatch"});
-         const {error:writeError}=await service.from("xrmovi_hml_card_subscriptions")
-           .update({provider_id:String(item.id),checkout_url:checkout,status:"pending",updated_at:new Date().toISOString()})
-           .eq("id","card-sandbox-only");
-         if(writeError)return reply(origin,{error:"Assinatura localizada, mas não foi possível vinculá-la. Não crie outra."},502);
-         return reply(origin,{test:true,created:true,recovered:true,provider_id:String(item.id),
-           status:String(item.status||"pending"),checkout_url:checkout,
-           real_customer_changed:false,revenue_changed:false});
-       }catch{return reply(origin,{test:true,created:false,status:record.status,
-         recovery:"search_unavailable",note:"Não repita a criação até concluir a conferência."})}
+         return reply(origin,{test:true,created:true,status:"created",
+           provider_status:String(data.status||"pending"),provider_id:String(data.id),
+           checkout_url:safeCheckout(data.init_point),real_customer_changed:false,revenue_changed:false});
+       }catch{return reply(origin,{error:"Consulta de assinatura indisponível.",test:true},502)}
      }
      try{
-       const response=await fetch("https://api.mercadopago.com/preapproval/"+encodeURIComponent(record.provider_id),{
-         headers:mpHeaders,signal:AbortSignal.timeout(12000)});
-       if(!response.ok)return reply(origin,{error:"Não foi possível verificar a assinatura de teste",http_status:response.status},502);
-       const item=await response.json();
-       if(String(item.external_reference)!=="xrmovi_hml_card_sandbox_only"||
-          Math.abs(Number(item.auto_recurring?.transaction_amount)-19.90)>.009)
-         return reply(origin,{error:"A assinatura não pertence ao ambiente isolado"},403);
-       const status=String(item.status||"unknown");
-       return reply(origin,{test:true,created:true,provider_id:String(item.id),
-         status,checkout_url:safeCheckout(item.init_point),
-         real_customer_changed:false,revenue_changed:false});
-     }catch{return reply(origin,{error:"Consulta Mercado Pago indisponível"},502)}
+       const result=await recover();
+       if(!result.complete)return reply(origin,{test:true,created:false,status:record.status,
+         recovery:"search_incomplete",note:"Não repita a criação."});
+       if(result.found.length>1)return reply(origin,{test:true,created:false,status:record.status,
+         recovery:"multiple_matches",note:"Conflito entre assinaturas. Não repetir."});
+       if(result.found.length===1){
+         const item=result.found[0];
+         if(Math.abs(Number(item.auto_recurring?.transaction_amount)-19.90)>.009)
+           return reply(origin,{test:true,created:false,recovery:"amount_mismatch"},409);
+         await patch({status:"created",provider_id:String(item.id),
+           provider_status:String(item.status||"pending"),checkout_url:safeCheckout(item.init_point),
+           error_id:null,error_details:null});
+         return reply(origin,{test:true,created:true,recovered:true,status:"created",
+           provider_status:String(item.status||"pending"),provider_id:String(item.id),
+           checkout_url:safeCheckout(item.init_point),
+           real_customer_changed:false,revenue_changed:false});
+       }
+       return reply(origin,{test:true,created:false,status:record.status,
+         recovery:"not_found",search_complete:true,
+         error_id:record.error_id||null,provider_diagnostic:record.error_details||null,
+         note:"Busca exaustiva sem assinatura correspondente. Não houve POST."});
+     }catch{return reply(origin,{test:true,created:false,status:record.status,
+       recovery:"search_unavailable",note:"Não repita a criação."})}
    }
-   if(record.provider_id)return reply(origin,{test:true,created:true,reused:true,
-     provider_id:record.provider_id,status:record.status,checkout_url:safeCheckout(record.checkout_url),
-     real_customer_changed:false,revenue_changed:false});
-   if(record.status!=="not_created")return reply(origin,{error:"Existe uma tentativa anterior de homologação. Nenhuma assinatura adicional foi criada."},409);
-   const buyer=await validateTestBuyer();
-   if(!buyer.verified||!buyer.email)return reply(origin,{error:"A API não confirmou o e-mail do comprador de teste. Nenhuma assinatura foi criada.",buyer_http_status:buyer.http_status},503);
-   const sellerResponse=await fetch("https://api.mercadopago.com/users/me",{
-     headers:mpHeaders,signal:AbortSignal.timeout(12000)});
-   const seller=await sellerResponse.json().catch(()=>({}));
-   const sellerIsTest=sellerResponse.ok&&(String(seller.email||"").toLowerCase().endsWith("@testuser.com")||
-     String(seller.nickname||"").toUpperCase().startsWith("TEST"));
-   if(!sellerIsTest)return reply(origin,{error:"A credencial atual não foi confirmada como vendedor de teste. Nenhuma assinatura foi criada.",seller_http_status:sellerResponse.status},503);
-   // Atomic single-use claim prevents accidental duplicate recurring subscriptions.
-   const {data:claimed,error:claimError}=await service.from("xrmovi_hml_card_subscriptions")
-     .update({status:"pending",updated_at:new Date().toISOString()})
-     .eq("id","card-sandbox-only").eq("status","not_created").select("id").maybeSingle();
-   if(claimError||!claimed)return reply(origin,{error:"Uma tentativa já está em andamento. Não criamos outra assinatura."},409);
+   // Creation is one-shot. Rejected or unknown attempts need explicit reconciliation.
+   if(record.provider_id||record.status!=="not_created")
+     return reply(origin,{error:"Tentativa anterior existente ou bloqueada. Consulte o status, sem criar outra.",
+       status:record.status,error_id:record.error_id||null},409);
+   let check;
+   try{check=await identities()}catch{return reply(origin,{error:"Identidades de teste indisponíveis; nenhum POST enviado."},503)}
+   if(!check.buyerTest||!check.sellerTest||!check.buyerEmail)
+     return reply(origin,{error:"Comprador e vendedor não foram confirmados como duas contas de teste. Nenhum POST enviado.",
+       buyer_verified:check.buyerTest,seller_is_test:check.sellerTest},503);
+   const existing=await recover().catch(()=>({complete:false,reason:"search_unavailable"}));
+   if(!existing.complete||existing.found?.length){
+     return reply(origin,{error:"Não foi possível comprovar ausência de assinatura anterior. Nenhum POST enviado."},409);
+   }
+   try{
+     await patch({status:"creating",error_id:null,error_details:null,
+       last_attempt_at:new Date().toISOString()},"not_created");
+   }catch{return reply(origin,{error:"Tentativa simultânea detectada. Nenhum POST enviado."},409)}
    const payload={
-     reason:"XRMOVI HOMOLOGAÇÃO — Start — CARTÃO DE TESTE",
-     external_reference:"xrmovi_hml_card_sandbox_only",
-     payer_email:buyer.email,
+     reason:"XRMOVI HOMOLOGAÇÃO - Start - CARTÃO TESTE",
+     external_reference:reference,
+     payer_email:check.buyerEmail,
      auto_recurring:{frequency:1,frequency_type:"months",
        end_date:new Date(Date.now()+365*24*60*60*1000).toISOString(),
        transaction_amount:19.90,currency_id:"BRL"},
-     back_url:"https://xrmovi.com.br/#planos",status:"pending"
+     back_url:"https://xrmovi.com.br/",status:"pending"
    };
    try{
      const response=await fetch("https://api.mercadopago.com/preapproval",{
-       method:"POST",headers:{...mpHeaders,"Content-Type":"application/json","X-Idempotency-Key":"xrmovi_hml_card_sandbox_only"},
+       method:"POST",headers:{...mpHeaders,"Content-Type":"application/json",
+         "X-Idempotency-Key":reference},
        body:JSON.stringify(payload),signal:AbortSignal.timeout(15000)});
-     const item=await response.json().catch(()=>({}));
+     const body=await response.json().catch(()=>({}));
      if(!response.ok){
-       // Only sanitized provider diagnostic categories may enter logs or admin-only responses.
-       // Never emit credentials, full payer details, tokens or the entire provider response.
-       const safeField=(v:unknown)=>String(v??"").replace(/[^a-zA-Z0-9_. :\-]/g,"").slice(0,120);
-       const causes=Array.isArray(item.cause)?item.cause.slice(0,5).map((x:any)=>({
-         code:safeField(x?.code),description:safeField(x?.description)
-       })):[];
-       const diagnostic={status:response.status,error:safeField(item.error),message:safeField(item.message),causes};
-       console.error("XRMOVI test preapproval rejected",diagnostic);
-       return reply(origin,{error:"Mercado Pago não aceitou a assinatura de teste. Tentativa bloqueada para evitar duplicidade.",http_status:response.status,
-         provider_diagnostic:diagnostic},502);
+       const diagnostic=mpError(body,response.status),errorId=crypto.randomUUID();
+       await patch({status:"rejected",error_id:errorId,error_details:diagnostic},"creating");
+       console.error("XRMOVI sandbox preapproval rejected",{
+         error_id:errorId,status:diagnostic.status,error:diagnostic.error,
+         message:diagnostic.message,cause:diagnostic.cause});
+       return reply(origin,{error:"Mercado Pago recusou a assinatura de teste.",
+         error_id:errorId,http_status:response.status},502);
      }
-     const id=String(item.id||""),checkout=safeCheckout(item.init_point);
-     if(!id||String(item.external_reference)!==payload.external_reference)
-       return reply(origin,{error:"Resposta inesperada. Nenhuma nova assinatura será criada até conferência."},502);
-     const {error:saveError}=await service.from("xrmovi_hml_card_subscriptions")
-       .update({provider_id:id,checkout_url:checkout,status:"pending",updated_at:new Date().toISOString()})
-       .eq("id","card-sandbox-only");
-     if(saveError)return reply(origin,{error:"Assinatura criada no ambiente de teste, mas não vinculada. Não tente novamente."},502);
-     return reply(origin,{test:true,created:true,reused:false,status:String(item.status||"pending"),
-       provider_id:id,checkout_url:checkout,real_customer_changed:false,revenue_changed:false});
-   }catch{return reply(origin,{error:"Não foi possível concluir a tentativa de teste. Evite repetir até conferir o status."},502)}
+     if(!body.id||String(body.external_reference||"")!==reference){
+       // A 2xx may have created the provider resource; leave creating until recovery.
+       return reply(origin,{error:"Resposta inconclusiva. Consulte antes de repetir.",status:"creating"},502);
+     }
+     const checkout=safeCheckout(body.init_point);
+     await patch({status:"created",provider_id:String(body.id),
+       provider_status:String(body.status||"pending"),checkout_url:checkout,
+       error_id:null,error_details:null},"creating");
+     return reply(origin,{test:true,created:true,status:"created",
+       provider_status:String(body.status||"pending"),provider_id:String(body.id),
+       checkout_url:checkout,real_customer_changed:false,revenue_changed:false});
+   }catch(e){
+     // Network/DB uncertainty must not become rejected or retryable.
+     console.error("XRMOVI sandbox preapproval uncertain",{category:"transport_or_persistence"});
+     return reply(origin,{error:"Resultado incerto. Consulte a assinatura antes de qualquer nova tentativa.",
+       status:"creating"},502);
+   }
  }
  if(action==="run_signed_webhook_hml"){
    const id=String(input.order_id||"");
