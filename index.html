@@ -635,9 +635,9 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
    finally{sandboxCardCreate.disabled=false}
  });
  sandboxBuyerPrepare?.addEventListener('click',async()=>{
-   if(!confirm('Esta operação cria UMA NOVA conta COMPRADORA FICTÍCIA no Mercado Pago. Contas de teste criadas não podem ser excluídas. Não gera assinatura nem cobrança. Continuar?'))return;
+   if(!confirm('Autorizar criação de UMA conta compradora FICTÍCIA? O Mercado Pago exige autenticação da conta real SOMENTE para cadastrar usuários de teste. O XRMOVI não usará a credencial real para assinaturas ou pagamentos nesta operação. A conta de teste não poderá ser excluída. Continuar?'))return;
    sandboxBuyerPrepare.disabled=true;
-   sandboxCardResult.textContent='Preparando a conta fictícia de comprador pela API oficial, sem pagamentos…';
+   sandboxCardResult.textContent='Criando um comprador fictício pela API oficial, com autorização da conta real exclusivamente para cadastramento. Nenhuma assinatura ou pagamento será enviado…';
    try{
      const item=await sandboxRequest({action:'prepare_buyer_hml'});
      if(item.test!==true||item.prepared!==true||item.created_subscription!==false)
