@@ -123,7 +123,7 @@ Deno.serve(async(req:Request)=>{
      const sellerNickname=String(seller?.data?.nickname||"").toUpperCase();
      const buyerTestIdentity=buyerIdMatches&&
        (buyerEmail.endsWith("@testuser.com")||buyerNickname.startsWith("TEST"));
-     const buyerEmailAvailable=/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(buyerEmail);
+     const buyerEmailAvailable=/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(buyerEmail);
      const sellerTest=seller?.response?.ok===true&&
        (sellerEmail.endsWith("@testuser.com")||sellerNickname.startsWith("TEST"));
      const buyerTest=buyer?.response?.ok===true&&buyerTestIdentity&&buyerEmailAvailable;
