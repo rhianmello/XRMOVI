@@ -78,12 +78,38 @@ Deno.serve(async(req:Request)=>{
      .select("id,provider_id,status,checkout_url").eq("id","card-sandbox-only").single();
    if(recordError||!record)return reply(origin,{error:"Registro isolado indisponível"},503);
    const mpHeaders={Authorization:"Bearer "+mpToken,Accept:"application/json"};
+   const validateTestBuyer=async()=>{
+     // Test buyer ID is from the user's Mercado Pago developer test-account dashboard.
+     const res=await fetch("https://api.mercadopago.com/users/3674938694",{
+       headers:mpHeaders,signal:AbortSignal.timeout(12000)});
+     const account=await res.json().catch(()=>({}));
+     const email=String(account.email||"").trim().toLowerCase();
+     const verified=res.ok&&String(account.id)==="3674938694"&&
+       /^[^@\\s]+@testuser\\.com$/.test(email);
+     return {verified,email:verified?email:null,http_status:res.status};
+   };
    const safeCheckout=(value:unknown)=>{
      if(typeof value!=="string")return null;
      try{const u=new URL(value);const host=u.hostname.toLowerCase();
       return u.protocol==="https:"&&["mercadopago.com","mercadopago.com.br"].some(d=>host===d||host.endsWith("."+d))?u.href:null;
      }catch{return null}
    };
+   if(action==="diagnose_card_hml"){
+     try{
+       const buyer=await validateTestBuyer();
+       const sellerResponse=await fetch("https://api.mercadopago.com/users/me",{
+         headers:mpHeaders,signal:AbortSignal.timeout(12000)});
+       const seller=await sellerResponse.json().catch(()=>({}));
+       const email=String(seller.email||"").toLowerCase();
+       const sellerIsTest=sellerResponse.ok&&email.endsWith("@testuser.com");
+       return reply(origin,{test:true,diagnostic:true,buyer_verified:buyer.verified,
+         buyer_http_status:buyer.http_status,seller_is_test:sellerIsTest,
+         seller_http_status:sellerResponse.status,record_status:record.status,
+         provider_id_exists:!!record.provider_id,
+         can_safely_prepare:sellerIsTest&&buyer.verified&&!record.provider_id,
+         note:"Somente inspeção das contas Mercado Pago. Nenhuma assinatura foi criada."});
+     }catch{return reply(origin,{test:true,diagnostic:true,error:"Falha ao consultar contas de teste"},502)}
+   }
    if(action==="inspect_card_hml"){
      if(!record.provider_id){
        // Read-only recovery before any retry: an earlier POST may have reached Mercado Pago.
@@ -148,10 +174,12 @@ Deno.serve(async(req:Request)=>{
      .update({status:"pending",updated_at:new Date().toISOString()})
      .eq("id","card-sandbox-only").eq("status","not_created").select("id").maybeSingle();
    if(claimError||!claimed)return reply(origin,{error:"Uma tentativa já está em andamento. Não criamos outra assinatura."},409);
+   const buyer=await validateTestBuyer();
+   if(!buyer.verified||!buyer.email)return reply(origin,{error:"Não foi possível validar o e-mail da conta compradora de teste no Mercado Pago. Nenhuma assinatura foi criada.",buyer_http_status:buyer.http_status},503);
    const payload={
      reason:"XRMOVI HOMOLOGAÇÃO — Start — CARTÃO DE TESTE",
      external_reference:"xrmovi_hml_card_sandbox_only",
-     payer_email:"test_payer@example.com",
+     payer_email:buyer.email,
      auto_recurring:{frequency:1,frequency_type:"months",
        end_date:new Date(Date.now()+365*24*60*60*1000).toISOString(),
        transaction_amount:19.90,currency_id:"BRL"},
