@@ -66,14 +66,28 @@ Deno.serve(async(req:Request)=>{
    return reply(origin,publicTestOrder(data));
   }catch{return reply(origin,{error:"Não foi possível consultar o ambiente de teste"},502)}
  }
- if(action==="inspect_pix"){
+ if(action==="inspect_pix"||action==="simulate_settlement"){
   const id=String(input.order_id||"");
   if(!orderId.test(id))return reply(origin,{error:"Identificador de teste inválido"},400);
   try{
    const result=await fetch("https://api.mercadopago.com/v1/orders/"+encodeURIComponent(id),{headers:{"Authorization":"Bearer "+mpToken},signal:AbortSignal.timeout(15000)});
    const data=await result.json().catch(()=>({}));
    if(!result.ok)return reply(origin,{error:"Não foi possível consultar a ordem",http_status:result.status},502);
-   return reply(origin,publicTestOrder(data));
+   // Only orders explicitly created by the XRMOVI sandbox may participate.
+   if(typeof data.external_reference!=="string"||!data.external_reference.startsWith("xrmovi_hml_"))
+     return reply(origin,{error:"Ordem não pertence à homologação XRMOVI"},403);
+   if(action==="inspect_pix")return reply(origin,publicTestOrder(data));
+   const payment=data.transactions?.payments?.[0]||{};
+   const status=String(data.status||"").toLowerCase();
+   const detail=String(data.status_detail||payment.status_detail||"").toLowerCase();
+   const accredited=status==="processed"&&(detail==="accredited"||String(payment.status||"").toLowerCase()==="approved");
+   return reply(origin,{
+     test:true,order_id:id,provider_status:status,provider_detail:detail,
+     event_simulated:accredited?"payment_approved":"payment_pending",
+     would_grant_access:accredited,access_actually_changed:false,
+     billing_ledger_changed:false,webhook_delivered:false,
+     note:"Simulação da regra de liberação. Nenhum webhook externo foi recebido ou processado e nenhuma assinatura foi criada."
+   });
   }catch{return reply(origin,{error:"Consulta da ordem indisponível"},502)}
  }
  return reply(origin,{error:"Ação não reconhecida"},400);
