@@ -81,7 +81,7 @@
         <button class="fleet-subnav" data-view="fines"><i data-lucide="file-warning"></i><span>Multas e Infrações</span></button>
         <button class="fleet-subnav" data-view="alerts"><i data-lucide="bell"></i><span>Alertas</span><span id="nav-alert-count" class="fleet-nav-count">—</span></button>
         <button class="fleet-subnav" data-view="history"><i data-lucide="history"></i><span>Histórico</span></button>
-        <button class="fleet-subnav" data-view="financial"><i data-lucide="chart-no-axes-combined"></i><span>Relatórios financeiros</span></button>
+        <button class="fleet-subnav" data-view="financial"><i data-lucide="chart-no-axes-combined"></i><span>Relatórios</span></button>
         <button class="fleet-subnav" data-view="subscription" id="xrm-subscriptions-nav"><i data-lucide="credit-card"></i><span>Minha assinatura</span></button>
         <a class="fleet-subnav" href="../cliente/" style="text-decoration:none"><i data-lucide="messages-square"></i><span>Mensagens / Suporte</span></a>
         <button type="button" class="fleet-subnav" id="xrm-fleet-logout" style="color:#ffd2c6"><i data-lucide="log-out"></i><span>Sair da conta</span></button>
@@ -101,7 +101,7 @@
     <main class="fleet-main" id="fleet-main">
       <header class="fleet-topbar">
         <div class="fleet-breadcrumb"><strong>Gestão de Frota</strong><span>/</span><span id="fleet-view-label">Visão Geral</span><label class="xrm-header-contract">Contrato <select id="xrm-contract-filter" aria-label="Filtrar contrato"><option value="">Todos os contratos</option></select></label></div>
-        <label class="fleet-mobile-navigation">Tela<select id="fleet-mobile-view" aria-label="Abrir tela"><option value="dashboard">Visão Geral</option><option value="assets">Ativos / Veículos</option><option value="mileage">KM e Troca de Óleo</option><option value="maintenance">Manutenção / Despesas</option><option value="drivers">Motoristas</option><option value="documents">Central de Documentos</option><option value="fuel">Abastecimentos</option><option value="fines">Multas e Infrações</option><option value="alerts">Alertas</option><option value="history">Histórico</option><option value="financial">Relatórios financeiros</option><option value="subscription">Minha assinatura</option></select></label><div class="fleet-top-actions"><label class="xrm-mobile-company-switch" for="v3-company-mobile">Empresa <select id="v3-company-mobile" aria-label="Trocar empresa ativa"></select></label><a class="xrm-mobile-support-link" href="../cliente/" aria-label="Abrir mensagens e suporte">Suporte</a>
+        <label class="fleet-mobile-navigation">Tela<select id="fleet-mobile-view" aria-label="Abrir tela"><option value="dashboard">Visão Geral</option><option value="assets">Ativos / Veículos</option><option value="mileage">KM e Troca de Óleo</option><option value="maintenance">Manutenção / Despesas</option><option value="drivers">Motoristas</option><option value="documents">Central de Documentos</option><option value="fuel">Abastecimentos</option><option value="fines">Multas e Infrações</option><option value="alerts">Alertas</option><option value="history">Histórico</option><option value="financial">Relatórios</option><option value="subscription">Minha assinatura</option></select></label><div class="fleet-top-actions"><label class="xrm-mobile-company-switch" for="v3-company-mobile">Empresa <select id="v3-company-mobile" aria-label="Trocar empresa ativa"></select></label><a class="xrm-mobile-support-link" href="../cliente/" aria-label="Abrir mensagens e suporte">Suporte</a>
           <span class="fleet-session-email" id="fleet-session-email" hidden></span>
           <span class="fleet-connection fleet-top-connection" id="connection-status" data-status="loading"><span class="fleet-dot"></span> Consultando banco</span>
           
@@ -317,13 +317,17 @@
     <p class="xrm-fines-note">Prazos são informados a partir de documentos oficiais e devem ser conferidos no órgão autuador. Marcar como paga cria uma única despesa vinculada em Manutenção / Despesas; não cadastre a mesma multa novamente nessa tela.</p>
   </div>
 </section>
-<section id="view-financial" class="fleet-view hidden" aria-label="Relatórios financeiros"><div class="xrm-period-filters fleet-panel"><label>Período<select id="xrm-report-period"><option value="daily">Diário</option><option value="fortnight">Quinzenal</option><option value="monthly" selected>Mensal</option><option value="quarterly">Trimestral</option><option value="semiannual">Semestral</option><option value="custom">Personalizado</option></select></label><label>Data de referência<input id="xrm-report-anchor" type="date"></label><label>De<input id="xrm-report-from" type="date"></label><label>Até<input id="xrm-report-to" type="date"></label><button id="xrm-report-apply" type="button" class="fleet-button primary">Consultar período</button><span id="xrm-report-range-label" role="status"></span></div><div class="fleet-workspace-heading"><div><p class="eyebrow">GESTÃO DE FROTA</p><h2 tabindex="-1">Relatórios financeiros</h2><p>Consulte combustível e manutenção realizada por período e veículos filtrados.</p></div></div><div id="financial-period-slot" hidden></div><div class="fleet-report-actions" aria-label="Formatos de relatório">
+<section id="view-financial" class="fleet-view hidden" aria-label="Relatórios"><div class="xrm-period-filters fleet-panel"><label>Período<select id="xrm-report-period"><option value="daily">Diário</option><option value="fortnight">Quinzenal</option><option value="monthly" selected>Mensal</option><option value="quarterly">Trimestral</option><option value="semiannual">Semestral</option><option value="custom">Personalizado</option></select></label><label>Data de referência<input id="xrm-report-anchor" type="date"></label><label>De<input id="xrm-report-from" type="date"></label><label>Até<input id="xrm-report-to" type="date"></label><button id="xrm-report-apply" type="button" class="fleet-button primary">Consultar período</button><span id="xrm-report-range-label" role="status"></span></div><div class="fleet-workspace-heading"><div><p class="eyebrow">GESTÃO DE FROTA</p><h2 tabindex="-1">Relatórios</h2><p>Escolha o tipo de relatório, o período e os veículos. O filtro de motorista usa o vínculo atual com o veículo.</p></div></div><div class="xrm-period-filters fleet-panel" aria-label="Filtros do relatório">
+ <label>Tipo de relatório<select id="xrm-report-kind"><option value="all">Financeiro completo</option><option value="maintenance">Manutenção realizada</option><option value="fuel">Abastecimentos</option><option value="expense">Despesas pagas</option></select></label>
+ <label>Veículo<select id="xrm-report-vehicle"><option value="">Todos os veículos</option></select></label>
+ <label>Motorista vinculado<select id="xrm-report-driver"><option value="">Todos os motoristas</option></select></label>
+</div><div id="financial-period-slot" hidden></div><div class="fleet-report-actions" aria-label="Formatos de relatório">
  <button type="button" id="financial-export-csv" class="fleet-button primary">Exportar CSV</button>
  <button type="button" id="financial-print" class="fleet-button">PDF — Somente valores</button>
  <button type="button" id="financial-print-evidence" class="fleet-button primary">PDF — Valores + comprovantes</button>
 </div>
 <p id="financial-print-status" class="fleet-workspace-note" role="status" aria-live="polite">
- O segundo formato inclui as fotos e páginas de PDF anexadas aos abastecimentos, organizadas por veículo.
+ O PDF com comprovantes inclui anexos dos abastecimentos selecionados, organizados por veículo.
 </p></section>
         <section id="view-subscription" class="fleet-view hidden" role="tabpanel" aria-label="Minha assinatura"><div id="xrm-subscription-content"></div></section>
 <section id="view-alerts" class="fleet-view hidden" role="tabpanel" aria-label="Alertas"><div class="fleet-view-heading"><div><p class="eyebrow">AÇÃO &amp; PREVENÇÃO</p><h2>Central de Alertas</h2><p>Alertas da frota correspondentes aos filtros selecionados.</p></div><div class="fleet-inline-title"><span id="alerts-total" class="fleet-chip">—</span></div></div><section id="xrm-mileage-alerts" class="xrm-mileage-alerts" aria-label="Alertas de óleo e quilometragem"></section><div id="alerts-content" class="fleet-alert-groups"></div></section>
@@ -344,7 +348,7 @@
 <script defer src="./xrmovi-local-assistant.js?v=20261030-v4-3"></script>
 <script defer src="/analytics/xrmovi-analytics.js?v=20261105-ga4-purchase-1"></script>
  <script type="module" src="/analytics/xrmovi-bridge.js?v=20261105-1"></script>
- <script type="module" src="./xrmovi-adapter.js?v=20261112-service-approval-1"></script>
+ <script type="module" src="./xrmovi-adapter.js?v=20261112-report-filters-1"></script>
  <script defer src="./mobile-experience.js?v=20261106-mileage-separate-1"></script>
 <script type="module" src="/analytics/xrmovi-presence.js?v=20261109-1"></script>
 </body>
