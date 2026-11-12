@@ -12,6 +12,9 @@ async function open({configFailure=false,viewport={width:1280,height:900}}={}){
  await page.exposeFunction('recordAuthCall',call=>calls.push(call));
  await page.addInitScript(()=>{
   window.mockClient={auth:{
+   getUser:async()=>({data:{user:null},error:null}),
+   getSession:async()=>({data:{session:null},error:null}),
+   onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),
    signUp:async args=>{await window.recordAuthCall({method:'signup',args});return {data:{session:null},error:null};},
    signInWithPassword:async args=>{await window.recordAuthCall({method:'signin',args});return {data:{session:{}},error:null};},
    resetPasswordForEmail:async(email,args)=>{await window.recordAuthCall({method:'recover',email,args});return {error:null};}
@@ -53,4 +56,18 @@ test('verified sign-in opens fleet; configuration failure disables access',async
 test('mobile access fits viewport and copy distinguishes manual Pix renewal',async()=>{
  const {page,errors}=await open({viewport:{width:390,height:844}});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  await page.locator('#xrm-auth-close').click();assert.match(await page.locator('body').innerText(),/Pix.*renovação manual/);assert.deepEqual(errors,[]);await page.close();
+});
+
+
+test('new vehicle-price simulator updates the total and CTA without reloading',async()=>{
+ const {page,errors}=await open({viewport:{width:390,height:844}});
+ await page.locator('#xrm-auth-close').click();
+ const simulator=page.locator('[data-fleet-calculator]');
+ await simulator.locator('[data-fleet-count]').fill('10');
+ await page.getByText('R$ 39,90',{exact:true}).first().waitFor();
+ const link=await simulator.locator('[data-fleet-cta]').first().getAttribute('href');
+ assert.match(link,/vehicles=10/);
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+ assert.deepEqual(errors,[]);
+ await page.close();
 });
