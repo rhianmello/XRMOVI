@@ -7,10 +7,10 @@ export function setupTrialCountdown({onExpire}){
  banner.hidden=true;
  banner.style.cssText='position:fixed;z-index:70;top:78px;right:16px;max-width:min(365px,calc(100vw - 32px));border-radius:12px;border:1px solid #50cba4;background:#113c48;color:#ebffff;box-shadow:0 15px 40px #0006;padding:12px 16px;font:650 13px/1.5 system-ui;';
  document.body.append(banner);
- let timer=null,exp=0,clockDelta=0,fired=false;
- function stop(){if(timer){clearInterval(timer);timer=null;}banner.hidden=true;exp=0;fired=false}
+ let timer=null,remainingAtSync=0,monotonicStart=0,fired=false;
+ function stop(){if(timer){clearInterval(timer);timer=null;}banner.hidden=true;remainingAtSync=0;fired=false}
  function tick(){
-  const left=Math.max(0,exp-(Date.now()+clockDelta));
+  const left=Math.max(0,remainingAtSync-(performance.now()-monotonicStart));
   const seconds=Math.ceil(left/1000);
   const hours=Math.floor(seconds/3600),mins=Math.floor(seconds%3600/60),secs=seconds%60;
   banner.textContent='⏳ Teste gratuito termina em '+[hours,mins,secs].map(x=>String(x).padStart(2,'0')).join(':');
@@ -21,8 +21,8 @@ export function setupTrialCountdown({onExpire}){
   const when=Date.parse(String(state.trial_end)),server=Date.parse(String(state.server_now||''));
   if(!Number.isFinite(when)){stop();return}
   if(timer)clearInterval(timer);
-  clockDelta=Number.isFinite(server)?server-Date.now():0;
-  exp=when;fired=false;banner.hidden=false;tick();
+  remainingAtSync=when-(Number.isFinite(server)?server:Date.now());
+  monotonicStart=performance.now();fired=false;banner.hidden=false;tick();
   timer=setInterval(tick,1000);
  }
  return {sync,stop};
