@@ -41,6 +41,26 @@
 #company-name-error:empty{display:none}
 .company-name-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px}
 </style>
+<style>
+  .fleet-session-email {
+    min-width: 0;
+    max-width: 260px;
+    padding: 4px 8px;
+    border: 1px solid var(--fleet-border, #37546b);
+    border-radius: 6px;
+    color: #d9eaf8;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+  @media (max-width: 760px) {
+    .fleet-session-email {
+      order: -1;
+      flex: 0 0 100%;
+      max-width: 100%;
+      text-align: right;
+    }
+  }
+</style>
 </head>
 <body class="fleet-page">
   <a class="fleet-skip" href="#fleet-main">Ir para o conteúdo</a>
@@ -82,6 +102,7 @@
       <header class="fleet-topbar">
         <div class="fleet-breadcrumb"><strong>Gestão de Frota</strong><span>/</span><span id="fleet-view-label">Visão Geral</span><label class="xrm-header-contract">Contrato <select id="xrm-contract-filter" aria-label="Filtrar contrato"><option value="">Todos os contratos</option></select></label></div>
         <label class="fleet-mobile-navigation">Tela<select id="fleet-mobile-view" aria-label="Abrir tela"><option value="dashboard">Visão Geral</option><option value="assets">Ativos / Veículos</option><option value="mileage">KM e Troca de Óleo</option><option value="maintenance">Manutenção / Despesas</option><option value="drivers">Motoristas</option><option value="documents">Central de Documentos</option><option value="fuel">Abastecimentos</option><option value="fines">Multas e Infrações</option><option value="alerts">Alertas</option><option value="history">Histórico</option><option value="financial">Relatórios financeiros</option><option value="subscription">Minha assinatura</option></select></label><div class="fleet-top-actions"><label class="xrm-mobile-company-switch" for="v3-company-mobile">Empresa <select id="v3-company-mobile" aria-label="Trocar empresa ativa"></select></label><a class="xrm-mobile-support-link" href="../cliente/" aria-label="Abrir mensagens e suporte">Suporte</a>
+          <span class="fleet-session-email" id="fleet-session-email" hidden></span>
           <span class="fleet-connection fleet-top-connection" id="connection-status" data-status="loading"><span class="fleet-dot"></span> Consultando banco</span>
           
           <button class="fleet-icon-button" id="xrm-fleet-logout-mobile" title="Sair da conta" aria-label="Sair da conta"><i data-lucide="log-out"></i></button>
@@ -323,7 +344,7 @@
 <script defer src="./xrmovi-local-assistant.js?v=20261030-v4-3"></script>
 <script defer src="/analytics/xrmovi-analytics.js?v=20261105-ga4-purchase-1"></script>
  <script type="module" src="/analytics/xrmovi-bridge.js?v=20261105-1"></script>
- <script type="module" src="./xrmovi-adapter.js?v=20261112-driver-portal-1"></script>
+ <script type="module" src="./xrmovi-adapter.js?v=20261112-session-email-1"></script>
  <script defer src="./mobile-experience.js?v=20261106-mileage-separate-1"></script>
 <script type="module" src="/analytics/xrmovi-presence.js?v=20261109-1"></script>
 </body>
