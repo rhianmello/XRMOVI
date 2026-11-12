@@ -338,6 +338,8 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
       <input id="xrm-sandbox-order-id" type="text" maxlength="110" placeholder="Cole aqui o identificador ORD...">
       <button type="button" class="btn outline" id="xrm-sandbox-inspect">Consultar status da ordem</button>
       <button type="button" class="btn outline" id="xrm-sandbox-settlement">Testar liberação simulada (sem alterar contas)</button>
+      <button type="button" class="btn" id="xrm-sandbox-activate">Ativar acesso fictício de homologação</button>
+      <p id="xrm-sandbox-activate-result" role="status" aria-live="polite" hidden></p>
       <p id="xrm-sandbox-settlement-result" role="status" aria-live="polite" hidden></p>
       <p id="xrm-sandbox-feedback" role="status" aria-live="polite">Aguardando verificação do ambiente de teste.</p>
       <div id="xrm-sandbox-qr-panel" hidden>
@@ -377,6 +379,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
 .xrm-sandbox-stage input,.xrm-sandbox-stage textarea{width:100%;min-width:0;background:#071925;color:#eaffff;border:1px solid #50778a;border-radius:8px;padding:11px;font:inherit}
 #xrm-sandbox-qr-panel{display:grid;gap:11px;border:1px solid #30756d;background:#082e37;padding:13px;border-radius:10px}
 #xrm-sandbox-settlement-result{border:1px solid #30756d;background:#082e37;padding:13px;border-radius:10px;line-height:1.6;font-size:13px}
+#xrm-sandbox-activate-result{border:1px solid #30756d;background:#082e37;padding:13px;border-radius:10px;line-height:1.6;font-size:13px}
 
 #xrm-sandbox-qr-panel[hidden]{display:none}
 #xrm-sandbox-qr-image{width:min(240px,100%);height:auto;background:#fff;padding:10px;border-radius:8px;justify-self:center}
@@ -400,6 +403,8 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
  const sandboxCreate=document.getElementById('xrm-sandbox-create');
  const sandboxInspect=document.getElementById('xrm-sandbox-inspect');
  const sandboxSettlement=document.getElementById('xrm-sandbox-settlement');
+ const sandboxActivate=document.getElementById('xrm-sandbox-activate');
+ const sandboxActivateResult=document.getElementById('xrm-sandbox-activate-result');
  const sandboxSettlementResult=document.getElementById('xrm-sandbox-settlement-result');
  const sandboxFeedback=document.getElementById('xrm-sandbox-feedback');
  const sandboxOrderInput=document.getElementById('xrm-sandbox-order-id');
@@ -529,6 +534,21 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
     : 'PENDENTE NA SIMULAÇÃO: a ordem ainda não está creditada. A regra não liberaria acesso. Nenhuma conta ou receita foi alterada.';
   }catch(e){sandboxSettlementResult.textContent='Não foi possível testar a regra de liberação: '+(e?.message||'falha')}
   finally{sandboxSettlement.disabled=false}
+ });
+ sandboxActivate?.addEventListener('click',async()=>{
+  const id=(sandboxOrderInput.value||sandboxOrderId).trim();
+  sandboxActivateResult.hidden=false;
+  if(!/^ORD[A-Z0-9]{8,100}$/.test(id)){sandboxActivateResult.textContent='Informe uma ordem de homologação ORD... válida.';return;}
+  if(!confirm('Ativar SOMENTE o registro fictício sandbox-only após verificar a ordem no Mercado Pago? Clientes e receita reais permanecerão inalterados.'))return;
+  sandboxActivate.disabled=true;sandboxActivateResult.textContent='Consultando Mercado Pago e verificando a autorização do teste…';
+  try{
+   const result=await sandboxRequest({action:'activate_hml_access',order_id:id});
+   if(result.test!==true||result.real_customer_changed===true||result.revenue_changed===true)throw Error('Resposta de segurança inesperada');
+   sandboxActivateResult.textContent=result.activated
+    ? 'ACESSO DE HOMOLOGAÇÃO ATIVO: registro fictício sandbox-only atualizado com a ordem '+result.order_id+'. Nenhum cliente real ou receita foi modificado.'
+    : 'NÃO ATIVADO: ordem de teste ainda não está creditada. Situação: '+(result.status||result.reason||'indisponível');
+  }catch(e){sandboxActivateResult.textContent='Falha na homologação: '+(e?.message||'erro desconhecido')}
+  finally{sandboxActivate.disabled=false}
  });
 })();
 </script>
