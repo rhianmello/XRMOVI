@@ -175,6 +175,7 @@ export async function showXrmoviOnboarding({login,client,onCreated,onLogout,exis
     if(frozenPlan||pendingCheckout)throw Error('Você já iniciou uma contratação; conclua ou verifique esse pagamento.');
     const {data:trial,error}=await client.rpc('xrmovi_start_trial',{cid:companyId});
     if(error||trial?.status!=='trial')throw Error(error?.message||'Não foi possível iniciar o teste.');
+    window.XrmoviAnalytics?.track('xrmovi_trial_started',{location:'registration'});
     try{localStorage.removeItem('xrmovi_fleet_trial_intent')}catch{}
     login.hidden=true;await onCreated(data);return;
    }
