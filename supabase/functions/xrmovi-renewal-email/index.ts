@@ -11,7 +11,7 @@ const fmtDate=(v:string)=>new Intl.DateTimeFormat("pt-BR",{
  timeZone:"America/Sao_Paulo",day:"2-digit",month:"2-digit",year:"numeric"
 }).format(new Date(v));
 const fmtMoney=(v:number)=>new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v);
-const link="https://frota.nospassa.com.br/v3/#subscription";
+const link="https://xrmovi.com.br/v3/#subscription";
 Deno.serve(async(req:Request)=>{
  if(req.method!=="POST")return respond({error:"Method not allowed"},405);
  const supplied=req.headers.get("x-xrmovi-worker-secret")||"";
