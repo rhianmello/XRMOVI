@@ -18,7 +18,7 @@ function validCpf(value:string){
 Deno.serve(async(req:Request)=>{
  const origin=req.headers.get("origin")||"";
  if(origin&&!ORIGINS.has(origin))return respond({error:"Origem não autorizada."},403,origin);
- if(req.method==="OPTIONS")return new Response(null,{status:204,headers:{"access-control-allow-origin":origin||"https://frota.nospassa.com.br","access-control-allow-methods":"POST,OPTIONS","access-control-allow-headers":"authorization,apikey,content-type,x-client-info"}});
+ if(req.method==="OPTIONS")return new Response(null,{status:204,headers:{"access-control-allow-origin":origin||"https://xrmovi.com.br","access-control-allow-methods":"POST,OPTIONS","access-control-allow-headers":"authorization,apikey,content-type,x-client-info"}});
  if(req.method!=="POST")return respond({error:"Método inválido."},405,origin);
  const auth=req.headers.get("authorization")||"";
  if(!auth.startsWith("Bearer "))return respond({error:"Entre na conta."},401,origin);
