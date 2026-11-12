@@ -254,15 +254,17 @@ Deno.serve(async(req:Request)=>{
    if(secret.length<20||!key)return reply(origin,{error:"Teste de webhook indisponível."},503);
    const service=createClient(url,key,{auth:{autoRefreshToken:false,persistSession:false}});
    const {data:row,error:lookupError}=await service.from("xrmovi_hml_card_subscriptions")
-     .select("provider_id,status,external_reference").eq("id","card-sandbox-only").maybeSingle();
+     .select("provider_id,status,external_reference,last_invoice_id,last_payment_id,last_payment_status").eq("id","card-sandbox-only").maybeSingle();
    if(lookupError||row?.status!=="created"||!row?.provider_id||
      row.external_reference!=="xrmovi_hml_card_sandbox_only")
      return reply(origin,{error:"Não existe assinatura fictícia válida para testar.",test:true},409);
+   let stage="prepare";
    const testGet=async(path:string)=>{
+     stage=path.startsWith("/preapproval/")?"subscription_lookup":"invoice_lookup";
      const res=await fetch("https://api.mercadopago.com"+path,{
        headers:{Authorization:"Bearer "+mpToken,Accept:"application/json"},
        signal:AbortSignal.timeout(12000)});
-     if(!res.ok)throw Error("test_provider_not_available");
+     if(!res.ok)throw Error("test_provider_http_"+res.status);
      return res.json();
    };
    try{
@@ -272,15 +274,23 @@ Deno.serve(async(req:Request)=>{
        sub.auto_recurring?.currency_id!=="BRL"||
        Math.abs(Number(sub.auto_recurring?.transaction_amount)-19.90)>0.009)
        return reply(origin,{error:"Assinatura não pertence ao teste isolado.",test:true},403);
-     const invoices=await testGet("/authorized_payments/search?preapproval_id="+
-       encodeURIComponent(row.provider_id)+"&limit=50");
-     const approved=Array.isArray(invoices.results)?invoices.results.find((v:any)=>
-       String(v.preapproval_id)===row.provider_id&&v.currency_id==="BRL"&&
-       Math.abs(Number(v.transaction_amount)-19.90)<0.009&&
-       v.payment?.status==="approved"&&/^\d+$/.test(String(v.id||""))):null;
+     // Existing signed webhook already saved the test invoice ID. Fetch that
+     // resource directly; /authorized_payments/search may reject preapproval_id.
+     let approved:any=null;
+     if(/^\d+$/.test(String(row.last_invoice_id||""))&&row.last_payment_status==="approved"){
+       const invoice=await testGet("/authorized_payments/"+encodeURIComponent(row.last_invoice_id));
+       if(String(invoice.id)===String(row.last_invoice_id)&&
+          String(invoice.preapproval_id)===row.provider_id&&
+          invoice.currency_id==="BRL"&&
+          Math.abs(Number(invoice.transaction_amount)-19.90)<0.009&&
+          invoice.payment?.status==="approved"&&
+          String(invoice.payment.id)===String(row.last_payment_id))
+          approved=invoice;
+     }
      const events=[{topic:"subscription_preapproval",id:row.provider_id}];
      if(approved)events.push({topic:"subscription_authorized_payment",id:String(approved.id)});
      const received:any[]=[];
+     stage="webhook_delivery";
      for(const event of events){
        const ts=String(Math.floor(Date.now()/1000));
        const requestId=crypto.randomUUID();
@@ -315,9 +325,17 @@ Deno.serve(async(req:Request)=>{
        payment_status:after?.last_payment_status||null,
        test_invoice_found:!!approved,deliveries:received,
        real_customer_changed:false,revenue_changed:false},passed?200:502);
-   }catch{return reply(origin,{test:true,passed:false,
-     error:"Falha no teste de webhook de cartão. Não foi criada nova cobrança.",
-     simulated_only:true,real_mercadopago_webhook_delivery_tested:false},502)}
+   }catch(e){
+     const diagnostic=e instanceof Error?String(e.message):"unknown";
+     // Only stage and HTTP category; never disclose provider payload, token, identity.
+     const safeReason=/^test_provider_http_\d{3}$/.test(diagnostic)?diagnostic:
+       diagnostic==="test_provider_not_available"?"provider_unavailable":"internal_error";
+     console.warn("XRMOVI sandbox signed-card-test failed",{stage,reason:safeReason});
+     return reply(origin,{test:true,passed:false,
+       error:"Falha na conferência do webhook de cartão. Nenhuma cobrança foi criada.",
+       failed_stage:stage,reason:safeReason,
+       simulated_only:true,real_mercadopago_webhook_delivery_tested:false},502)
+   }
  }
  if(action==="run_signed_webhook_hml"){
    const id=String(input.order_id||"");
