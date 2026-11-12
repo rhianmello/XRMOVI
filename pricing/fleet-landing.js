@@ -1,4 +1,4 @@
-import {wireFleetCalculator} from './fleet-pricing.js';
+import {wireFleetCalculator} from './fleet-pricing.js?v=20261112-ladder1';
 const root=document.querySelector('[data-fleet-calculator]');
 const controls=wireFleetCalculator(root,{initial:5,onChange:quote=>{
  const qty=quote.count;
