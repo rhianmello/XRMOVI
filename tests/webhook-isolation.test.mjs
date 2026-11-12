@@ -63,3 +63,15 @@ test('integrated homologation uses an internally signed webhook only after admin
  assert.match(sandbox,/real_mercadopago_webhook_delivery_tested:false/);
  assert.doesNotMatch(sandbox,/xrmovi_pix_settle|xrmovi_checkout_settle/);
 });
+
+test('recurring card sandbox uses test credential and a single isolated preapproval',()=>{
+ assert.match(sandbox,/create_card_hml/);
+ assert.match(sandbox,/inspect_card_hml/);
+ assert.match(sandbox,/XRMOVI_MP_TEST_ACCESS_TOKEN/);
+ assert.match(sandbox,/xrmovi_hml_card_subscriptions/);
+ assert.match(sandbox,/xrmovi_hml_card_sandbox_only/);
+ assert.match(sandbox,/status:"pending"/);
+ assert.match(sandbox,/preapproval/);
+ assert.match(sandbox,/status","not_created"/);
+ assert.doesNotMatch(sandbox,/xrmovi_checkout_settle|xrmovi_pix_settle/);
+});
