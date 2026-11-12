@@ -66,6 +66,59 @@ Deno.serve(async(req:Request)=>{
    return reply(origin,publicTestOrder(data));
   }catch{return reply(origin,{error:"Não foi possível consultar o ambiente de teste"},502)}
  }
+ if(action==="run_signed_webhook_hml"){
+   const id=String(input.order_id||"");
+   if(!orderId.test(id))return reply(origin,{error:"Identificador de homologação inválido"},400);
+   const webhookSecret=Deno.env.get("XRMOVI_MP_TEST_WEBHOOK_SECRET")||"";
+   const serviceKey=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")||"";
+   if(webhookSecret.length<20||!serviceKey)return reply(origin,{error:"Serviços de homologação indisponíveis"},503);
+   try{
+     // Verify order with the TEST Mercado Pago credential before any test write.
+     const check=await fetch("https://api.mercadopago.com/v1/orders/"+encodeURIComponent(id),{
+       headers:{Authorization:"Bearer "+mpToken},signal:AbortSignal.timeout(12000)});
+     if(!check.ok)return reply(origin,{error:"Ordem de teste não encontrada"},404);
+     const ord=await check.json(),p=ord.transactions?.payments?.[0]||{};
+     const ref=String(ord.external_reference||"");
+     const detail=String(ord.status_detail||p.status_detail||"").toLowerCase();
+     if(String(ord.id)!==id||!ref.startsWith("xrmovi_hml_")||
+        Math.abs(Number(ord.total_amount||p.amount||0)-50)>0.009||
+        !(String(ord.status||"").toLowerCase()==="processed"&&
+          (detail==="accredited"||String(p.status||"").toLowerCase()==="approved")))
+       return reply(origin,{test:true,passed:false,error:"Ordem ainda não creditada ou não pertence à homologação"},409);
+     const service=createClient(url,serviceKey,{auth:{autoRefreshToken:false,persistSession:false}});
+     const {error:resetError}=await service.from("xrmovi_hml_entitlements").upsert({
+       id:"sandbox-only",order_id:id,external_reference:ref,status:"pending",
+       activated_at:null,updated_at:new Date().toISOString()
+     },{onConflict:"id"});
+     if(resetError)return reply(origin,{error:"Falha ao preparar registro fictício"},500);
+     // Deterministic in-house signed notification; NOT a provider-delivered event.
+     const ts=String(Math.floor(Date.now()/1000));
+     const requestId=crypto.randomUUID();
+     const manifest="id:"+id.toLowerCase()+";request-id:"+requestId+";ts:"+ts+";";
+     const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(webhookSecret),{
+       name:"HMAC",hash:"SHA-256"},false,["sign"]);
+     const signature=Array.from(new Uint8Array(await crypto.subtle.sign("HMAC",key,new TextEncoder().encode(manifest))))
+       .map(b=>b.toString(16).padStart(2,"0")).join("");
+     const endpoint=url+"/functions/v1/xrmovi-webhook-sandbox?data.id="+encodeURIComponent(id)+"&type=order";
+     const incoming=await fetch(endpoint,{method:"POST",headers:{
+       "content-type":"application/json","x-request-id":requestId,"x-signature":"ts="+ts+",v1="+signature},
+       body:JSON.stringify({type:"order",action:"order.updated",live_mode:false,data:{id}}),
+       signal:AbortSignal.timeout(20000)});
+     const outcome=await incoming.json().catch(()=>({}));
+     const {data:row,error:readError}=await service.from("xrmovi_hml_entitlements")
+       .select("order_id,status,activated_at").eq("id","sandbox-only").maybeSingle();
+     const passed=incoming.status===200&&outcome.signature_valid===true&&
+       outcome.isolated_access_activated===true&&!readError&&
+       row?.order_id===id&&row?.status==="active";
+     return reply(origin,{test:true,passed,webhook_http_status:incoming.status,
+       signature_valid:outcome.signature_valid===true,
+       isolated_access_activated:passed,record_status:row?.status||"unavailable",
+       webhook_event_source:"internally_signed_simulation",
+       real_mercadopago_webhook_delivery_tested:false,
+       customers_changed:false,revenue_changed:false},passed?200:502);
+   }catch(e){return reply(origin,{test:true,passed:false,error:"Falha no teste integrado de webhook",
+      reason:e instanceof Error?e.name:"unknown"},502)}
+ }
  if(action==="inspect_pix"||action==="simulate_settlement"||action==="activate_hml_access"){
   const id=String(input.order_id||"");
   if(!orderId.test(id))return reply(origin,{error:"Identificador de teste inválido"},400);
