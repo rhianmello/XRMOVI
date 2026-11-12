@@ -181,11 +181,13 @@ export function setupSubscriptionPanel({client,getCompany,onCompanyCreated,onDat
  });
 
  // Server-side quote and capacity update, without changing an existing paid subscription.
+ let lockedLegacyCheckout=null;
  async function ensureCheckoutCapacity(){
   const selected=getCompany();
   if(!selected)throw Error('Selecione sua empresa.');
   if(!current||!['pending','trial'].includes(current.status))
    throw Error('A assinatura atual não pode ser alterada por um novo pagamento.');
+  if(lockedLegacyCheckout)return {code:lockedLegacyCheckout};
   const count=fleetCalculator.quote.count;
   const {data,error}=await client.rpc('xrmovi_set_checkout_capacity',{cid:selected.id,p_count:count});
   if(error||!data?.code)throw Error(error?.message||'Não foi possível confirmar a capacidade.');
@@ -260,7 +262,8 @@ export function setupSubscriptionPanel({client,getCompany,onCompanyCreated,onDat
        const original=String(attempt.requested_plan||'');
        const choices=root.querySelector('#xrm-bill-plan-form input[name="plan"]');
        if([...choices.options].some(option=>option.value===original)){
-        choices.value=original;if(/^fleet_\d+$/.test(original))fleetCalculator?.setCount(Number(original.slice(6)));
+        if(!/^fleet_\d+$/.test(original))lockedLegacyCheckout=original;
+         choices.value=original;if(/^fleet_\d+$/.test(original))fleetCalculator?.setCount(Number(original.slice(6)));
        }
        checkoutButton.textContent='Retomar pagamento pendente';
        billingNotice.textContent='Identificamos uma tentativa anterior de '+(original||'assinatura')+'. O sistema reutilizará a mesma referência no Mercado Pago; não será criada outra assinatura independente.';
