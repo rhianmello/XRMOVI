@@ -329,6 +329,14 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
     <fieldset><legend>Forma de pagamento (demonstração)</legend><label><input type="radio" name="xrm-preview-method" value="pix" checked> Pix mensal</label><label><input type="radio" name="xrm-preview-method" value="card"> Cartão recorrente</label></fieldset>
     <button class="btn" id="xrm-preview-next" type="button">Continuar simulação</button>
     <button class="btn outline" id="xrm-preview-connectivity" type="button">Verificar conexão com pagamentos (sem cobrança)</button>
+    <div class="xrm-sandbox-stage" aria-label="Homologação real no Mercado Pago">
+      <strong>Homologação Mercado Pago — somente proprietário</strong>
+      <p>Teste integrado com credenciais de teste. Não usa assinaturas nem pagamentos de clientes. O Pix de homologação tem valor fixo fictício de R$ 50,00, independente do plano selecionado.</p>
+      <button type="button" class="btn outline" id="xrm-sandbox-check">Verificar ambiente de homologação</button>
+      <button type="button" class="btn" id="xrm-sandbox-create" disabled>Gerar ordem Pix de teste</button>
+      <button type="button" class="btn outline" id="xrm-sandbox-inspect" hidden>Consultar status da ordem</button>
+      <p id="xrm-sandbox-feedback" role="status" aria-live="polite">Aguardando verificação do ambiente de teste.</p>
+    </div>
     <div id="xrm-preview-connectivity-result" role="status" aria-live="polite" hidden></div>
     <div id="xrm-preview-result" role="status" aria-live="polite" hidden></div>
     <p class="xrm-preview-caption">A simulação não acessa Mercado Pago nem Supabase. A verificação de conexão consulta somente a disponibilidade do serviço, sem criar pagamento. Para homologação completa com sandbox, são necessárias credenciais de teste isoladas e backend dedicado.</p>
@@ -349,6 +357,11 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
 .xrm-checkout-preview fieldset label{display:flex;align-items:center;gap:8px}
 #xrm-preview-result{border:1px solid #2c8170;background:#0a403e;padding:14px;border-radius:10px;font-size:13px;line-height:1.6}
 #xrm-preview-connectivity-result{border:1px solid #456475;background:#0b3143;padding:14px;border-radius:10px;font-size:13px;line-height:1.6}
+.xrm-sandbox-stage{border:1px solid #346476;border-radius:12px;padding:16px;display:grid;gap:12px;background:#082232}
+.xrm-sandbox-stage strong{color:#8fe7ce;font-size:13px}
+.xrm-sandbox-stage button:disabled{opacity:.5;cursor:not-allowed}
+.xrm-sandbox-stage #xrm-sandbox-feedback{color:#d0e3ed;overflow-wrap:anywhere}
+
 .xrm-checkout-preview .xrm-preview-caption{font-size:11px}
 @media(max-width:520px){.xrm-checkout-preview-content{padding:16px}.xrm-checkout-preview{width:calc(100vw - 20px)}}
 </style>
@@ -362,6 +375,13 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
  const plan=document.getElementById('xrm-preview-plan');
  const connectivity=document.getElementById('xrm-preview-connectivity');
  const connectionResult=document.getElementById('xrm-preview-connectivity-result');
+ const sandboxCheck=document.getElementById('xrm-sandbox-check');
+ const sandboxCreate=document.getElementById('xrm-sandbox-create');
+ const sandboxInspect=document.getElementById('xrm-sandbox-inspect');
+ const sandboxFeedback=document.getElementById('xrm-sandbox-feedback');
+ const sandboxEndpoint='https://ztqtcbzjesrkuaijmylm.supabase.co/functions/v1/xrmovi-payment-sandbox';
+ let sandboxOrderId='';
+ let sandboxReady=false;
  if(!modal||!open||!close||!next||!result||!plan||!connectivity||!connectionResult)return;
  open.addEventListener('click',()=>{result.hidden=true;connectionResult.hidden=true;modal.showModal()});
  close.addEventListener('click',()=>modal.close());
@@ -397,6 +417,54 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
    connectionResult.textContent=message;
   }catch(error){connectionResult.textContent='Não foi possível validar a conexão: '+(error?.name==='AbortError'?'tempo limite excedido':error?.message||'falha de rede')+'. Nenhuma cobrança foi criada.'}
   finally{connectivity.disabled=false}
+ });
+ async function checkSandbox(){
+  sandboxReady=false;sandboxCreate.disabled=true;sandboxInspect.hidden=true;
+  sandboxFeedback.textContent='Conferindo se o ambiente de homologação está habilitado…';
+  try{
+   const response=await fetch(sandboxEndpoint,{method:'GET',cache:'no-store',headers:{Accept:'application/json'}});
+   if(!response.ok)throw Error('HTTP '+response.status);
+   const info=await response.json();
+   sandboxReady=info.mode==='sandbox'&&info.available===true;
+   sandboxCreate.disabled=!sandboxReady;
+   sandboxFeedback.textContent=sandboxReady
+    ? 'Ambiente de teste disponível. A geração da ordem exige login do proprietário. Nenhum valor real será cobrado.'
+    : 'Homologação aguardando configuração do token de teste e ativação no Supabase. Nenhuma cobrança pode ser gerada.';
+  }catch(e){sandboxFeedback.textContent='Não foi possível verificar o ambiente de teste: '+(e?.message||'erro de conexão')}
+ }
+ async function sandboxRequest(input){
+  const config=await fetch('/v3/config.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('Configuração indisponível');return r.json()});
+  const sdk=await import('https://esm.sh/@supabase/supabase-js@2.58.0');
+  const client=sdk.createClient(config.supabaseUrl,config.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true}});
+  const {data:{session}}=await client.auth.getSession();
+  if(!session?.access_token)throw Error('Entre primeiro na sua conta de proprietário para homologar. Não é necessário criar outro cadastro.');
+  const response=await fetch(sandboxEndpoint,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+session.access_token,'apikey':config.supabaseAnonKey},body:JSON.stringify(input)});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw Error(data.error||'Falha na homologação (HTTP '+response.status+')');
+  return data;
+ }
+ sandboxCheck?.addEventListener('click',()=>void checkSandbox());
+ sandboxCreate?.addEventListener('click',async()=>{
+  if(!sandboxReady)return;
+  if(!confirm('Criar uma ordem PIX FICTÍCIA de R$ 50,00 no ambiente de TESTE do Mercado Pago? Nenhuma venda ou assinatura será registrada no XRMOVI.'))return;
+  sandboxCreate.disabled=true;sandboxFeedback.textContent='Criando ordem de teste…';
+  try{
+   const data=await sandboxRequest({action:'create_pix'});
+   if(!data.test||!data.order_id)throw Error('Resposta de teste inválida');
+   sandboxOrderId=data.order_id;
+   sandboxFeedback.textContent='Ordem de TESTE criada: '+data.order_id+' · Situação: '+data.status+'. Não transfira dinheiro nem pague qualquer QR Code de homologação.';
+   sandboxInspect.hidden=false;
+  }catch(e){sandboxFeedback.textContent='Teste não executado: '+(e?.message||'erro desconhecido')}
+  finally{sandboxCreate.disabled=!sandboxReady}
+ });
+ sandboxInspect?.addEventListener('click',async()=>{
+  if(!sandboxOrderId)return;
+  sandboxInspect.disabled=true;
+  try{
+   const data=await sandboxRequest({action:'inspect_pix',order_id:sandboxOrderId});
+   sandboxFeedback.textContent='Ordem de TESTE '+data.order_id+' · Situação atual: '+data.status+' ('+(data.status_detail||'sem detalhe')+'). Isto não libera assinatura real.';
+  }catch(e){sandboxFeedback.textContent='Falha ao consultar teste: '+(e?.message||'erro')}
+  finally{sandboxInspect.disabled=false}
  });
 })();
 </script>
