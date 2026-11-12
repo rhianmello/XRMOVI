@@ -339,6 +339,8 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
       <button type="button" class="btn outline" id="xrm-sandbox-inspect">Consultar status da ordem</button>
       <button type="button" class="btn outline" id="xrm-sandbox-settlement">Testar liberação simulada (sem alterar contas)</button>
       <button type="button" class="btn" id="xrm-sandbox-activate">Ativar acesso fictício de homologação</button>
+      <button type="button" class="btn outline" id="xrm-sandbox-webhook-run">Testar webhook assinado e acesso automático</button>
+      <p id="xrm-sandbox-webhook-result" role="status" aria-live="polite" hidden></p>
       <p id="xrm-sandbox-activate-result" role="status" aria-live="polite" hidden></p>
       <p id="xrm-sandbox-settlement-result" role="status" aria-live="polite" hidden></p>
       <p id="xrm-sandbox-feedback" role="status" aria-live="polite">Aguardando verificação do ambiente de teste.</p>
@@ -380,6 +382,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
 #xrm-sandbox-qr-panel{display:grid;gap:11px;border:1px solid #30756d;background:#082e37;padding:13px;border-radius:10px}
 #xrm-sandbox-settlement-result{border:1px solid #30756d;background:#082e37;padding:13px;border-radius:10px;line-height:1.6;font-size:13px}
 #xrm-sandbox-activate-result{border:1px solid #30756d;background:#082e37;padding:13px;border-radius:10px;line-height:1.6;font-size:13px}
+#xrm-sandbox-webhook-result{border:1px solid #30756d;background:#082e37;padding:13px;border-radius:10px;line-height:1.6;font-size:13px}
 
 #xrm-sandbox-qr-panel[hidden]{display:none}
 #xrm-sandbox-qr-image{width:min(240px,100%);height:auto;background:#fff;padding:10px;border-radius:8px;justify-self:center}
@@ -404,6 +407,8 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
  const sandboxInspect=document.getElementById('xrm-sandbox-inspect');
  const sandboxSettlement=document.getElementById('xrm-sandbox-settlement');
  const sandboxActivate=document.getElementById('xrm-sandbox-activate');
+ const sandboxWebhookRun=document.getElementById('xrm-sandbox-webhook-run');
+ const sandboxWebhookResult=document.getElementById('xrm-sandbox-webhook-result');
  const sandboxActivateResult=document.getElementById('xrm-sandbox-activate-result');
  const sandboxSettlementResult=document.getElementById('xrm-sandbox-settlement-result');
  const sandboxFeedback=document.getElementById('xrm-sandbox-feedback');
@@ -549,6 +554,23 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
     : 'NÃO ATIVADO: ordem de teste ainda não está creditada. Situação: '+(result.status||result.reason||'indisponível');
   }catch(e){sandboxActivateResult.textContent='Falha na homologação: '+(e?.message||'erro desconhecido')}
   finally{sandboxActivate.disabled=false}
+ });
+ sandboxWebhookRun?.addEventListener('click',async()=>{
+  const id=(sandboxOrderInput.value||sandboxOrderId).trim();
+  sandboxWebhookResult.hidden=false;
+  if(!/^ORD[A-Z0-9]{8,100}$/.test(id)){
+   sandboxWebhookResult.textContent='Informe a ordem de homologação aprovada (ORD...).';return;
+  }
+  sandboxWebhookRun.disabled=true;
+  sandboxWebhookResult.textContent='Enviando evento de teste assinado e conferindo a ativação fictícia…';
+  try{
+   const result=await sandboxRequest({action:'run_signed_webhook_hml',order_id:id});
+   if(result.test!==true)throw Error('Resposta inesperada');
+   sandboxWebhookResult.textContent=result.passed
+    ? 'TESTE INTEGRADO APROVADO: o webhook recebeu uma notificação assinada gerada no ambiente de homologação, validou a ordem no Mercado Pago e ativou automaticamente apenas o acesso fictício. Nenhum cliente ou faturamento foi alterado. Isto ainda não comprova entrega de evento iniciado pelo Mercado Pago.'
+    : 'TESTE NÃO APROVADO: '+(result.error||'verificação incompleta')+'. Nenhum cliente real foi alterado.';
+  }catch(e){sandboxWebhookResult.textContent='Falha no teste integrado: '+(e?.message||'erro desconhecido');}
+  finally{sandboxWebhookRun.disabled=false}
  });
 })();
 </script>
