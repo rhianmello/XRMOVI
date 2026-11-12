@@ -1,7 +1,8 @@
 import{createClient}from 'https://esm.sh/@supabase/supabase-js@2.58.0';
+import {setupTrialCountdown} from './trial-countdown.js?v=20261112';
 import { setupSubscriptionPanel } from './subscription-panel.js?v=20261105-syntax-fix-2';
 import { renewalNotice } from './renewal-reminder.js?v=20261103-reminders-2';
-import { showXrmoviOnboarding } from './onboarding.js?v=20261110-resume-account-1';
+import { showXrmoviOnboarding } from './onboarding.js?v=20261112-fleet-trial-1';
 import { createCompanyBranding } from './company-branding.js?v=20261110-company-name-1';
 import { setupMileage } from './mileage.js?v=20261106-mileage-page-1';
 import { setupVehicleExport } from './vehicle-export.js?v=20261106-vehicle-xlsx-1';
@@ -12,6 +13,8 @@ import { setupTrafficFines } from './fines-module.js?v=20261106-fines-1';
 let branding;
 let mileage=null;
 let subscriptionPanel=null;
+let lastAccessState=null;
+const trialCountdown=setupTrialCountdown({onExpire:()=>void checkSubscriptionAccess()});
 let trafficFines=null;
 let paymentRequired=false;
 let drivers=[],vehicleExpenses=[],paidExpenses=[],historyExpenses=[];
@@ -99,8 +102,8 @@ function updatePaymentGateUI(){
  hint.style.display=paymentRequired?'grid':'none';
  if(paymentRequired){
   hint.replaceChildren();
-  const title=document.createElement('strong');title.textContent='Assinatura necessária para liberar sua frota';title.style.cssText='font-size:19px;color:#ffe2a0';
-  const details=document.createElement('span');details.textContent='Sua empresa está cadastrada, mas contratos, veículos, motoristas, manutenção, abastecimentos e relatórios só são liberados após a confirmação do pagamento pelo Mercado Pago. Escolha o plano abaixo.';
+  const title=document.createElement('strong');title.textContent=lastAccessState?.status==='trial'?'Seu teste gratuito de 24 horas terminou':'Assinatura necessária para liberar sua frota';title.style.cssText='font-size:19px;color:#ffe2a0';
+  const details=document.createElement('span');details.textContent=lastAccessState?.status==='trial'?'Seus veículos e registros estão preservados. Escolha Pix ou cartão para continuar com acesso ao painel.':'Sua empresa está cadastrada. Escolha cartão, Pix ou experimente o sistema por 24 horas, sem pagamento antecipado.';
   hint.append(title,details);
  }
  for(const id of ['xrm-bill-company-form','xrm-bill-contract-form','xrm-bill-member-form']){
@@ -137,10 +140,16 @@ async function refreshRenewalBanner(){
 async function checkSubscriptionAccess(){
  if(!company)return;
  const state=await rpc('access_status',{cid:company.id});
+ lastAccessState=state;
  paymentRequired=!state?.allowed;
+ trialCountdown.sync(state);
  updatePaymentGateUI();
  void refreshRenewalBanner();
  if(paymentRequired){
+  if(state?.status==='trial'&&company.role==='owner'){
+   showCompanyOnboarding(company);
+   return;
+  }
   xrmAssistClear();
   ++loadRequest;
   vehicles=[];maintenance=[];contracts=[];fuelRows=[];fuelEntries=[];drivers=[];
@@ -167,7 +176,7 @@ async function init({skipWizard=false,companyId=null}={}){
   company=companies.find(c=>c.id===companyId)||companies.find(c=>c.name.includes('DEMONSTRAÇÃO'))||companies[0];
   if(!skipWizard&&company.role==='owner'){
    const access=await rpc('access_status',{cid:company.id});
-   if(access?.billing_required&&access?.status==='pending'){
+   if(access?.billing_required&&['pending','trial'].includes(access?.status)){
     showCompanyOnboarding(company);
     return;
    }
@@ -1362,4 +1371,8 @@ async function startXrmovi(){
   await init();
  }catch(error){showLoadFailure(error)}
 }
+document.addEventListener('visibilitychange',()=>{
+ if(document.visibilityState==='visible'&&company&&lastAccessState?.status==='trial')
+  void checkSubscriptionAccess();
+});
 void startXrmovi();
