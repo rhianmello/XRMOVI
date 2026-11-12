@@ -21,7 +21,7 @@ function boot(initial={}) {
  vm.runInNewContext(analytics,{
   window,document,localStorage,
   Date,JSON,Number,URL,URLSearchParams,setTimeout,clearTimeout,
-  location:{hostname:'frota.nospassa.com.br',origin:'https://frota.nospassa.com.br',pathname:'/',search:''}
+  location:{hostname:'xrmovi.com.br',origin:'https://xrmovi.com.br',pathname:'/',search:''}
  });
  return {api:window.XrmoviAnalytics,items};
 }
