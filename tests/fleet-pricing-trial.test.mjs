@@ -4,21 +4,24 @@ import {readFileSync} from 'node:fs';
 import {quoteFleet} from '../pricing/fleet-pricing.js';
 
 const examples=[
- [1,2990],[5,2990],[6,3580],[10,5940],[15,8890],
- [20,11840],[30,17740],[50,29540],[100,59040],[10000,5900040]
+ [1,1990],[5,1990],[6,2390],[9,3590],[10,3990],
+ [11,4123],[12,4257],[20,5323],[30,6657],[40,7990],
+ [41,8107],[42,8223],[50,9157],[75,12073],[100,14990]
 ];
 
-test('Fleet pricing: five included and R$5.90 per additional vehicle',()=>{
+test('Vehicle-by-vehicle prices interpolate exactly between commercial milestones',()=>{
  for(const [count,amount] of examples){
   const result=quoteFleet(count);
-  assert.equal(result.monthlyCents,amount);
+  assert.equal(result.monthlyCents,amount,'quantity '+count);
   assert.equal(result.count,Math.max(5,count));
   assert.equal(result.code,'fleet_'+Math.max(5,count));
  }
+ for(let count=6;count<=100;count++)
+  assert.ok(quoteFleet(count).monthlyCents>quoteFleet(count-1).monthlyCents);
 });
 
-test('Fleet pricing: invalid and fractional quantity is rejected',()=>{
- for(const raw of [-1,0,1.2,10001,NaN,Infinity,'abc'])
+test('Invalid or over-100 vehicle quantities are rejected',()=>{
+ for(const raw of [-1,0,1.2,101,10001,NaN,Infinity,'abc'])
   assert.throws(()=>quoteFleet(raw),RangeError);
 });
 
