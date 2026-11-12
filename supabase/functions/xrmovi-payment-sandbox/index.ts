@@ -85,7 +85,35 @@ Deno.serve(async(req:Request)=>{
      }catch{return null}
    };
    if(action==="inspect_card_hml"){
-     if(!record.provider_id)return reply(origin,{test:true,created:false,status:record.status});
+     if(!record.provider_id){
+       // Read-only recovery before any retry: an earlier POST may have reached Mercado Pago.
+       try{
+         const params=new URLSearchParams({payer_email:"test_payer@example.com",limit:"50",offset:"0"});
+         const response=await fetch("https://api.mercadopago.com/preapproval/search?"+params,{
+           headers:mpHeaders,signal:AbortSignal.timeout(12000)});
+         const data=await response.json().catch(()=>({}));
+         if(!response.ok)return reply(origin,{test:true,created:false,status:record.status,
+           recovery:"provider_search_failed",http_status:response.status,
+           note:"Consulta inconclusiva. Não crie outra assinatura."});
+         const found=Array.isArray(data.results)?data.results.filter((x:any)=>
+           String(x.external_reference||"")==="xrmovi_hml_card_sandbox_only"):[];
+         if(found.length!==1)return reply(origin,{test:true,created:false,status:record.status,
+           recovery:found.length>1?"multiple_matches":"not_found",
+           search_complete:Number(data.paging?.total||0)<=50,
+           note:"Nenhuma nova assinatura foi criada. Não repita a compra."});
+         const item=found[0],checkout=safeCheckout(item.init_point);
+         if(Math.abs(Number(item.auto_recurring?.transaction_amount)-19.90)>0.009)
+           return reply(origin,{test:true,created:false,recovery:"amount_mismatch"});
+         const {error:writeError}=await service.from("xrmovi_hml_card_subscriptions")
+           .update({provider_id:String(item.id),checkout_url:checkout,status:"pending",updated_at:new Date().toISOString()})
+           .eq("id","card-sandbox-only");
+         if(writeError)return reply(origin,{error:"Assinatura localizada, mas não foi possível vinculá-la. Não crie outra."},502);
+         return reply(origin,{test:true,created:true,recovered:true,provider_id:String(item.id),
+           status:String(item.status||"pending"),checkout_url:checkout,
+           real_customer_changed:false,revenue_changed:false});
+       }catch{return reply(origin,{test:true,created:false,status:record.status,
+         recovery:"search_unavailable",note:"Não repita a criação até concluir a conferência."})}
+     }
      try{
        const response=await fetch("https://api.mercadopago.com/preapproval/"+encodeURIComponent(record.provider_id),{
          headers:mpHeaders,signal:AbortSignal.timeout(12000)});
