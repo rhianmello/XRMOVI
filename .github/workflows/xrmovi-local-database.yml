@@ -1,6 +1,14 @@
 name: XRMOVI free local database verification
 
 on:
+  push:
+    branches:
+      - feat/frota-cobranca-veiculo-teste-24h
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/tests/xrmovi-fleet-local-smoke.sql'
+      - 'supabase/tests/xrmovi-ci-baseline.sql'
+      - '.github/workflows/xrmovi-local-database.yml'
   pull_request:
     paths:
       - 'supabase/migrations/**'
