@@ -126,9 +126,12 @@ export async function showXrmoviOnboarding({login,client,onCreated,onLogout,exis
      void(async()=>{for(const ms of [900,3500,7000]){await new Promise(r=>setTimeout(r,ms));if(login.hidden)return;if((await checkExistingPayment())==='active')return}})();
     }
    }else if(snapshot.status==='trial'){
-    await markCheckoutLocked(String(snapshot.plan));
+    const currentCapacity=Number(/^fleet_(\d+)$/.exec(String(snapshot.plan||''))?.[1]||5);
+    calc?.setCount(currentCapacity);
+    trialRadio.disabled=true;
+    trialRadio.checked=false;
     const notice=document.createElement('p');notice.className='wizard-pending-payment';
-    notice.textContent='Seu teste de 24 horas terminou. Escolha cartão ou Pix para continuar com os veículos já selecionados.';
+    notice.textContent='Você já utilizou o teste de 24 horas. Ajuste quantos veículos deseja contratar e escolha cartão ou Pix; não será criado outro período gratuito.';
     form.querySelector('[data-fleet-calculator]').after(notice);
    }else if(/^fleet_\d+$/.test(String(snapshot.plan||''))){
     calc?.setCount(Number(snapshot.plan.split('_')[1]));
@@ -153,6 +156,11 @@ export async function showXrmoviOnboarding({login,client,onCreated,onLogout,exis
     plan=quote.code;
    }
    let data={company_id:companyId};
+   if(snapshot?.status==='trial'&&choice!=='trial'){
+    const {data:updated,error}=await client.rpc('xrmovi_set_checkout_capacity',{cid:companyId,p_count:calc.quote.count});
+    if(error||!updated?.code)throw Error(error?.message||'Não foi possível confirmar a mensalidade.');
+    plan=updated.code;
+   }
    if(!companyId||snapshot?.status==='pending'){
     const args={
      ...(companyId?{cid:companyId}:{}),
