@@ -95,7 +95,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
 <script defer src="/analytics/xrmovi-widget-visits.js?v=20261108-1"></script>
 <link rel="stylesheet" href="/legal/policies.css">
 <link rel="manifest" href="/manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="icon" href="/pwa/icon.svg?v=20261110-brand-v2" type="image/svg+xml" sizes="any"></head><body>
-<header><div class="shell nav"><a class="brand" href="#inicio" aria-label="XRMOVI — voltar ao início"><img class="brand-logo" src="/assets/xrmovi-logo-oficial.svg?v=20261110-v2" alt="XRMOVI" width="248" height="61" decoding="async"></a><nav class="links" aria-label="Navegação principal"><a href="#recursos">Recursos</a><a href="#planos">Planos</a><button type="button" class="xrm-install-nav-link" data-demo>Demonstração</button><a href="/perguntas-frequentes/">Perguntas frequentes</a><button class="xrm-install-nav-link" type="button" data-xrm-install>Baixar App</button></nav><div class="actions nav-actions"><details class="xrm-mobile-nav"><summary aria-label="Abrir menu de navegação">☰ <span>Menu</span></summary><nav aria-label="Menu do celular"><a href="#recursos">Recursos</a><a href="#planos">Planos</a><button type="button" data-demo>Demonstração</button><a href="/perguntas-frequentes/">Perguntas frequentes</a><a href="#contato">Contato</a><button type="button" data-xrm-install>Baixar App</button></nav></details><a class="btn small" href="/?login=1">Entrar / Criar conta</a></div></div></header>
+<header><div class="shell nav"><a class="brand" href="#inicio" aria-label="XRMOVI — voltar ao início"><img class="brand-logo" src="/assets/xrmovi-logo-oficial.svg?v=20261110-v2" alt="XRMOVI" width="248" height="61" decoding="async"></a><nav class="links" aria-label="Navegação principal"><a href="#recursos">Recursos</a><a href="#planos">Planos</a><button type="button" class="xrm-install-nav-link" data-demo>Demonstração</button><a href="/perguntas-frequentes/">Perguntas frequentes</a><button class="xrm-install-nav-link" type="button" data-xrm-install>Baixar App</button></nav><div class="actions nav-actions"><details class="xrm-mobile-nav"><summary aria-label="Abrir menu de navegação">☰ <span>Menu</span></summary><nav aria-label="Menu do celular"><a href="#recursos">Recursos</a><a href="#planos">Planos</a><button type="button" data-demo>Demonstração</button><a href="/perguntas-frequentes/">Perguntas frequentes</a><a href="#contato">Contato</a><button type="button" data-xrm-install>Baixar App</button></nav></details><a class="btn small" id="xrm-header-auth-link" href="/?login=1" aria-label="Entrar ou criar conta">Entrar / Criar conta</a></div></div></header>
 <main id="inicio">
 <div class="hero xrm-qr-hero">
  <div class="shell xrm-qr-hero-grid">
@@ -834,7 +834,12 @@ body.xrm-auth-open{overflow:hidden}
   const url=new URL(location.href);
   if(url.searchParams.has('login')||url.hash==='#acesso'){url.searchParams.delete('login');if(url.hash==='#acesso')url.hash='';history.replaceState(null,'',url.pathname+url.search+url.hash)}
  }
- document.querySelectorAll('a[href*="login=1"],a[href="#acesso"]').forEach(a=>a.addEventListener('click',openAuth));
+ document.querySelectorAll('a[href*="login=1"],a[href="#acesso"]').forEach(a=>a.addEventListener('click',event=>{
+  // Dynamic header becomes a direct dashboard link for authenticated users.
+  // Only the sign-in destination should trigger the login dialog.
+  if(a.id==='xrm-header-auth-link' && a.getAttribute('href')!=='/?login=1')return;
+  openAuth(event);
+ }));
  close.addEventListener('click',closeAuth);
  // Navigating from the auth modal must dismiss the overlay before scrolling.
  modal.querySelectorAll('a[href^="#"]').forEach(link=>link.addEventListener('click',event=>{
