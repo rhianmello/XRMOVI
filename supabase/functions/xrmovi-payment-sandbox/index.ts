@@ -169,9 +169,9 @@ Deno.serve(async(req:Request)=>{
      try{
        const {response:sellerResponse,data:seller}=await mpGet("/users/me");
        const nick=String(seller?.nickname||"").toUpperCase();
-       const email=String(seller?.email||"").toLowerCase();
+       const sellerEmail=String(seller?.email||"").toLowerCase();
        if(!sellerResponse.ok||String(seller.site_id||"")!=="MLB"||
-         !(nick.startsWith("TEST")||email.endsWith("@testuser.com")))
+         !(nick.startsWith("TEST")||sellerEmail.endsWith("@testuser.com")))
          return reply(origin,{error:"O vendedor não foi validado como conta de teste brasileira. Nenhum usuário criado."},503);
        const {data:claimed,error:claimError}=await table()
          .update({test_buyer_state:"creating",updated_at:new Date().toISOString()})
