@@ -345,6 +345,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
         <p>Plano Start fictício: R$ 19,90/mês. Somente cartão de teste do Mercado Pago. Nenhum usuário do XRMOVI será liberado e nenhum valor entrará no faturamento real.</p>
         <button type="button" class="btn outline" id="xrm-sandbox-card-create">Preparar checkout de cartão de teste</button>
         <button type="button" class="btn outline" id="xrm-sandbox-card-status">Consultar assinatura de teste</button>
+        <button type="button" class="btn outline" id="xrm-sandbox-buyer-prepare">Preparar um novo comprador fictício (sem cobrança)</button>
         <button type="button" class="btn outline" id="xrm-sandbox-card-diagnose">Diagnosticar contas de teste (sem cobrança)</button>
         <a id="xrm-sandbox-card-checkout" class="btn" target="_blank" rel="noopener noreferrer" hidden>Abrir checkout de TESTE no Mercado Pago</a>
         <p id="xrm-sandbox-card-result" role="status" aria-live="polite">Nenhuma assinatura de cartão foi criada nesta sessão.</p>
@@ -425,6 +426,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
  const sandboxCardCreate=document.getElementById('xrm-sandbox-card-create');
  const sandboxCardStatus=document.getElementById('xrm-sandbox-card-status');
  const sandboxCardDiagnose=document.getElementById('xrm-sandbox-card-diagnose');
+ const sandboxBuyerPrepare=document.getElementById('xrm-sandbox-buyer-prepare');
  const sandboxCardCheckout=document.getElementById('xrm-sandbox-card-checkout');
  const sandboxCardResult=document.getElementById('xrm-sandbox-card-result');
  const sandboxWebhookResult=document.getElementById('xrm-sandbox-webhook-result');
@@ -631,6 +633,24 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
      cardSandboxShow(data);
    }catch(e){sandboxCardResult.textContent='Teste não iniciado: '+(e?.message||'falha de conexão')+'. Não repita a criação em caso de erro; consulte o status.';}
    finally{sandboxCardCreate.disabled=false}
+ });
+ sandboxBuyerPrepare?.addEventListener('click',async()=>{
+   if(!confirm('Esta operação cria UMA NOVA conta COMPRADORA FICTÍCIA no Mercado Pago. Contas de teste criadas não podem ser excluídas. Não gera assinatura nem cobrança. Continuar?'))return;
+   sandboxBuyerPrepare.disabled=true;
+   sandboxCardResult.textContent='Preparando a conta fictícia de comprador pela API oficial, sem pagamentos…';
+   try{
+     const item=await sandboxRequest({action:'prepare_buyer_hml'});
+     if(item.test!==true||item.prepared!==true||item.created_subscription!==false)
+       throw Error('Preparação não confirmada');
+     const check=await sandboxRequest({action:'diagnose_card_hml'});
+     sandboxCardResult.textContent='Comprador fictício preparado (e-mail mantido no backend). '+
+       'Comprador validado: '+(check.buyer_verified?'SIM':'NÃO')+
+       '; vendedor validado: '+(check.seller_is_test?'SIM':'NÃO')+
+       '; mesmo país: '+(check.same_country?'SIM':'NÃO')+
+       '. Nenhuma assinatura foi criada. A tentativa anterior permanece bloqueada para conciliação.';
+   }catch(e){sandboxCardResult.textContent='Não foi possível preparar o comprador: '+(e?.message||'falha inesperada')+
+     '. Não repita a operação sem conferir o estado da homologação.';}
+   finally{sandboxBuyerPrepare.disabled=false}
  });
  sandboxCardDiagnose?.addEventListener('click',async()=>{
    sandboxCardDiagnose.disabled=true;
