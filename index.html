@@ -334,8 +334,19 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
       <p>Teste integrado com credenciais de teste. Não usa assinaturas nem pagamentos de clientes. O Pix de homologação tem valor fixo fictício de R$ 50,00, independente do plano selecionado.</p>
       <button type="button" class="btn outline" id="xrm-sandbox-check">Verificar ambiente de homologação</button>
       <button type="button" class="btn" id="xrm-sandbox-create" disabled>Gerar ordem Pix de teste</button>
-      <button type="button" class="btn outline" id="xrm-sandbox-inspect" hidden>Consultar status da ordem</button>
+      <label for="xrm-sandbox-order-id">Consultar uma ordem de teste já criada (sem gerar outra)</label>
+      <input id="xrm-sandbox-order-id" type="text" maxlength="110" placeholder="Cole aqui o identificador ORD...">
+      <button type="button" class="btn outline" id="xrm-sandbox-inspect">Consultar status da ordem</button>
       <p id="xrm-sandbox-feedback" role="status" aria-live="polite">Aguardando verificação do ambiente de teste.</p>
+      <div id="xrm-sandbox-qr-panel" hidden>
+        <strong>Pix fictício — não pagar</strong>
+        <img id="xrm-sandbox-qr-image" alt="QR Code de teste do Mercado Pago — não utilizar para pagamento real" hidden>
+        <label for="xrm-sandbox-pix-code">Código Pix de teste (não pagar)</label>
+        <textarea id="xrm-sandbox-pix-code" rows="3" readonly></textarea>
+        <button type="button" id="xrm-sandbox-copy" class="btn outline">Copiar código de teste</button>
+        <a id="xrm-sandbox-ticket" target="_blank" rel="noopener noreferrer" hidden>Visualizar comprovante de teste no Mercado Pago</a>
+        <p>Use somente para conferir a apresentação do checkout. Nunca faça transferência bancária para esse código.</p>
+      </div>
     </div>
     <div id="xrm-preview-connectivity-result" role="status" aria-live="polite" hidden></div>
     <div id="xrm-preview-result" role="status" aria-live="polite" hidden></div>
@@ -361,6 +372,12 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
 .xrm-sandbox-stage strong{color:#8fe7ce;font-size:13px}
 .xrm-sandbox-stage button:disabled{opacity:.5;cursor:not-allowed}
 .xrm-sandbox-stage #xrm-sandbox-feedback{color:#d0e3ed;overflow-wrap:anywhere}
+.xrm-sandbox-stage input,.xrm-sandbox-stage textarea{width:100%;min-width:0;background:#071925;color:#eaffff;border:1px solid #50778a;border-radius:8px;padding:11px;font:inherit}
+#xrm-sandbox-qr-panel{display:grid;gap:11px;border:1px solid #30756d;background:#082e37;padding:13px;border-radius:10px}
+#xrm-sandbox-qr-panel[hidden]{display:none}
+#xrm-sandbox-qr-image{width:min(240px,100%);height:auto;background:#fff;padding:10px;border-radius:8px;justify-self:center}
+#xrm-sandbox-qr-panel a{color:#79e6dc;text-decoration:underline;overflow-wrap:anywhere}
+
 
 .xrm-checkout-preview .xrm-preview-caption{font-size:11px}
 @media(max-width:520px){.xrm-checkout-preview-content{padding:16px}.xrm-checkout-preview{width:calc(100vw - 20px)}}
@@ -379,6 +396,12 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
  const sandboxCreate=document.getElementById('xrm-sandbox-create');
  const sandboxInspect=document.getElementById('xrm-sandbox-inspect');
  const sandboxFeedback=document.getElementById('xrm-sandbox-feedback');
+ const sandboxOrderInput=document.getElementById('xrm-sandbox-order-id');
+ const sandboxQrPanel=document.getElementById('xrm-sandbox-qr-panel');
+ const sandboxQrImage=document.getElementById('xrm-sandbox-qr-image');
+ const sandboxPixCode=document.getElementById('xrm-sandbox-pix-code');
+ const sandboxCopy=document.getElementById('xrm-sandbox-copy');
+ const sandboxTicket=document.getElementById('xrm-sandbox-ticket');
  const sandboxEndpoint='https://ztqtcbzjesrkuaijmylm.supabase.co/functions/v1/xrmovi-payment-sandbox';
  let sandboxOrderId='';
  let sandboxReady=false;
@@ -443,6 +466,27 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
   if(!response.ok)throw Error(data.error||'Falha na homologação (HTTP '+response.status+')');
   return data;
  }
+ function showSandboxOrder(data){
+  sandboxFeedback.textContent='Ordem de TESTE '+data.order_id+' · Situação: '+data.status+(data.status_detail?' ('+data.status_detail+')':'')+'. Nenhuma cobrança real ou assinatura do XRMOVI foi criada.';
+  sandboxOrderId=data.order_id;
+  sandboxOrderInput.value=sandboxOrderId;
+  const code=typeof data.pix_code==='string'?data.pix_code:'';
+  const image=typeof data.pix_qr_base64==='string'?data.pix_qr_base64:'';
+  const ticket=typeof data.sandbox_ticket_url==='string'?data.sandbox_ticket_url:'';
+  sandboxQrPanel.hidden=!(code||image||ticket);
+  sandboxPixCode.value=code;
+  sandboxPixCode.hidden=!code;
+  sandboxCopy.hidden=!code;
+  sandboxQrImage.hidden=!image;
+  if(image)sandboxQrImage.src='data:image/png;base64,'+image;else sandboxQrImage.removeAttribute('src');
+  sandboxTicket.hidden=!ticket;
+  if(ticket&&ticket.startsWith('https://www.mercadopago.com.br/sandbox/'))sandboxTicket.href=ticket;
+  else sandboxTicket.removeAttribute('href');
+ }
+ sandboxCopy?.addEventListener('click',async()=>{
+  try{await navigator.clipboard.writeText(sandboxPixCode.value);sandboxCopy.textContent='Código de teste copiado';}
+  catch{sandboxPixCode.focus();sandboxPixCode.select();sandboxCopy.textContent='Selecione e copie o código';}
+ });
  sandboxCheck?.addEventListener('click',()=>void checkSandbox());
  sandboxCreate?.addEventListener('click',async()=>{
   if(!sandboxReady)return;
@@ -451,18 +495,17 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
   try{
    const data=await sandboxRequest({action:'create_pix'});
    if(!data.test||!data.order_id)throw Error('Resposta de teste inválida');
-   sandboxOrderId=data.order_id;
-   sandboxFeedback.textContent='Ordem de TESTE criada: '+data.order_id+' · Situação: '+data.status+'. Não transfira dinheiro nem pague qualquer QR Code de homologação.';
-   sandboxInspect.hidden=false;
+   showSandboxOrder(data);
   }catch(e){sandboxFeedback.textContent='Teste não executado: '+(e?.message||'erro desconhecido')}
   finally{sandboxCreate.disabled=!sandboxReady}
  });
  sandboxInspect?.addEventListener('click',async()=>{
-  if(!sandboxOrderId)return;
+  const requestedId=(sandboxOrderInput.value||sandboxOrderId).trim();
+  if(!/^ORD[A-Z0-9]{8,100}$/.test(requestedId)){sandboxFeedback.textContent='Informe um identificador válido de ordem de teste (ORD...).';return;}
   sandboxInspect.disabled=true;
   try{
-   const data=await sandboxRequest({action:'inspect_pix',order_id:sandboxOrderId});
-   sandboxFeedback.textContent='Ordem de TESTE '+data.order_id+' · Situação atual: '+data.status+' ('+(data.status_detail||'sem detalhe')+'). Isto não libera assinatura real.';
+   const data=await sandboxRequest({action:'inspect_pix',order_id:requestedId});
+   showSandboxOrder(data);
   }catch(e){sandboxFeedback.textContent='Falha ao consultar teste: '+(e?.message||'erro')}
   finally{sandboxInspect.disabled=false}
  });
