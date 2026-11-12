@@ -446,18 +446,46 @@ export function setupMileage({client,getCompany,getVehicles,getFilteredIds,onRel
   }
   actions.append(reject,accept);form.append(actions);modal.append(form);
  }
- async function reviewService(item,decision){
-  if(!owned()||busy)return;
+ function reviewService(item,decision){
   const cid=company()?.id;
-  if(!cid||cid!==serviceState.cid)return;
-  const reason=window.prompt(decision==='approve'?'Justificativa da aprovação:':'Motivo da rejeição:');
-  if(reason===null)return;
-  if(reason.trim().length<4){status('Informe uma justificativa com pelo menos 4 caracteres.','error');return}
-  busy=true;
-  try{await rpc('driver_service_review',{cid,submission_id:item.id,decision,reason:reason.trim()});if(company()?.id!==cid)return;
-   await onReload?.();status(decision==='approve'?'Registro aprovado e lançado.':'Registro rejeitado e preservado no histórico.')}
-  catch(error){status('Não foi possível concluir a revisão: '+error.message,'error')}
-  finally{busy=false}
+  if(!owned()||busy||!cid||cid!==serviceState.cid)return;
+  const approve=decision==='approve';
+  const oil=item.kind==='oil';
+  const modal=makeDialog((approve?'Aprovar ':'Rejeitar ')+(oil?'troca de óleo':'abastecimento')+' · '+item.plate);
+  const form=add('form','xrm-mileage-modal-form');
+  modal.append(form);
+  const vehicle=planFor(item.vehicle_id);
+  if(approve&&oil&&vehicle&&!vehicle.interval_km){
+   form.append(add('p','xrm-mileage-modal-help','Configure o intervalo de troca de óleo do veículo antes de aprovar. O registro continuará aguardando conferência.'));
+   form.append(btn('Configurar veículo',()=>{modal.close();onEditVehicle(item.vehicle_id)},'primary'));
+   return;
+  }
+  const reason=labelInput(approve?'Justificativa da aprovação':'Motivo da rejeição','text');
+  reason.input.required=true;reason.input.minLength=4;reason.input.maxLength=500;
+  const message=add('p','xrm-mileage-modal-help','Informe pelo menos 4 caracteres.');
+  message.setAttribute('role','status');
+  const submit=btn(approve?'Confirmar aprovação':'Confirmar rejeição',null,approve?'primary':'danger');
+  submit.type='submit';
+  form.append(reason.label,message,submit);
+  reason.input.focus();
+  form.onsubmit=async event=>{
+   event.preventDefault();
+   if(busy||company()?.id!==cid||!owned())return;
+   const justification=reason.input.value.trim();
+   if(justification.length<4){message.textContent='Informe pelo menos 4 caracteres na justificativa.';reason.input.focus();return}
+   busy=true;submit.disabled=true;
+   try{
+    await rpc('driver_service_review',{cid,submission_id:item.id,decision,reason:justification});
+   }catch(error){
+    message.textContent=error.message;
+    submit.disabled=false;
+    return;
+   }finally{busy=false}
+   modal.close();
+   if(company()?.id!==cid)return;
+   status(approve?'Registro aprovado e lançado.':'Registro rejeitado e preservado no histórico.');
+   await onReload?.();
+  };
  }
  async function openProof(path){
   try{const {data,error}=await client.storage.from('xrmovi-odometer-proof').createSignedUrl(path,90);
