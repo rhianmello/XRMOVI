@@ -345,6 +345,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
         <p>Plano Start fictício: R$ 19,90/mês. Somente cartão de teste do Mercado Pago. Nenhum usuário do XRMOVI será liberado e nenhum valor entrará no faturamento real.</p>
         <button type="button" class="btn outline" id="xrm-sandbox-card-create">Preparar checkout de cartão de teste</button>
         <button type="button" class="btn outline" id="xrm-sandbox-card-status">Consultar assinatura de teste</button>
+        <button type="button" class="btn outline" id="xrm-sandbox-card-diagnose">Diagnosticar contas de teste (sem cobrança)</button>
         <a id="xrm-sandbox-card-checkout" class="btn" target="_blank" rel="noopener noreferrer" hidden>Abrir checkout de TESTE no Mercado Pago</a>
         <p id="xrm-sandbox-card-result" role="status" aria-live="polite">Nenhuma assinatura de cartão foi criada nesta sessão.</p>
       </div>
@@ -423,6 +424,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
  const sandboxWebhookRun=document.getElementById('xrm-sandbox-webhook-run');
  const sandboxCardCreate=document.getElementById('xrm-sandbox-card-create');
  const sandboxCardStatus=document.getElementById('xrm-sandbox-card-status');
+ const sandboxCardDiagnose=document.getElementById('xrm-sandbox-card-diagnose');
  const sandboxCardCheckout=document.getElementById('xrm-sandbox-card-checkout');
  const sandboxCardResult=document.getElementById('xrm-sandbox-card-result');
  const sandboxWebhookResult=document.getElementById('xrm-sandbox-webhook-result');
@@ -622,6 +624,22 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
      cardSandboxShow(data);
    }catch(e){sandboxCardResult.textContent='Teste não iniciado: '+(e?.message||'falha de conexão')+'. Não repita a criação em caso de erro; consulte o status.';}
    finally{sandboxCardCreate.disabled=false}
+ });
+ sandboxCardDiagnose?.addEventListener('click',async()=>{
+   sandboxCardDiagnose.disabled=true;
+   sandboxCardResult.textContent='Conferindo as contas de comprador e vendedor no Mercado Pago, sem criar assinatura…';
+   try{
+     const info=await sandboxRequest({action:'diagnose_card_hml'});
+     if(!info.test||!info.diagnostic)throw Error('Diagnóstico indisponível');
+     sandboxCardResult.textContent='Comprador de teste: '+(info.buyer_verified?'CONFIRMADO':'NÃO CONFIRMADO')+
+       ' (HTTP '+info.buyer_http_status+'). Vendedor de teste: '+
+       (info.seller_is_test?'CONFIRMADO':'NÃO CONFIRMADO')+
+       ' (HTTP '+info.seller_http_status+'). '+
+       (info.can_safely_prepare?'As contas são compatíveis; a tentativa antiga continua bloqueada até conclusão da recuperação.':
+       'Não faremos nova cobrança enquanto a identidade das contas não estiver correta.')+
+       ' Nenhuma assinatura foi criada.';
+   }catch(e){sandboxCardResult.textContent='Não foi possível conferir as contas: '+(e?.message||'erro desconhecido')}
+   finally{sandboxCardDiagnose.disabled=false}
  });
  sandboxCardStatus?.addEventListener('click',async()=>{
    sandboxCardStatus.disabled=true;sandboxCardResult.textContent='Consultando a assinatura de teste no Mercado Pago…';
