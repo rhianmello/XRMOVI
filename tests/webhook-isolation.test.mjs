@@ -51,3 +51,15 @@ test('HMAC manifest contract changes on request id, time or payment id',()=>{
  assert.notEqual(base,signature('12345','request-b','1794440000'));
  assert.notEqual(base,signature('12345','request-a','1794440001'));
 });
+
+test('integrated homologation uses an internally signed webhook only after admin verification',()=>{
+ assert.match(sandbox,/run_signed_webhook_hml/);
+ assert.match(sandbox,/xrmovi_platform_is_admin/);
+ assert.match(sandbox,/XRMOVI_MP_TEST_WEBHOOK_SECRET/);
+ assert.match(sandbox,/crypto\.subtle\.sign/);
+ assert.match(sandbox,/xrmovi-webhook-sandbox/);
+ assert.match(sandbox,/xrmovi_hml_entitlements/);
+ assert.match(sandbox,/internally_signed_simulation/);
+ assert.match(sandbox,/real_mercadopago_webhook_delivery_tested:false/);
+ assert.doesNotMatch(sandbox,/xrmovi_pix_settle|xrmovi_checkout_settle/);
+});
