@@ -24,11 +24,28 @@ BEGIN
     RAISE EXCEPTION 'Local test JWT not available';
   END IF;
   quote:=public.xrmovi_vehicle_quote(5);
-  IF quote->>'code'<>'fleet_5' OR (quote->>'monthly_brl')::numeric<>29.90
+  IF quote->>'code'<>'fleet_5' OR (quote->>'monthly_brl')::numeric<>19.90
   THEN RAISE EXCEPTION 'Incorrect price for 5 vehicles: %',quote; END IF;
   quote:=public.xrmovi_vehicle_quote(10);
-  IF quote->>'code'<>'fleet_10' OR (quote->>'monthly_brl')::numeric<>59.40
+  IF quote->>'code'<>'fleet_10' OR (quote->>'monthly_brl')::numeric<>39.90
   THEN RAISE EXCEPTION 'Incorrect price for 10 vehicles: %',quote; END IF;
+  quote:=public.xrmovi_vehicle_quote(6);
+  IF quote->>'code'<>'fleet_6' OR (quote->>'monthly_brl')::numeric<>23.90
+  THEN RAISE EXCEPTION 'Incorrect price for 6 vehicles: %',quote; END IF;
+  quote:=public.xrmovi_vehicle_quote(40);
+  IF quote->>'code'<>'fleet_40' OR (quote->>'monthly_brl')::numeric<>79.90
+  THEN RAISE EXCEPTION 'Incorrect price for 40 vehicles: %',quote; END IF;
+  quote:=public.xrmovi_vehicle_quote(42);
+  IF quote->>'code'<>'fleet_42' OR (quote->>'monthly_brl')::numeric<>82.23
+  THEN RAISE EXCEPTION 'Incorrect price for 42 vehicles: %',quote; END IF;
+  quote:=public.xrmovi_vehicle_quote(100);
+  IF quote->>'code'<>'fleet_100' OR (quote->>'monthly_brl')::numeric<>149.90
+  THEN RAISE EXCEPTION 'Incorrect price for 100 vehicles: %',quote; END IF;
+  BEGIN
+    PERFORM public.xrmovi_vehicle_quote(101);
+    RAISE EXCEPTION '101 vehicles should have been rejected';
+  EXCEPTION WHEN sqlstate '22023' THEN NULL;
+  END;
   IF (SELECT monthly_brl FROM xrmovi.plans WHERE code='start')<>19.90
   THEN RAISE EXCEPTION 'Legacy price changed'; END IF;
   INSERT INTO xrmovi.companies(id,name) VALUES(ci_company,'Frota de teste CI');
