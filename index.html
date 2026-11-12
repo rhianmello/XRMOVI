@@ -602,7 +602,9 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
      }catch{}
    }
    sandboxCardResult.textContent=(recovery==='not_found'
-     ? 'CONSULTA CONCLUÍDA: nenhuma assinatura com a referência de teste foi encontrada na primeira página do Mercado Pago. A tentativa continua bloqueada para evitar duplicidade. '
+     ? (data.search_complete===true
+        ? 'BUSCA COMPLETA: nenhuma assinatura com a referência de homologação foi encontrada nas páginas consultadas do Mercado Pago. A tentativa permanece bloqueada até identificarmos a causa do HTTP 400. '
+        : 'BUSCA INCOMPLETA: ainda não é possível descartar uma assinatura existente. Não repita a criação. ')
      : recovery==='provider_search_failed'||recovery==='search_unavailable'
        ? 'A consulta de recuperação não pôde ser concluída. Não crie outra assinatura. '
        : recovery==='multiple_matches'
