@@ -347,6 +347,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
         <input id="xrm-sandbox-card-payer-email" type="email" autocomplete="email" maxlength="254" required>
         <button type="button" class="btn outline" id="xrm-sandbox-card-create">Preparar checkout de cartão de teste</button>
         <button type="button" class="btn outline" id="xrm-sandbox-card-status">Consultar assinatura de teste</button>
+        <button type="button" class="btn outline" id="xrm-sandbox-card-webhook-test">Testar webhook do cartão (simulação sem cobrança)</button>
         <button type="button" class="btn outline" id="xrm-sandbox-card-diagnose">Verificar disponibilidade do teste</button>
         <a id="xrm-sandbox-card-checkout" class="btn" target="_blank" rel="noopener noreferrer" hidden>Abrir checkout de TESTE no Mercado Pago</a>
         <p id="xrm-sandbox-card-result" role="status" aria-live="polite">Nenhuma assinatura de cartão foi criada nesta sessão.</p>
@@ -426,6 +427,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
  const sandboxWebhookRun=document.getElementById('xrm-sandbox-webhook-run');
  const sandboxCardCreate=document.getElementById('xrm-sandbox-card-create');
  const sandboxCardStatus=document.getElementById('xrm-sandbox-card-status');
+ const sandboxCardWebhookTest=document.getElementById('xrm-sandbox-card-webhook-test');
  const sandboxCardDiagnose=document.getElementById('xrm-sandbox-card-diagnose');
  const sandboxCardPayerEmail=document.getElementById('xrm-sandbox-card-payer-email');
  const sandboxCardCheckout=document.getElementById('xrm-sandbox-card-checkout');
@@ -656,6 +658,23 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
        :'Já existe uma tentativa ou assinatura de teste. Use Consultar assinatura de teste.';
    }catch(e){sandboxCardResult.textContent='Não foi possível consultar a disponibilidade: '+(e?.message||'erro desconhecido')}
    finally{sandboxCardDiagnose.disabled=false}
+ });
+
+ sandboxCardWebhookTest?.addEventListener('click',async()=>{
+   sandboxCardWebhookTest.disabled=true;
+   sandboxCardResult.textContent='Simulando internamente uma notificação assinada e conferindo o pagamento fictício na API do Mercado Pago. Nenhuma nova cobrança será realizada…';
+   try{
+     const data=await sandboxRequest({action:'test_signed_card_webhook_hml'});
+     if(data.test!==true||data.simulated_only!==true||data.real_customer_changed!==false)
+       throw Error('Simulação não confirmada como isolada');
+     sandboxCardResult.textContent='Teste interno do webhook: '+(data.passed?'APROVADO':'NÃO CONCLUÍDO')+
+       '. Status da assinatura no Mercado Pago: '+String(data.subscription_provider_status||'não confirmado')+
+       '. Fatura fictícia encontrada: '+(data.test_invoice_found?'SIM':'NÃO')+
+       '. Pagamento fictício: '+String(data.payment_status||'não verificado')+
+       '. Esta é uma SIMULAÇÃO interna; ela NÃO confirma que o Mercado Pago entregou um webhook real. Não houve nova cobrança nem liberação comercial.';
+   }catch(e){sandboxCardResult.textContent='Teste interno do webhook falhou: '+(e?.message||'erro')+
+       '. Nenhuma nova cobrança foi realizada.';}
+   finally{sandboxCardWebhookTest.disabled=false}
  });
  sandboxCardStatus?.addEventListener('click',async()=>{
    sandboxCardStatus.disabled=true;sandboxCardResult.textContent='Consultando a assinatura de teste no Mercado Pago…';
