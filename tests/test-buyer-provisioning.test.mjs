@@ -10,9 +10,14 @@ test('test buyer created only via authorized server endpoint and explicit action
   assert.match(edge,/xrmovi_platform_is_admin/);
   assert.match(edge,/action==="prepare_buyer_hml"/);
   assert.match(html,/action:'prepare_buyer_hml'/);
-  assert.match(html,/Contas de teste criadas não podem ser excluídas/);
+  assert.match(html,/A conta de teste não poderá ser excluída/);
   assert.match(edge,/https:\/\/api\.mercadopago\.com\/users\/test/);
   assert.doesNotMatch(html,/api\.mercadopago\.com\/users\/test/);
+  assert.match(edge,/const productiveToken=Deno\.env\.get\("XRMOVI_MP_ACCESS_TOKEN"\)/);
+  assert.match(edge,/headers:\{Authorization:"Bearer "\+productiveToken,"Content-Type":"application\/json"\}/);
+  assert.match(edge,/!realNick\.startsWith\("TEST"\)/);
+  assert.match(edge,/String\(productiveSeller\.data\?\.id\|\|""\)!==String\(testSeller\.data\?\.id\|\|""\)/);
+  assert.match(edge,/method:"POST",headers:\{\.\.\.mpHeaders,"Content-Type":"application\/json"/);
 });
 
 test('test-user provisioning is single-shot and persists synthetic email server-side',()=>{
