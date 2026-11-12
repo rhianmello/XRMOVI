@@ -167,12 +167,32 @@ Deno.serve(async(req:Request)=>{
        return reply(origin,{test:true,prepared:false,state:record.test_buyer_state,
          error:"Uma tentativa anterior de criar comprador já existe. Não criaremos outra."},409);
      try{
-       const {response:sellerResponse,data:seller}=await mpGet("/users/me");
-       const nick=String(seller?.nickname||"").toUpperCase();
-       const sellerEmail=String(seller?.email||"").toLowerCase();
-       if(!sellerResponse.ok||String(seller.site_id||"")!=="MLB"||
-         !(nick.startsWith("TEST")||sellerEmail.endsWith("@testuser.com")))
-         return reply(origin,{error:"O vendedor não foi validado como conta de teste brasileira. Nenhum usuário criado."},503);
+       // Account provisioning requires a productive caller according to Mercado Pago.
+       // This productive credential is NEVER used for preapproval or payments.
+       // Test subscriptions continue using mpToken (XRMOVI_MP_TEST_ACCESS_TOKEN) only.
+       const productiveToken=Deno.env.get("XRMOVI_MP_ACCESS_TOKEN")||Deno.env.get("MP_ACCESS_TOKEN")||"";
+       if(!productiveToken||productiveToken===mpToken)
+         return reply(origin,{error:"Credencial da conta real não está disponível exclusivamente para criar contas fictícias. Nenhum usuário criado."},503);
+       const [testSeller,productiveSeller]=await Promise.all([
+         mpGet("/users/me"),
+         fetch("https://api.mercadopago.com/users/me",{
+           headers:{Authorization:"Bearer "+productiveToken,Accept:"application/json"},
+           signal:AbortSignal.timeout(12000)
+         }).then(async response=>({response,data:await response.json().catch(()=>({}))}))
+       ]);
+       const realNick=String(productiveSeller.data?.nickname||"").toUpperCase();
+       const realEmail=String(productiveSeller.data?.email||"").toLowerCase();
+       const testNick=String(testSeller.data?.nickname||"").toUpperCase();
+       const testEmail=String(testSeller.data?.email||"").toLowerCase();
+       const testOk=testSeller.response.ok&&String(testSeller.data?.site_id||"")==="MLB"&&
+         (testNick.startsWith("TEST")||testEmail.endsWith("@testuser.com"));
+       const realOk=productiveSeller.response.ok&&String(productiveSeller.data?.site_id||"")==="MLB"&&
+         !realNick.startsWith("TEST")&&!realEmail.endsWith("@testuser.com")&&
+         String(productiveSeller.data?.id||"")!==String(testSeller.data?.id||"");
+       if(!testOk||!realOk)
+         return reply(origin,{error:"Não foi possível comprovar duas identidades distintas: vendedor de teste e conta real autorizada a criar usuários fictícios. Nenhuma conta criada.",
+           productive_identity_http_status:productiveSeller.response.status,
+           test_identity_http_status:testSeller.response.status},503);
        const {data:claimed,error:claimError}=await table()
          .update({test_buyer_state:"creating",updated_at:new Date().toISOString()})
          .eq("id","card-sandbox-only").eq("test_buyer_state","not_created")
@@ -184,7 +204,7 @@ Deno.serve(async(req:Request)=>{
        try{
          response=await fetch("https://api.mercadopago.com/users/test",{
            method:"POST",
-           headers:{...mpHeaders,"Content-Type":"application/json"},
+           headers:{Authorization:"Bearer "+productiveToken,"Content-Type":"application/json"},
            body:JSON.stringify({site_id:"MLB",description:"XRMOVI homologacao assinatura cartao"}),
            signal:AbortSignal.timeout(15000)
          });
