@@ -340,6 +340,14 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
       <button type="button" class="btn outline" id="xrm-sandbox-settlement">Testar liberação simulada (sem alterar contas)</button>
       <button type="button" class="btn" id="xrm-sandbox-activate">Ativar acesso fictício de homologação</button>
       <button type="button" class="btn outline" id="xrm-sandbox-webhook-run">Testar webhook assinado e acesso automático</button>
+      <div class="xrm-sandbox-card" aria-label="Assinatura recorrente com cartão de teste">
+        <strong>Cartão recorrente — ambiente de teste</strong>
+        <p>Plano Start fictício: R$ 19,90/mês. Somente cartão de teste do Mercado Pago. Nenhum usuário do XRMOVI será liberado e nenhum valor entrará no faturamento real.</p>
+        <button type="button" class="btn outline" id="xrm-sandbox-card-create">Preparar checkout de cartão de teste</button>
+        <button type="button" class="btn outline" id="xrm-sandbox-card-status">Consultar assinatura de teste</button>
+        <a id="xrm-sandbox-card-checkout" class="btn" target="_blank" rel="noopener noreferrer" hidden>Abrir checkout de TESTE no Mercado Pago</a>
+        <p id="xrm-sandbox-card-result" role="status" aria-live="polite">Nenhuma assinatura de cartão foi criada nesta sessão.</p>
+      </div>
       <p id="xrm-sandbox-webhook-result" role="status" aria-live="polite" hidden></p>
       <p id="xrm-sandbox-activate-result" role="status" aria-live="polite" hidden></p>
       <p id="xrm-sandbox-settlement-result" role="status" aria-live="polite" hidden></p>
@@ -383,6 +391,11 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
 #xrm-sandbox-settlement-result{border:1px solid #30756d;background:#082e37;padding:13px;border-radius:10px;line-height:1.6;font-size:13px}
 #xrm-sandbox-activate-result{border:1px solid #30756d;background:#082e37;padding:13px;border-radius:10px;line-height:1.6;font-size:13px}
 #xrm-sandbox-webhook-result{border:1px solid #30756d;background:#082e37;padding:13px;border-radius:10px;line-height:1.6;font-size:13px}
+.xrm-sandbox-card{display:grid;gap:12px;border:1px solid #376879;padding:14px;border-radius:12px;background:#072333}
+.xrm-sandbox-card strong{color:#8fe7ce}
+.xrm-sandbox-card[hidden],#xrm-sandbox-card-checkout[hidden]{display:none}
+.xrm-sandbox-card a{max-width:100%;overflow-wrap:anywhere;text-align:center}
+
 
 #xrm-sandbox-qr-panel[hidden]{display:none}
 #xrm-sandbox-qr-image{width:min(240px,100%);height:auto;background:#fff;padding:10px;border-radius:8px;justify-self:center}
@@ -408,6 +421,10 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
  const sandboxSettlement=document.getElementById('xrm-sandbox-settlement');
  const sandboxActivate=document.getElementById('xrm-sandbox-activate');
  const sandboxWebhookRun=document.getElementById('xrm-sandbox-webhook-run');
+ const sandboxCardCreate=document.getElementById('xrm-sandbox-card-create');
+ const sandboxCardStatus=document.getElementById('xrm-sandbox-card-status');
+ const sandboxCardCheckout=document.getElementById('xrm-sandbox-card-checkout');
+ const sandboxCardResult=document.getElementById('xrm-sandbox-card-result');
  const sandboxWebhookResult=document.getElementById('xrm-sandbox-webhook-result');
  const sandboxActivateResult=document.getElementById('xrm-sandbox-activate-result');
  const sandboxSettlementResult=document.getElementById('xrm-sandbox-settlement-result');
@@ -571,6 +588,39 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
     : 'TESTE NÃO APROVADO: '+(result.error||'verificação incompleta')+'. Nenhum cliente real foi alterado.';
   }catch(e){sandboxWebhookResult.textContent='Falha no teste integrado: '+(e?.message||'erro desconhecido');}
   finally{sandboxWebhookRun.disabled=false}
+ });
+ function cardSandboxShow(data){
+   const status=String(data.status||'não criada');
+   const url=data.checkout_url;
+   sandboxCardCheckout.hidden=true;sandboxCardCheckout.removeAttribute('href');
+   if(typeof url==='string'&&url.startsWith('https://')){
+     try{const u=new URL(url);const host=u.hostname.toLowerCase();
+       if(['mercadopago.com.br','mercadopago.com'].some(d=>host===d||host.endsWith('.'+d))){
+         sandboxCardCheckout.href=u.href;sandboxCardCheckout.hidden=false;
+       }
+     }catch{}
+   }
+   sandboxCardResult.textContent='Assinatura de TESTE — status: '+status+'. '+(data.provider_id?'Identificador: '+data.provider_id+'. ':'')+
+     'Só use cartões oficiais de teste no checkout. Nenhum plano real foi liberado.';
+ }
+ sandboxCardCreate?.addEventListener('click',async()=>{
+   if(!confirm('Preparar uma assinatura recorrente FICTÍCIA Start de R$ 19,90/mês usando apenas o ambiente de TESTE do Mercado Pago? Não utilize cartão real.'))return;
+   sandboxCardCreate.disabled=true;sandboxCardResult.textContent='Conferindo credenciais e criando uma única assinatura de teste…';
+   try{
+     const data=await sandboxRequest({action:'create_card_hml'});
+     if(data.test!==true||data.real_customer_changed!==false||data.revenue_changed!==false)throw Error('Resposta não confirmada como teste');
+     cardSandboxShow(data);
+   }catch(e){sandboxCardResult.textContent='Teste não iniciado: '+(e?.message||'falha de conexão')+'. Não repita a criação em caso de erro; consulte o status.';}
+   finally{sandboxCardCreate.disabled=false}
+ });
+ sandboxCardStatus?.addEventListener('click',async()=>{
+   sandboxCardStatus.disabled=true;sandboxCardResult.textContent='Consultando a assinatura de teste no Mercado Pago…';
+   try{
+     const data=await sandboxRequest({action:'inspect_card_hml'});
+     if(data.test!==true)throw Error('Resposta inesperada');
+     cardSandboxShow(data);
+   }catch(e){sandboxCardResult.textContent='Não foi possível consultar: '+(e?.message||'erro desconhecido')}
+   finally{sandboxCardStatus.disabled=false}
  });
 })();
 </script>
