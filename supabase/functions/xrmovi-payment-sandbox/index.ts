@@ -12,6 +12,22 @@ const configured=()=> {
    key.startsWith("APP_USR-") && key.length>30 && key!==prod;
 };
 const orderId=/^ORD[A-Z0-9]{8,100}$/;
+function publicTestOrder(data:Record<string,any>){
+ const payment=data.transactions?.payments?.[0]||{};
+ const method=payment.payment_method||{};
+ const qr=String(method.qr_code||"");
+ const base64=String(method.qr_code_base64||"");
+ const ticket=String(method.ticket_url||"");
+ const sandboxTicket=ticket.startsWith("https://www.mercadopago.com.br/sandbox/")?ticket:null;
+ return {
+  test:true,order_id:String(data.id||""),status:String(data.status||"unknown"),
+  status_detail:String(data.status_detail||payment.status_detail||""),
+  amount_brl:50,paid_in_real_money:false,
+  pix_code:qr.length<=1500?qr:null,
+  pix_qr_base64:base64.length<=400000&&/^[a-zA-Z0-9+/=]*$/.test(base64)?base64:null,
+  sandbox_ticket_url:sandboxTicket
+ };
+}
 Deno.serve(async(req:Request)=>{
  const origin=req.headers.get("origin")||"";
  if(origin&&!allowedOrigins.has(origin))return reply(origin,{error:"Origem não autorizada"},403);
@@ -47,7 +63,7 @@ Deno.serve(async(req:Request)=>{
    const result=await fetch("https://api.mercadopago.com/v1/orders",{method:"POST",headers:{"Authorization":"Bearer "+mpToken,"Content-Type":"application/json","X-Idempotency-Key":idempotencyKey},body:JSON.stringify(payload),signal:AbortSignal.timeout(15000)});
    const data=await result.json().catch(()=>({}));
    if(!result.ok)return reply(origin,{error:"Falha na ordem de teste",http_status:result.status},502);
-   return reply(origin,{test:true,order_id:String(data.id||""),status:String(data.status||"unknown"),status_detail:String(data.status_detail||""),amount_brl:50,paid_in_real_money:false});
+   return reply(origin,publicTestOrder(data));
   }catch{return reply(origin,{error:"Não foi possível consultar o ambiente de teste"},502)}
  }
  if(action==="inspect_pix"){
@@ -57,7 +73,7 @@ Deno.serve(async(req:Request)=>{
    const result=await fetch("https://api.mercadopago.com/v1/orders/"+encodeURIComponent(id),{headers:{"Authorization":"Bearer "+mpToken},signal:AbortSignal.timeout(15000)});
    const data=await result.json().catch(()=>({}));
    if(!result.ok)return reply(origin,{error:"Não foi possível consultar a ordem",http_status:result.status},502);
-   return reply(origin,{test:true,order_id:String(data.id||""),status:String(data.status||"unknown"),status_detail:String(data.status_detail||"")});
+   return reply(origin,publicTestOrder(data));
   }catch{return reply(origin,{error:"Consulta da ordem indisponível"},502)}
  }
  return reply(origin,{error:"Ação não reconhecida"},400);
