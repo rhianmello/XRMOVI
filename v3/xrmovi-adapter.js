@@ -1,6 +1,6 @@
 import{createClient}from 'https://esm.sh/@supabase/supabase-js@2.58.0';
 import {setupTrialCountdown} from './trial-countdown.js?v=20261112';
-import { setupSubscriptionPanel } from './subscription-panel.js?v=20261105-syntax-fix-2';
+import { setupSubscriptionPanel } from './subscription-panel.js?v=20261112-fleet-trial-1';
 import { renewalNotice } from './renewal-reminder.js?v=20261103-reminders-2';
 import { showXrmoviOnboarding } from './onboarding.js?v=20261112-fleet-trial-1';
 import { createCompanyBranding } from './company-branding.js?v=20261110-company-name-1';
