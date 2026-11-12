@@ -89,9 +89,9 @@ export async function showXrmoviOnboarding({login,client,onCreated,onLogout,exis
  };
  const checkExistingPayment=async()=>{
   if(!companyId)return;
-  status.textContent='Consultando o pagamento no Mercado Pago, sem criar nova cobrança...';
+  status.textContent='Consultando o pagamento no Mercado Pago. Nenhuma cobrança será feita...';
   try{
-   const {data,error}=await client.functions.invoke('xrmovi-reconcile-subscription',{body:{company_id:companyId}});
+   const {data,error}=await client.functions.invoke('xrmovi-reconcile-subscription',{body:{company_id:existing.id}});
    if(error){
     let text='Falha ao verificar o pagamento.';
     try{const detail=await error.context?.json?.();if(detail?.error)text=detail.error}catch{}
@@ -118,11 +118,11 @@ export async function showXrmoviOnboarding({login,client,onCreated,onLogout,exis
     warning.className='wizard-pending-payment';
     warning.textContent='Já existe tentativa de pagamento em andamento. Você pode retomar ou consultar o pagamento, sem abrir outra assinatura.';
     form.querySelector('[data-fleet-calculator]').after(warning);
-    const verify=document.createElement('button');verify.type='button';verify.className='wizard-verify-payment';
+    const verify=document.createElement('button');verify.type='button';verify.id='xrm-onboarding-verify-payment';verify.className='wizard-verify-payment';
     verify.textContent='Já paguei · Verificar pagamento';
     verify.addEventListener('click',()=>void checkExistingPayment());
     submit.before(verify);
-    if(location.hash==='#subscription'){
+    if(window.location.hash==='#subscription'){
      void(async()=>{for(const ms of [900,3500,7000]){await new Promise(r=>setTimeout(r,ms));if(login.hidden)return;if((await checkExistingPayment())==='active')return}})();
     }
    }else if(snapshot.status==='trial'){
@@ -179,8 +179,8 @@ export async function showXrmoviOnboarding({login,client,onCreated,onLogout,exis
    const readiness=await client.functions.invoke('xrmovi-billing-readiness',{method:'GET'});
    if(readiness.error||readiness.data?.enabled!==true){
     throw Error(readiness.data?.reason==='pilot_only'
-     ?'Checkout de cartão restrito à homologação. Nenhuma cobrança foi criada. Você também pode escolher Pix ou teste gratuito.'
-     :'Cartão temporariamente indisponível. Nenhuma cobrança foi criada. Escolha Pix ou tente novamente.');
+     ?'Checkout de cartão restrito à homologação. Nenhuma cobrança foi iniciada. Você também pode escolher Pix ou teste gratuito.'
+     :'Cartão temporariamente indisponível. Nenhuma cobrança foi iniciada. Escolha Pix ou tente novamente.');
    }
    const checkout=await client.functions.invoke('xrmovi-create-subscription',{body:{company_id:companyId,plan}});
    if(checkout.error){
@@ -194,6 +194,8 @@ export async function showXrmoviOnboarding({login,client,onCreated,onLogout,exis
    window.location.assign(url.href);
   }catch(error){
    status.textContent=error?.message||'Falha ao processar sua solicitação.';
+   const feedback=document.getElementById('xrm-bill-plan-feedback');
+   if(feedback)feedback.textContent=status.textContent;
   }finally{submit.disabled=false}
  };
 }
