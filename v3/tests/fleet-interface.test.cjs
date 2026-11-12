@@ -189,6 +189,37 @@ test('financial period reloads both costs and records; failure never retains ano
  assert.deepEqual(errors,[]);await page.close();
 });
 
+test('reports combine type, vehicle and linked driver in the table and CSV',async()=>{
+ const {page,errors}=await open();
+ await page.waitForSelector('#fleet-table-body tr',{state:'attached'});
+ await page.evaluate(()=>{
+  brandingTest.drivers.push({id:'d1',name:'Ana',active:true},{id:'d2',name:'Bruno',active:true});
+  brandingTest.fixture.vehicles[0].driver_id='d1';
+  brandingTest.fixture.vehicles[1].driver_id='d2';
+ });
+ await page.locator('#refresh-button').click();
+ await page.locator('.fleet-main-nav [data-view="financial"]').click();
+ await page.locator('#xrm-report-driver option[value="d1"]').waitFor({state:'attached'});
+ const records=page.locator('#financial-entries tbody tr');
+ await page.selectOption('#xrm-report-kind','maintenance');
+ assert.equal(await records.count(),2);
+ await page.selectOption('#xrm-report-driver','d1');
+ assert.equal(await records.count(),1);
+ assert.match(await records.first().innerText(),/AAA1111/);
+ await page.selectOption('#xrm-report-vehicle','v2');
+ assert.equal(await records.count(),0);
+ await page.selectOption('#xrm-report-vehicle','v1');
+ assert.equal(await records.count(),1);
+ const [download]=await Promise.all([
+  page.waitForEvent('download'),page.locator('#financial-export-csv').click()
+ ]);
+ const csv=fs.readFileSync(await download.path(),'utf8');
+ assert.match(csv,/AAA1111.*Manutenção realizada/);
+ assert.doesNotMatch(csv,/BBB2222|Combustível|Despesa paga/);
+ assert.deepEqual(errors,[]);
+ await page.close();
+});
+
 test('stock movements remain inside the warehouse and search scopes counters',async()=>{
  const {page,errors}=await open();await page.goto(base+'/v3/operacoes.html#movimentacoes');await page.waitForFunction(()=>document.querySelectorAll('#rows tr').length===2);
  assert.equal(await page.locator('#modules [data-module="movimentacoes"]').count(),0);assert.equal(await page.locator('#title').innerText(),'Estoque de peças');
