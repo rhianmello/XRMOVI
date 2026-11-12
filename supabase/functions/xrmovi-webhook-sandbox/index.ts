@@ -32,9 +32,41 @@ Deno.serve(async req=>{
  catch{return respond({error:"invalid_json"},400)}
  if(body?.data&&typeof body.data==="object"&&body.data!==null&&"id" in body.data&&String((body.data as {id:unknown}).id)!==dataId)
    return respond({error:"id_mismatch"},400);
- // Acknowledge only. Never call settlement RPCs, production Mercado Pago APIs or mutate DB.
+ // Signed test events are validated, but only verified TEST ORD orders can
+ // update the single isolated sandbox-only entitlement. No production billing writes.
  const topic=String(body.type||body.topic||"unknown").slice(0,60);
  const action=String(body.action||"unknown").slice(0,60);
+ if((topic==="order"||topic==="orders")&&/^ORD[A-Z0-9]{8,100}$/.test(dataId)){
+   const testToken=Deno.env.get("XRMOVI_MP_TEST_ACCESS_TOKEN")||"";
+   const prodToken=Deno.env.get("XRMOVI_MP_ACCESS_TOKEN")||"";
+   if(!testToken.startsWith("APP_USR-")||testToken===prodToken)
+     return respond({error:"sandbox_credentials_not_ready"},503);
+   try{
+     const res=await fetch("https://api.mercadopago.com/v1/orders/"+encodeURIComponent(dataId),{
+       headers:{Authorization:"Bearer "+testToken},signal:AbortSignal.timeout(12000)});
+     if(!res.ok)return respond({ok:true,ignored:"test_order_not_available"},200);
+     const order=await res.json();
+     const pay=order.transactions?.payments?.[0]||{};
+     const reference=String(order.external_reference||"");
+     const amount=Number(order.total_amount||pay.amount||0);
+     if(String(order.id)!==dataId||!reference.startsWith("xrmovi_hml_")||Math.abs(amount-50)>0.009)
+       return respond({ok:true,ignored:"not_xrmovi_sandbox_order"},200);
+     const detail=String(order.status_detail||pay.status_detail||"").toLowerCase();
+     const approved=String(order.status||"").toLowerCase()==="processed"&&(detail==="accredited"||String(pay.status||"").toLowerCase()==="approved");
+     if(!approved)return respond({ok:true,received:true,ignored:"order_not_accredited",access_changed:false,revenue_changed:false});
+     const sbUrl=Deno.env.get("SUPABASE_URL")||"";
+     const serviceKey=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")||"";
+     if(!sbUrl.startsWith("https://")||!serviceKey)return respond({error:"sandbox_persistence_unavailable"},503);
+     const write=await fetch(sbUrl+"/rest/v1/xrmovi_hml_entitlements?on_conflict=id",{
+       method:"POST",headers:{"apikey":serviceKey,"authorization":"Bearer "+serviceKey,"content-type":"application/json","prefer":"resolution=merge-duplicates"},
+       body:JSON.stringify({id:"sandbox-only",order_id:dataId,external_reference:reference,status:"active",activated_at:new Date().toISOString(),updated_at:new Date().toISOString()}),
+       signal:AbortSignal.timeout(12000)
+     });
+     if(!write.ok){console.error("XRMOVI sandbox webhook entitlement failed",{status:write.status});return respond({error:"sandbox_entitlement_update_failed"},500)}
+     console.info("XRMOVI sandbox webhook verified",{topic,action,simulation:true,isolated_access_activated:true});
+     return respond({ok:true,signature_valid:true,received:true,isolated_access_activated:true,real_customer_changed:false,revenue_changed:false});
+   }catch{return respond({error:"sandbox_order_verification_unavailable"},503)}
+ }
  console.info("XRMOVI sandbox webhook verified",{topic,action,simulation:true,mutated:false});
  return respond({ok:true,signature_valid:true,received:true,topic,action,simulation_only:true,access_changed:false,revenue_changed:false});
 });
