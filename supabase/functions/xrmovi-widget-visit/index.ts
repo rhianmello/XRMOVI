@@ -1,6 +1,6 @@
 // XRMOVI Monitor: contador de visitantes consentidos, sem dados pessoais.
 import { createClient } from "npm:@supabase/supabase-js@2.58.0";
-const ORIGIN = "https://frota.nospassa.com.br";
+const ORIGIN = "https://xrmovi.com.br";
 const headers = {
   "Access-Control-Allow-Origin": ORIGIN,
   "Access-Control-Allow-Methods": "POST, OPTIONS",
