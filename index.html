@@ -602,6 +602,10 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
    const providerStatus=typeof data.provider_status==='string'?' | Mercado Pago: '+data.provider_status:'';
    const lastError=data.error_id?' | error_id: '+data.error_id:'';
    const providerError=data.provider_diagnostic?.message?' | motivo: '+String(data.provider_diagnostic.message).slice(0,180):'';
+   const webhookProof=data.webhook_verified===true?' | Webhook de teste: assinatura validada':
+      data.webhook_verified===false?' | Webhook de teste: ainda não confirmado':'';
+   const testPayment=typeof data.sandbox_payment_status==='string'?
+      ' | Pagamento fictício: '+data.sandbox_payment_status:'';
    const recovery=data.recovery||'';
    const url=data.checkout_url;
    sandboxCardCheckout.hidden=true;sandboxCardCheckout.removeAttribute('href');
@@ -621,7 +625,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
        : recovery==='multiple_matches'
          ? 'Há mais de uma assinatura com a referência de teste. Não crie outra. '
          : '')+
-     'Status local: '+status+providerStatus+lastError+providerError+'. '+
+     'Status local: '+status+providerStatus+lastError+providerError+webhookProof+testPayment+'. '+
      (data.provider_id?'Preapproval ID: '+data.provider_id+'. ':'')+
      'Nenhum cliente ou plano real foi liberado.';
  }
