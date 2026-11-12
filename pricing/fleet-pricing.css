@@ -1,0 +1,27 @@
+
+/* XRMOVI single-plan commercial design, aligned with V3 dark/mint palette. */
+#planos .xrm-fleet-header{max-width:670px;margin-bottom:19px}
+#planos .xrm-fleet-header h2{font-size:clamp(28px,3.2vw,39px);margin:8px 0}
+#planos .xrm-fleet-header p{margin:0;color:#b9d3dc;font-size:14px}
+#planos .xrm-fleet-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,.9fr);gap:18px;align-items:stretch}
+#planos .xrm-fleet-benefits,#planos .xrm-fleet-simulator{border:1px solid #326273;border-radius:18px;background:#102a3b;padding:24px;min-width:0}
+#planos .xrm-fleet-benefits h3{font-size:22px;margin:0 0 12px}
+#planos .xrm-fleet-benefits p{font-size:14px;color:#b5d0da}
+#planos .xrm-fleet-benefits ul{padding:0;list-style:none;display:grid;gap:11px;color:#d9edf1;font-size:14px;margin:18px 0}
+#planos .xrm-fleet-benefits li:before{content:'✓';color:#54e0ad;font-weight:800;margin-right:10px}
+#planos .xrm-fleet-badge{display:inline-block;color:#6ef3c8;background:#103f40;border:1px solid #32796e;border-radius:22px;padding:5px 11px;font-size:11px;font-weight:800;margin-bottom:12px}
+#planos .xrm-fleet-simulator{background:linear-gradient(148deg,#153f49,#0b2738);border-color:#4ebc9f;display:grid;gap:13px}
+#planos .xrm-fleet-simulator .xrm-fleet-price{color:#71e9c5;font-weight:850;font-size:clamp(30px,4vw,44px);line-height:1.1}
+#planos .xrm-fleet-simulator .xrm-fleet-price small{font-size:13px;color:#c0d8e1;font-weight:500}
+#planos .xrm-fleet-simulator label{font-weight:700;font-size:13px;color:#d3e8ed}
+#planos .xrm-fleet-range{width:100%;accent-color:#54e0ad;cursor:pointer}
+#planos .xrm-fleet-counter{display:flex;gap:9px;align-items:center}
+#planos .xrm-fleet-counter button{background:#0e2e3e;color:#edfbff;border:1px solid #447588;border-radius:9px;min-width:43px;height:43px;cursor:pointer;font-size:22px}
+#planos .xrm-fleet-counter input{width:100%;min-width:0;height:43px;text-align:center;color:#efffff;background:#0a2233;border:1px solid #42707f;border-radius:9px;font:700 19px system-ui}
+#planos .xrm-fleet-breakdown{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;border-top:1px solid #386270;padding-top:14px;font-size:13px}
+#planos .xrm-fleet-breakdown span{color:#b8cfdb}
+#planos .xrm-fleet-simulator .xrm-fleet-actions{display:grid;gap:9px}
+#planos .xrm-fleet-actions a{text-align:center;justify-content:center;width:100%}
+#planos .xrm-fleet-footnote{font-size:11px;color:#b3cad6;margin:0}
+@media(max-width:800px){#planos .xrm-fleet-layout{grid-template-columns:1fr}#planos .xrm-fleet-benefits,#planos .xrm-fleet-simulator{padding:20px}}
+@media(min-width:900px){#planos.section{padding:52px 0}}
