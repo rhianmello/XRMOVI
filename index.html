@@ -337,6 +337,8 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
       <label for="xrm-sandbox-order-id">Consultar uma ordem de teste já criada (sem gerar outra)</label>
       <input id="xrm-sandbox-order-id" type="text" maxlength="110" placeholder="Cole aqui o identificador ORD...">
       <button type="button" class="btn outline" id="xrm-sandbox-inspect">Consultar status da ordem</button>
+      <button type="button" class="btn outline" id="xrm-sandbox-settlement">Testar liberação simulada (sem alterar contas)</button>
+      <p id="xrm-sandbox-settlement-result" role="status" aria-live="polite" hidden></p>
       <p id="xrm-sandbox-feedback" role="status" aria-live="polite">Aguardando verificação do ambiente de teste.</p>
       <div id="xrm-sandbox-qr-panel" hidden>
         <strong>Pix fictício — não pagar</strong>
@@ -374,6 +376,8 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
 .xrm-sandbox-stage #xrm-sandbox-feedback{color:#d0e3ed;overflow-wrap:anywhere}
 .xrm-sandbox-stage input,.xrm-sandbox-stage textarea{width:100%;min-width:0;background:#071925;color:#eaffff;border:1px solid #50778a;border-radius:8px;padding:11px;font:inherit}
 #xrm-sandbox-qr-panel{display:grid;gap:11px;border:1px solid #30756d;background:#082e37;padding:13px;border-radius:10px}
+#xrm-sandbox-settlement-result{border:1px solid #30756d;background:#082e37;padding:13px;border-radius:10px;line-height:1.6;font-size:13px}
+
 #xrm-sandbox-qr-panel[hidden]{display:none}
 #xrm-sandbox-qr-image{width:min(240px,100%);height:auto;background:#fff;padding:10px;border-radius:8px;justify-self:center}
 #xrm-sandbox-qr-panel a{color:#79e6dc;text-decoration:underline;overflow-wrap:anywhere}
@@ -395,6 +399,8 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
  const sandboxCheck=document.getElementById('xrm-sandbox-check');
  const sandboxCreate=document.getElementById('xrm-sandbox-create');
  const sandboxInspect=document.getElementById('xrm-sandbox-inspect');
+ const sandboxSettlement=document.getElementById('xrm-sandbox-settlement');
+ const sandboxSettlementResult=document.getElementById('xrm-sandbox-settlement-result');
  const sandboxFeedback=document.getElementById('xrm-sandbox-feedback');
  const sandboxOrderInput=document.getElementById('xrm-sandbox-order-id');
  const sandboxQrPanel=document.getElementById('xrm-sandbox-qr-panel');
@@ -508,6 +514,21 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
    showSandboxOrder(data);
   }catch(e){sandboxFeedback.textContent='Falha ao consultar teste: '+(e?.message||'erro')}
   finally{sandboxInspect.disabled=false}
+ });
+ sandboxSettlement?.addEventListener('click',async()=>{
+  const id=(sandboxOrderInput.value||sandboxOrderId).trim();
+  sandboxSettlementResult.hidden=false;
+  if(!/^ORD[A-Z0-9]{8,100}$/.test(id)){sandboxSettlementResult.textContent='Informe uma ordem de homologação ORD... antes de testar a regra de liberação.';return;}
+  sandboxSettlement.disabled=true;
+  sandboxSettlementResult.textContent='Validando o status real da ordem de teste e simulando a decisão de acesso…';
+  try{
+   const outcome=await sandboxRequest({action:'simulate_settlement',order_id:id});
+   if(outcome.test!==true||outcome.access_actually_changed!==false||outcome.billing_ledger_changed!==false)throw Error('Resposta de segurança inesperada');
+   sandboxSettlementResult.textContent=outcome.would_grant_access
+    ? 'APROVADO NA SIMULAÇÃO: a ordem de teste está creditada e a regra indicaria liberação. Nenhuma conta foi liberada, nenhum webhook foi recebido e nenhuma receita foi lançada.'
+    : 'PENDENTE NA SIMULAÇÃO: a ordem ainda não está creditada. A regra não liberaria acesso. Nenhuma conta ou receita foi alterada.';
+  }catch(e){sandboxSettlementResult.textContent='Não foi possível testar a regra de liberação: '+(e?.message||'falha')}
+  finally{sandboxSettlement.disabled=false}
  });
 })();
 </script>
