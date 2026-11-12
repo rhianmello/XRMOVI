@@ -7,6 +7,7 @@ on:
       - 'tests/ga4-confirmed-payments.test.mjs'
       - 'tests/analytics-internal.test.mjs'
       - 'tests/seo-core.test.mjs'
+      - 'tests/fleet-pricing-trial.test.mjs'
       - 'supabase/tests/*.test.cjs'
       - 'v3/xrmovi-adapter.js'
       - 'v3/fuel-quality.js'
@@ -147,6 +148,8 @@ jobs:
         run: node --test v3/tests/assistant-course.test.cjs
       - name: Test compact assistant layout and responsive controls
         run: node --test v3/tests/assistant-layout.test.cjs
+      - name: Verify fleet pricing, trial guards, and guarded checkout rules
+        run: node --test tests/fleet-pricing-trial.test.mjs
       - name: Run isolated no-charge subscription tests
         run: node --test supabase/tests/checkout_recovery.test.cjs supabase/tests/xrmovi_renewal.test.cjs supabase/tests/xrmovi_support_email.test.cjs
       - name: Verify webhook signatures and redacted rejection diagnostics
