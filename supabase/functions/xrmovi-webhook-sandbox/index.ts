@@ -14,8 +14,12 @@ Deno.serve(async req=>{
  const signature=req.headers.get("x-signature")||"";
  const parts=new Map(signature.split(",").map(x=>x.trim().split("=")).filter(x=>x.length===2));
  const ts=parts.get("ts")||"",hash=parts.get("v1")||"";
- if(!requestId||requestId.length>200||!/^\d{10,13}$/.test(ts)||!/^[a-f0-9]{64}$/i.test(hash))
-   return respond({error:"invalid_signature_format"},401);
+ if(!requestId||requestId.length>200||!/^\d{10,13}$/.test(ts)||!/^[a-f0-9]{64}$/i.test(hash)){
+   // Never log raw headers, hashes, secret keys, or payer identifiers.
+   const reason=!requestId?"missing_request_id":!ts?"missing_signature_timestamp":!hash?"missing_signature_hash":"invalid_signature_format";
+   console.warn("XRMOVI homologation webhook rejected",{reason});
+   return respond({error:"invalid_signature",reason},401);
+ }
  const ms=ts.length===13?Number(ts):Number(ts)*1000;
  if(!Number.isFinite(ms)||Math.abs(Date.now()-ms)>600000)return respond({error:"signature_expired"},401);
  const manifest="id:"+dataId.toLowerCase()+";request-id:"+requestId+";ts:"+ts+";";
