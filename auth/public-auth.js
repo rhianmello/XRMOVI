@@ -11,6 +11,52 @@ for(const button of document.querySelectorAll('[data-auth-mode]'))button.addEven
 forgot.addEventListener('click',()=>{mode='recover';document.querySelectorAll('[data-auth-mode]').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false')});confirm.hidden=true;confirm.querySelector('input').required=false;passwordRow.hidden=true;passwordRow.querySelector('input').required=false;forgot.hidden=true;submit.textContent='Enviar link de recuperação';msg.textContent='Informe seu e-mail para receber o link de redefinição.';form.querySelector('[name=email]').focus();});
 let client;
 try{const response=await fetch('./v3/config.json',{cache:'no-store'});if(!response.ok)throw Error('Configuração indisponível');const config=await response.json();client=createClient(config.supabaseUrl,config.supabaseAnonKey)}catch(e){msg.textContent='Serviço temporariamente indisponível: '+e.message;submit.disabled=true}
+// Reflect authenticated Supabase state in the public header, without exposing any keys.
+const headerAuthLink=document.getElementById('xrm-header-auth-link');
+let headerAuthVersion=0;
+function renderHeaderSession(kind){
+ if(!headerAuthLink)return;
+ if(kind==='admin'){
+  headerAuthLink.textContent='Painel ADM';
+  headerAuthLink.href='/admin/';
+  headerAuthLink.setAttribute('aria-label','Abrir administração do XRMOVI');
+ }else if(kind==='user'){
+  headerAuthLink.textContent='Meu painel';
+  headerAuthLink.href='/v3/';
+  headerAuthLink.setAttribute('aria-label','Abrir painel do XRMOVI');
+ }else{
+  headerAuthLink.textContent='Entrar / Criar conta';
+  headerAuthLink.href='/?login=1';
+  headerAuthLink.setAttribute('aria-label','Entrar ou criar conta');
+ }
+}
+async function syncHeaderSession(){
+ if(!client)return;
+ const version=++headerAuthVersion;
+ try{
+  // getUser validates the token remotely; getSession alone does not prove identity.
+  const {data:{user},error:userError}=await client.auth.getUser();
+  if(version!==headerAuthVersion)return;
+  if(userError||!user){renderHeaderSession(null);return}
+  const {data:isAdmin,error:roleError}=await client.rpc('xrmovi_platform_is_admin');
+  if(version!==headerAuthVersion)return;
+  renderHeaderSession(!roleError&&isAdmin===true?'admin':'user');
+ }catch{
+  if(version===headerAuthVersion)renderHeaderSession(null);
+ }
+}
+if(client){
+ void syncHeaderSession();
+ client.auth.onAuthStateChange((event,session)=>{
+  if(event==='SIGNED_OUT'){
+   ++headerAuthVersion;
+   renderHeaderSession(null);
+  }else if((event==='SIGNED_IN'||event==='INITIAL_SESSION'||event==='TOKEN_REFRESHED')&&session?.user){
+   // Do not await Supabase queries inside onAuthStateChange.
+   queueMicrotask(()=>{void syncHeaderSession()});
+  }
+ });
+}
 form.addEventListener('submit',async event=>{
  event.preventDefault();if(!client)return;
  submit.disabled=true;msg.textContent='Verificando...';
