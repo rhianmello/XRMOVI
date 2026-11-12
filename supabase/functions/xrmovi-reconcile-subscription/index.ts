@@ -11,7 +11,7 @@ Deno.serve(async(req:Request)=>{
  const origin=req.headers.get("origin");
  if(origin&&!origins.has(origin))return json({error:"Origem não autorizada"},403,origin);
  if(req.method==="OPTIONS")return new Response(null,{status:204,headers:{
-  "access-control-allow-origin":origin||"https://frota.nospassa.com.br",
+  "access-control-allow-origin":origin||"https://xrmovi.com.br",
   "access-control-allow-methods":"POST, OPTIONS",
   "access-control-allow-headers":"authorization,apikey,content-type,x-client-info",
   "vary":"Origin"
