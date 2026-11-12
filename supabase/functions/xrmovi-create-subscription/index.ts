@@ -80,7 +80,7 @@ Deno.serve(async(req:Request)=>{
   }
   const payload=await req.json();
   const cid=String(payload?.company_id||""),chosen=String(payload?.plan||"");
-  if(!/^[0-9a-f-]{36}$/i.test(cid)||!["start","pro","business","advanced"].includes(chosen))
+  if(!/^[0-9a-f-]{36}$/i.test(cid)||!(["start","pro","business","advanced"].includes(chosen)||(/^fleet_[1-9]\d{0,4}$/.test(chosen)&&Number(chosen.slice(6))>=5&&Number(chosen.slice(6))<=10000)))
     return json({error:"Dados inválidos."},400,outputOrigin);
   const {data:intent,error:intentError}=await authClient.rpc("xrmovi_checkout_prepare",{cid,chosen_plan:chosen});
   if(intentError)throw new Error(intentError.message);
