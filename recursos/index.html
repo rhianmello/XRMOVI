@@ -16,7 +16,7 @@
 a{color:inherit;text-decoration:none}.shell{width:min(1160px,100% - 36px);margin:auto}
 header{border-bottom:1px solid #274658;background:#071a29;position:sticky;top:0;z-index:10}
 nav{min-height:75px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
-nav img{max-width:178px;width:100%;height:auto}nav .links{display:flex;flex-wrap:wrap;gap:16px;font-size:13px}
+nav img{max-width:178px;width:100%;height:auto}nav .links{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:12px 16px;font-size:13px;min-width:0}nav .links a{white-space:nowrap}
 nav a:hover{color:var(--mint)}.btn{display:inline-flex;align-items:center;justify-content:center;text-align:center;padding:12px 19px;border-radius:11px;background:var(--mint);color:#092633;font-weight:800}
 .btn.outline{border:1px solid #497888;background:transparent;color:var(--text)}
 .hero{padding:54px 0 35px;background:radial-gradient(circle at 80% 10%,#16505a,transparent 48%)}.eyebrow{color:var(--mint);font-weight:850;letter-spacing:.13em;font-size:11px}
@@ -25,13 +25,13 @@ h1{font-size:clamp(31px,4.8vw,48px);line-height:1.15;letter-spacing:-1.4px;max-w
 .feature{min-width:0;background:var(--panel);border:1px solid #2c5566;border-radius:15px;padding:22px;position:relative}
 .feature .symbol{font-size:27px;display:inline-block}.feature .idx{float:right;color:#79c3bb;font-size:12px;font-weight:800}
 .feature h2{font-size:17px;margin:15px 0 8px}.feature p{font-size:13px;color:var(--muted);margin:0}
-.qr-demo{border:1px solid #3f847c;border-radius:18px;padding:clamp(20px,4vw,32px);background:linear-gradient(125deg,#123d44,#0b2738);margin:0 0 45px}
+.qr-demo{border:1px solid #3f847c;border-radius:18px;padding:clamp(20px,4vw,32px);background:linear-gradient(125deg,#123d44,#0b2738);margin:0 auto 45px;scroll-margin-top:95px}
 .qr-demo h2{margin:0 0 8px;font-size:25px}.qr-demo p{color:var(--muted)}.qr-demo .steps{display:flex;gap:8px;flex-wrap:wrap}
-.qr-demo .steps button{font:inherit;cursor:pointer;color:#edfffb;background:#12364b;border:1px solid #4b8592;border-radius:8px;padding:12px}
+.qr-demo .steps button{font:inherit;cursor:pointer;color:#edfffb;background:#12364b;border:1px solid #4b8592;border-radius:8px;padding:12px;min-width:0}
 .qr-demo output{display:block;margin:15px 0;color:var(--mint);font-size:20px;font-weight:850}
 .linkcards{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0 42px}.linkcards a{padding:12px 16px;border:1px solid #3e6b7b;border-radius:10px;color:#cce9e9}
 footer{border-top:1px solid #254c59;padding:25px 0;font-size:12px;color:#b0ccda}
-@media(max-width:930px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.grid{grid-template-columns:1fr}nav{padding:12px 0}.hero{padding-top:36px}}
+@media(max-width:930px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.grid{grid-template-columns:1fr}nav{padding:12px 0;gap:10px}nav .links{justify-content:flex-start;gap:9px 13px;font-size:12px}.hero{padding-top:36px}.qr-demo{padding:18px}.qr-demo .steps button{flex:1 1 150px}.qr-demo output{font-size:17px;overflow-wrap:anywhere}.linkcards a{max-width:100%;overflow-wrap:anywhere}}
 </style><script defer src="/analytics/xrmovi-analytics.js?v=20261103-1"></script></head>
 <body>
 <header><nav class="shell" aria-label="Menu principal"><a href="/"><img src="/assets/xrmovi-logo-oficial.svg?v=20261110-v2" alt="XRMOVI"></a>
