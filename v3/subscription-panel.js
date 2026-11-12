@@ -179,6 +179,20 @@ export function setupSubscriptionPanel({client,getCompany,onCompanyCreated,onDat
    if(error)throw error;feedback('xrm-bill-plan-feedback','Solicitação registrada. Ainda não houve cobrança e o plano não foi alterado.');
   });
  });
+
+ // Server-side quote and capacity update, without changing an existing paid subscription.
+ async function ensureCheckoutCapacity(){
+  const selected=getCompany();
+  if(!selected)throw Error('Selecione sua empresa.');
+  if(!current||!['pending','trial'].includes(current.status))
+   throw Error('A assinatura atual não pode ser alterada por um novo pagamento.');
+  const count=fleetCalculator.quote.count;
+  const {data,error}=await client.rpc('xrmovi_set_checkout_capacity',{cid:selected.id,p_count:count});
+  if(error||!data?.code)throw Error(error?.message||'Não foi possível confirmar a capacidade.');
+  if(data.code!==fleetCalculator.quote.code)throw Error('O preço no servidor diverge da seleção.');
+  hiddenPlan.value=data.code;
+  return data;
+ }
  const checkoutButton=root.querySelector('#xrm-bill-checkout');
  let billingReady=false;
  const billingNotice=document.createElement('p');
@@ -196,14 +210,17 @@ export function setupSubscriptionPanel({client,getCompany,onCompanyCreated,onDat
  pixButton.textContent='Pagar por Pix · mensal';
  pixButton.title='Pix Copia e Cola ou QR Code bancário. Renovação mensal manual.';
  checkoutButton.insertAdjacentElement('afterend',pixButton);
- pixButton.addEventListener('click',()=>{
+ pixButton.addEventListener('click',async()=>{
   if(!billingReady)return;
   const current=getCompany();
   if(!current){feedback('xrm-bill-plan-feedback','Selecione a empresa.',true);return;}
-  openPixCheckout({client,companyId:current.id,onPaid:async()=>{
-   await refresh();await onDataChanged?.();
-   feedback('xrm-bill-plan-feedback','Pix confirmado. Sua assinatura foi liberada.');
-  }});
+  try{
+   await ensureCheckoutCapacity();
+   openPixCheckout({client,companyId:current.id,onPaid:async()=>{
+    await refresh();await onDataChanged?.();
+    feedback('xrm-bill-plan-feedback','Pix confirmado. Sua assinatura foi liberada.');
+   }});
+  }catch(e){feedback('xrm-bill-plan-feedback',e.message||'Erro ao preparar Pix.',true)}
  });
 
  const retryButton=document.createElement('button');
@@ -284,7 +301,8 @@ export function setupSubscriptionPanel({client,getCompany,onCompanyCreated,onDat
   const base=getCompany();if(!base)return;
   checkoutButton.disabled=true;feedback('xrm-bill-plan-feedback','Verificando a assinatura existente e preparando o checkout. Não será criada uma cobrança duplicada...');
   try{
-   const chosen=root.querySelector('#xrm-bill-plan-form input[name="plan"]').value;
+   const verifiedQuote=await ensureCheckoutCapacity();
+   const chosen=verifiedQuote.code;
    const {data,error}=await client.functions.invoke('xrmovi-create-subscription',{
     body:{company_id:base.id,plan:chosen}
    });
