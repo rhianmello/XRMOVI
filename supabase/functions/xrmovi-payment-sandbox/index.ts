@@ -88,19 +88,30 @@ Deno.serve(async(req:Request)=>{
      if(!record.provider_id){
        // Read-only recovery before any retry: an earlier POST may have reached Mercado Pago.
        try{
-         const params=new URLSearchParams({payer_email:"test_payer@example.com",limit:"50",offset:"0"});
-         const response=await fetch("https://api.mercadopago.com/preapproval/search?"+params,{
-           headers:mpHeaders,signal:AbortSignal.timeout(12000)});
-         const data=await response.json().catch(()=>({}));
-         if(!response.ok)return reply(origin,{test:true,created:false,status:record.status,
-           recovery:"provider_search_failed",http_status:response.status,
-           note:"Consulta inconclusiva. Não crie outra assinatura."});
-         const found=Array.isArray(data.results)?data.results.filter((x:any)=>
-           String(x.external_reference||"")==="xrmovi_hml_card_sandbox_only"):[];
+         // Exhaust paginated provider results; never infer absence from page one.
+         const found:any[]=[];
+         let offset=0,total=0,complete=false;
+         for(let page=0;page<20;page++){
+           const params=new URLSearchParams({payer_email:"test_payer@example.com",limit:"50",offset:String(offset)});
+           const response=await fetch("https://api.mercadopago.com/preapproval/search?"+params,{
+             headers:mpHeaders,signal:AbortSignal.timeout(12000)});
+           const data=await response.json().catch(()=>({}));
+           if(!response.ok)return reply(origin,{test:true,created:false,status:record.status,
+             recovery:"provider_search_failed",http_status:response.status,
+             note:"Consulta inconclusiva. Não crie outra assinatura."});
+           if(!Array.isArray(data.results))return reply(origin,{test:true,created:false,status:record.status,
+             recovery:"invalid_search_response"});
+           found.push(...data.results.filter((x:any)=>String(x.external_reference||"")==="xrmovi_hml_card_sandbox_only"));
+           total=Number(data.paging?.total||0);
+           offset+=data.results.length;
+           if(data.results.length===0||offset>=total){complete=true;break}
+         }
+         if(!complete)return reply(origin,{test:true,created:false,status:record.status,
+           recovery:"search_incomplete",note:"Busca paginada incompleta. Nenhuma nova assinatura criada."});
          if(found.length!==1)return reply(origin,{test:true,created:false,status:record.status,
            recovery:found.length>1?"multiple_matches":"not_found",
-           search_complete:Number(data.paging?.total||0)<=50,
-           note:"Nenhuma nova assinatura foi criada. Não repita a compra."});
+           search_complete:true,
+           note:"Busca concluída sem criar assinatura. A tentativa anterior continua bloqueada; investigar a rejeição 400 antes de reabrir."});
          const item=found[0],checkout=safeCheckout(item.init_point);
          if(Math.abs(Number(item.auto_recurring?.transaction_amount)-19.90)>0.009)
            return reply(origin,{test:true,created:false,recovery:"amount_mismatch"});
