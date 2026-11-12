@@ -151,13 +151,18 @@ Deno.serve(async(req:Request)=>{
          if(String(data.external_reference||"")!==reference||
             Math.abs(Number(data.auto_recurring?.transaction_amount)-19.90)>0.009)
             return reply(origin,{error:"Assinatura de outra referência ou valor.",test:true},403);
-         if(record.status!=="created"){
-           await patch({status:"created",provider_status:String(data.status||"pending"),
+         const currentProviderStatus=String(data.status||"pending");
+         if(record.status!=="created"||record.provider_status!==currentProviderStatus){
+           await patch({status:"created",provider_status:currentProviderStatus,
              checkout_url:safeCheckout(data.init_point),error_id:null,error_details:null});
          }
          return reply(origin,{test:true,created:true,status:"created",
-           provider_status:String(data.status||"pending"),provider_id:String(data.id),
-           checkout_url:safeCheckout(data.init_point),real_customer_changed:false,revenue_changed:false});
+           provider_status:currentProviderStatus,provider_id:String(data.id),
+           checkout_url:safeCheckout(data.init_point),
+           webhook_verified:!!record.webhook_verified_at,
+           webhook_last_topic:record.webhook_last_topic||null,
+           sandbox_payment_status:record.last_payment_status||null,
+           real_customer_changed:false,revenue_changed:false});
        }catch{return reply(origin,{error:"Consulta de assinatura indisponível.",test:true},502)}
      }
      try{
