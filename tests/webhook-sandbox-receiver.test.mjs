@@ -5,9 +5,13 @@ const code=readFileSync(new URL('../supabase/functions/xrmovi-webhook-sandbox/in
 test('sandbox receiver verifies HMAC, request identity and timestamp',()=>{
  for(const x of ['XRMOVI_MP_TEST_WEBHOOK_SECRET','x-signature','x-request-id','crypto.subtle.verify','signature_expired','id_mismatch','signature_mismatch'])assert.ok(code.includes(x),x);
 });
-test('sandbox receiver cannot settle, revoke, authorize or write financial entries',()=>{
- assert.ok(code.includes('access_changed:false'));
- assert.ok(code.includes('revenue_changed:false'));
- assert.doesNotMatch(code,/createClient|\.rpc\(|\.from\(|xrmovi_pix_settle|xrmovi_checkout_settle|service_role|SUPABASE_SERVICE_ROLE_KEY/);
- assert.doesNotMatch(code,/MP_ACCESS_TOKEN|api\.mercadopago\.com/);
+test('sandbox receiver writes only isolated entitlements after verified sandbox order',()=>{
+ assert.match(code,/xrmovi_hml_entitlements/);
+ assert.match(code,/xrmovi_hml_/);
+ assert.match(code,/order\.status/);
+ assert.match(code,/accredited/);
+ assert.match(code,/XRMOVI_MP_TEST_ACCESS_TOKEN/);
+ assert.match(code,/signature_valid:true/);
+ assert.doesNotMatch(code,/\.rpc\(|xrmovi_pix_settle|xrmovi_checkout_settle|xrmovi_pix_revoke|billing_ledger|client_access|billing_accounts/);
+ assert.doesNotMatch(code,/api\.mercadopago\.com\/v1\/payments/);
 });
