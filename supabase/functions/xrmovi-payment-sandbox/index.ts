@@ -118,11 +118,22 @@ Deno.serve(async(req:Request)=>{
      const seller=sellerResult.status==="fulfilled"?sellerResult.value:null;
      const buyerEmail=String(buyer?.data?.email||"").trim().toLowerCase();
      const sellerEmail=String(seller?.data?.email||"").trim().toLowerCase();
-     const buyerTest=buyer?.response?.ok===true&&String(buyer.data?.id)==="3674938694"&&
-       buyerEmail.endsWith("@testuser.com");
+     const buyerIdMatches=String(buyer?.data?.id||"")==="3674938694";
+     const buyerNickname=String(buyer?.data?.nickname||"").toUpperCase();
+     const sellerNickname=String(seller?.data?.nickname||"").toUpperCase();
+     const buyerTestIdentity=buyerIdMatches&&
+       (buyerEmail.endsWith("@testuser.com")||buyerNickname.startsWith("TEST"));
+     const buyerEmailAvailable=/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(buyerEmail);
      const sellerTest=seller?.response?.ok===true&&
-       (sellerEmail.endsWith("@testuser.com")||String(seller.data?.nickname||"").toUpperCase().startsWith("TEST"));
+       (sellerEmail.endsWith("@testuser.com")||sellerNickname.startsWith("TEST"));
+     const buyerTest=buyer?.response?.ok===true&&buyerTestIdentity&&buyerEmailAvailable;
+     const buyerSite=String(buyer?.data?.site_id||"");
+     const sellerSite=String(seller?.data?.site_id||"");
+     const sameCountry=!!buyerSite&&!!sellerSite&&buyerSite===sellerSite;
      return {buyerTest,sellerTest,buyerEmail:buyerTest?buyerEmail:null,
+       buyerIdMatches,buyerNicknameIsTest:buyerNickname.startsWith("TEST"),
+       buyerEmailAvailable,buyerEmailIsTestDomain:buyerEmail.endsWith("@testuser.com"),
+       sameCountry,buyerSiteIsBR:buyerSite==="MLB",sellerSiteIsBR:sellerSite==="MLB",
        buyerHttp:buyer?.response?.status||null,sellerHttp:seller?.response?.status||null};
    };
    // Full recovery across provider pages: never treat page-one absence as definitive.
@@ -145,9 +156,13 @@ Deno.serve(async(req:Request)=>{
        const info=await identities();
        return reply(origin,{test:true,diagnostic:true,buyer_verified:info.buyerTest,
          seller_is_test:info.sellerTest,buyer_http_status:info.buyerHttp,
-         seller_http_status:info.sellerHttp,record_status:record.status,
+         seller_http_status:info.sellerHttp,buyer_id_matches:info.buyerIdMatches,
+         buyer_nickname_is_test:info.buyerNicknameIsTest,
+         buyer_email_available:info.buyerEmailAvailable,
+         buyer_email_is_test_domain:info.buyerEmailIsTestDomain,
+         same_country:info.sameCountry,record_status:record.status,
          provider_id_exists:!!record.provider_id,
-         can_safely_prepare:info.buyerTest&&info.sellerTest&&record.status==="not_created",
+         can_safely_prepare:info.buyerTest&&info.sellerTest&&info.sameCountry&&record.status==="not_created",
          note:"Leitura das identidades, sem criar assinatura."});
      }catch{return reply(origin,{error:"Não foi possível diagnosticar as contas.",test:true},502)}
    }
@@ -199,7 +214,7 @@ Deno.serve(async(req:Request)=>{
        status:record.status,error_id:record.error_id||null},409);
    let check;
    try{check=await identities()}catch{return reply(origin,{error:"Identidades de teste indisponíveis; nenhum POST enviado."},503)}
-   if(!check.buyerTest||!check.sellerTest||!check.buyerEmail)
+   if(!check.buyerTest||!check.sellerTest||!check.sameCountry||!check.buyerEmail)
      return reply(origin,{error:"Comprador e vendedor não foram confirmados como duas contas de teste. Nenhum POST enviado.",
        buyer_verified:check.buyerTest,seller_is_test:check.sellerTest},503);
    const existing=await recover().catch(()=>({complete:false,reason:"search_unavailable"}));
