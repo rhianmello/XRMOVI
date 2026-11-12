@@ -32,10 +32,10 @@
   },
   "offers": {
     "@type": "Offer",
-    "price": "29.90",
+    "price": "19.90",
     "priceCurrency": "BRL",
     "url": "https://xrmovi.com.br/#planos",
-    "description": "Assinatura mensal a partir de R$ 29,90 para até cinco veículos; R$ 5,90 por veículo adicional."
+    "description": "Assinatura mensal a partir de R$ 19,90 para até cinco veículos e valor proporcional por veículo até cem."
   },
   "featureList": [
     "QR Code individual por veículo",
@@ -94,7 +94,13 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
 <script defer src="/analytics/xrmovi-analytics.js?v=20261110-qr-demo-1"></script>
 <script defer src="/analytics/xrmovi-widget-visits.js?v=20261108-1"></script>
 <link rel="stylesheet" href="/legal/policies.css">
-<link rel="manifest" href="/manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="icon" href="/pwa/icon.svg?v=20261110-brand-v2" type="image/svg+xml" sizes="any"><link rel="stylesheet" href="/pricing/fleet-pricing.css?v=20261112"></head><body>
+<link rel="manifest" href="/manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="icon" href="/pwa/icon.svg?v=20261110-brand-v2" type="image/svg+xml" sizes="any"><link rel="stylesheet" href="/pricing/fleet-pricing.css?v=20261112"><style>
+ #planos .xrm-fleet-tiers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:1px 0 5px}
+ #planos .xrm-fleet-tiers span{border:1px solid #346b75;border-radius:8px;background:#0b2939;padding:8px 5px;text-align:center;font-size:11px;color:#b9d6df}
+ #planos .xrm-fleet-tiers strong{display:block;color:#78e5c7;font-size:12px}
+ #planos .xrm-fleet-stage{margin:0;color:#b8d6df;font-size:12px}
+ @media(max-width:420px){#planos .xrm-fleet-tiers{grid-template-columns:repeat(2,minmax(0,1fr))}}
+ </style></head><body>
 <header><div class="shell nav"><a class="brand" href="#inicio" aria-label="XRMOVI — voltar ao início"><img class="brand-logo" src="/assets/xrmovi-logo-oficial.svg?v=20261110-v2" alt="XRMOVI" width="248" height="61" decoding="async"></a><nav class="links" aria-label="Navegação principal"><a href="/recursos/">Recursos</a><a href="#planos">Planos</a><button type="button" class="xrm-install-nav-link" data-demo>Demonstração</button><a href="/perguntas-frequentes/">Perguntas frequentes</a><button class="xrm-install-nav-link" type="button" data-xrm-install>Baixar App</button></nav><div class="actions nav-actions"><details class="xrm-mobile-nav"><summary aria-label="Abrir menu de navegação">☰ <span>Menu</span></summary><nav aria-label="Menu do celular"><a href="/recursos/">Recursos</a><a href="#planos">Planos</a><button type="button" data-demo>Demonstração</button><a href="/perguntas-frequentes/">Perguntas frequentes</a><a href="/recursos/#contato">Contato</a><button type="button" data-xrm-install>Baixar App</button></nav></details><a class="btn small" id="xrm-header-auth-link" href="/?login=1" aria-label="Entrar ou criar conta">Entrar / Criar conta</a></div></div></header>
 <main id="inicio">
 <div class="hero xrm-qr-hero">
@@ -181,7 +187,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
   <div class="xrm-fleet-header">
    <div class="eyebrow">PREÇO SIMPLES POR VEÍCULO</div>
    <h2 id="xrm-fleet-title">Um plano. Sua frota. Seu controle.</h2>
-   <p>Comece com até 5 veículos por R$ 29,90/mês. Adicione capacidade conforme a operação crescer, sem planos complicados.</p>
+   <p>Comece com até 5 veículos por R$ 19,90/mês. A mensalidade cresce por veículo, sem saltos de preço.</p>
   </div>
   <div class="xrm-fleet-layout">
    <div class="xrm-fleet-benefits">
@@ -189,31 +195,35 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
     <h3>Tudo o que sua frota precisa, em um sistema.</h3>
     <p>Distribua a capacidade contratada entre suas empresas. Você paga pelo total de veículos, não por contratos separados.</p>
     <ul>
-     <li>Veículos, motoristas e QR Code individual</li>
-     <li>Controle de quilometragem, óleo e manutenção</li>
-     <li>Abastecimentos, gastos e multas</li>
-     <li>Central de documentos e relatórios</li>
-     <li>Alertas, histórico e painel gerencial</li>
+     <li>Veículos, abastecimentos e manutenção</li>
+     <li>Quilometragem e relatórios</li>
+     <li>QR Code individual para cada veículo</li>
+     <li>Registro de KM com foto pelo motorista</li>
+     <li>Central de documentos (CNH, CRLV, notas)</li>
+     <li>Multas e infrações</li>
+     <li>Gestão de múltiplas empresas</li>
     </ul>
     <a href="/recursos/" class="btn outline">Conhecer todos os recursos</a>
    </div>
    <div class="xrm-fleet-simulator" data-fleet-calculator aria-label="Simulador de mensalidade">
-    <div><div class="eyebrow">SIMULE SUA ASSINATURA</div><strong class="xrm-fleet-price"><span data-fleet-price>R$ 29,90</span> <small>/ mês</small></strong></div>
+    <div><div class="eyebrow">SIMULE SUA ASSINATURA</div><strong class="xrm-fleet-price"><span data-fleet-price>R$ 19,90</span> <small>/ mês</small></strong></div>
     <label for="fleet-cars">Quantos veículos deseja administrar?</label>
     <div class="xrm-fleet-counter">
      <button type="button" data-fleet-minus aria-label="Diminuir um veículo">−</button>
-     <input id="fleet-cars" type="number" min="1" max="10000" value="5" inputmode="numeric" data-fleet-count aria-label="Quantidade de veículos">
+     <input id="fleet-cars" type="number" min="1" max="100" value="5" inputmode="numeric" data-fleet-count aria-label="Quantidade de veículos">
      <button type="button" data-fleet-plus aria-label="Adicionar um veículo">+</button>
     </div>
-    <input type="range" min="5" max="200" step="1" value="5" data-fleet-slider class="xrm-fleet-range" aria-label="Capacidade da frota">
-    <div class="xrm-fleet-breakdown"><span>5 veículos incluídos</span><strong>R$ 29,90</strong></div>
-    <div class="xrm-fleet-breakdown"><span>Veículos adicionais: <b data-fleet-extra>0</b> × R$ 5,90</span><strong data-fleet-extra-cost>R$ 0,00</strong></div>
+    <input type="range" min="5" max="100" step="1" value="5" data-fleet-slider class="xrm-fleet-range" aria-label="Capacidade da frota">
+    <p class="xrm-fleet-tiers"><span>Até 5: <strong>R$ 19,90</strong></span><span>10: <strong>R$ 39,90</strong></span><span>40: <strong>R$ 79,90</strong></span><span>100: <strong>R$ 149,90</strong></span></p>
+    <p class="xrm-fleet-stage" data-fleet-tier-detail>Até 5 veículos: R$ 19,90/mês</p>
+    <div class="xrm-fleet-breakdown"><span>Base (até 5 veículos)</span><strong>R$ 19,90</strong></div>
+    <div class="xrm-fleet-breakdown"><span>Veículos adicionais: <b data-fleet-extra>0</b></span><strong data-fleet-extra-cost>R$ 0,00</strong></div>
     <div class="xrm-fleet-breakdown"><span>Capacidade total</span><strong><span data-fleet-total>5</span> veículos</strong></div>
     <div class="xrm-fleet-actions">
      <a class="btn" href="/?login=1&vehicles=5" data-fleet-cta>Começar agora</a>
      <a class="btn outline" href="/?login=1&vehicles=5&trial=1" data-fleet-cta data-fleet-trial>Experimentar grátis por 24 horas</a>
     </div>
-    <p class="xrm-fleet-footnote">Teste sem cartão, com até 5 veículos. O preço contratado só será cobrado após sua escolha e confirmação de pagamento. Pix: renovação manual.</p>
+    <p class="xrm-fleet-footnote">Valores proporcionais e calculados no servidor antes de pagar. Até 100 veículos; acima disso, consulte o atendimento. Pix: renovação manual.</p>
    </div>
   </div>
  </div>
@@ -225,7 +235,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
     <h2 id="xrm-checkout-preview-title">Teste o processo de pagamento</h2>
     <p id="xrm-checkout-preview-desc">Confira como o cliente escolhe o plano e o meio de pagamento. Nenhum Pix ou assinatura será criado, e nenhum cartão será solicitado.</p>
     <label for="xrm-preview-plan">Veículos contratados (simulação)</label>
-    <input id="xrm-preview-plan" type="number" min="1" max="10000" value="5" inputmode="numeric">
+    <input id="xrm-preview-plan" type="number" min="1" max="100" value="5" inputmode="numeric">
     <fieldset><legend>Forma de pagamento (demonstração)</legend><label><input type="radio" name="xrm-preview-method" value="pix" checked> Pix mensal</label><label><input type="radio" name="xrm-preview-method" value="card"> Cartão recorrente</label></fieldset>
     <button class="btn" id="xrm-preview-next" type="button">Continuar simulação</button>
     <button class="btn outline" id="xrm-preview-connectivity" type="button">Verificar conexão com pagamentos (sem cobrança)</button>
@@ -1198,5 +1208,5 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 </script>
 <style>#inicio .xrm-qr-plan-price{display:flex;align-items:center;gap:7px 14px;flex-wrap:wrap;font-size:11px;line-height:1.5;margin:13px 0 0;color:#a8c7d0}#inicio .xrm-qr-plan-price strong{font-weight:850;color:#f0faff}#inicio .xrm-qr-plan-price a{color:#7eeaca;font-weight:750;text-decoration:underline;text-underline-offset:3px}</style><script type="module" src="/analytics/xrmovi-presence.js?v=20261109-1"></script>
-<script defer src="/pwa/install.js?v=20261110-menu-1"></script><script type="module" src="/pricing/fleet-landing.js?v=20261112"></script>
+<script defer src="/pwa/install.js?v=20261110-menu-1"></script><script type="module" src="/pricing/fleet-landing.js?v=20261112-ladder1"></script>
 </body></html>
