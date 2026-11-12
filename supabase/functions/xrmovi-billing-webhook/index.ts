@@ -27,6 +27,99 @@ async function signed(request:Request,id:string,secret:string){
  const ok=await crypto.subtle.verify("HMAC",key,bytes,new TextEncoder().encode(manifest));
  return {ok,reason:ok?"verified":"signature_mismatch"};
 }
+
+// TEST-ONLY: signed Mercado Pago notifications sent to the existing webhook URL
+// are reconciled with the sandbox provider and persisted solely to the isolated
+// one-row homologation table. Never grants production entitlement or books revenue.
+async function handleHomologationWebhook(body:any,dataId:string,token:string,
+    supabaseUrl:string,serviceKey:string){
+  const topic=getType(body?.type||body?.topic);
+  if(!["subscription_preapproval","subscription_authorized_payment","payment"].includes(topic))
+    return send({ok:true,test:true,ignored:"unsupported_test_topic"});
+  if(!token.startsWith("APP_USR-")||!supabaseUrl.startsWith("https://")||!serviceKey)
+    return send({error:"Homologation configuration unavailable"},503);
+  const service=createClient(supabaseUrl,serviceKey,{auth:{persistSession:false}});
+  const {data:row,error:readError}=await service.from("xrmovi_hml_card_subscriptions")
+    .select("id,provider_id,status,external_reference")
+    .eq("id","card-sandbox-only").maybeSingle();
+  if(readError||!row?.provider_id||row.status!=="created"||
+    row.external_reference!=="xrmovi_hml_card_sandbox_only")
+    return send({ok:true,test:true,ignored:"no_matching_test_subscription"});
+  const get=async(path:string)=>{
+    const r=await fetch("https://api.mercadopago.com"+path,{
+      headers:{Authorization:"Bearer "+token,Accept:"application/json"},
+      signal:AbortSignal.timeout(12000)
+    });
+    if(!r.ok)throw new Error("Sandbox provider verification failed");
+    return r.json();
+  };
+  const sub=await get("/preapproval/"+encodeURIComponent(row.provider_id));
+  if(String(sub.id)!==row.provider_id||
+     String(sub.external_reference)!=="xrmovi_hml_card_sandbox_only"||
+     sub.auto_recurring?.currency_id!=="BRL"||
+     Math.abs(Number(sub.auto_recurring?.transaction_amount)-19.90)>0.009)
+     return send({ok:true,test:true,ignored:"provider_subscription_mismatch"});
+  // If the provider includes collector_id, validate against the test seller.
+  if(sub.collector_id!=null){
+    const seller=await get("/users/me");
+    if(String(seller.id)!==String(sub.collector_id))
+      return send({ok:true,test:true,ignored:"test_seller_mismatch"});
+  }
+  let paymentStatus:string|null=null;
+  let paymentId:string|null=null,invoiceId:string|null=null;
+  if(topic==="subscription_preapproval"){
+    if(dataId!==row.provider_id)
+      return send({ok:true,test:true,ignored:"unrelated_subscription"});
+  }else{
+    let invoice:any;
+    if(topic==="subscription_authorized_payment"){
+      if(!/^\d+$/.test(dataId))return send({ok:true,test:true,ignored:"invalid_invoice"});
+      invoice=await get("/authorized_payments/"+encodeURIComponent(dataId));
+    }else{
+      if(!/^\d+$/.test(dataId))return send({ok:true,test:true,ignored:"invalid_payment"});
+      const search=await get("/authorized_payments/search?payment_id="+encodeURIComponent(dataId)+"&limit=50");
+      invoice=Array.isArray(search?.results)?
+        search.results.find((x:any)=>String(x?.preapproval_id)===row.provider_id &&
+          String(x?.payment?.id)===dataId):null;
+    }
+    if(!invoice||String(invoice.preapproval_id)!==row.provider_id||
+       invoice.currency_id!=="BRL"||
+       Math.abs(Number(invoice.transaction_amount)-19.90)>0.009)
+      return send({ok:true,test:true,ignored:"unrelated_or_invalid_invoice"});
+    invoiceId=String(invoice.id||"");
+    paymentId=String(invoice.payment?.id||"");
+    if(!/^\d+$/.test(invoiceId)||!/^\d+$/.test(paymentId))
+      return send({ok:true,test:true,ignored:"missing_payment_proof"});
+    const payment=await get("/v1/payments/"+encodeURIComponent(paymentId));
+    if(String(payment.id)!==paymentId||payment.currency_id!=="BRL"||
+       Math.abs(Number(payment.transaction_amount)-19.90)>0.009)
+      return send({ok:true,test:true,ignored:"invalid_payment_proof"});
+    paymentStatus=payment.status==="approved"&&invoice.payment?.status==="approved"?
+      "approved":"not_approved";
+  }
+  const update:Record<string,unknown>={
+    provider_status:String(sub.status||"unknown").slice(0,40),
+    webhook_last_topic:topic,webhook_verified_at:new Date().toISOString(),
+    updated_at:new Date().toISOString()
+  };
+  if(paymentStatus){
+    update.last_payment_status=paymentStatus;
+    update.last_payment_id=paymentId;
+    update.last_invoice_id=invoiceId;
+    if(paymentStatus==="approved")update.last_payment_verified_at=new Date().toISOString();
+  }
+  const {error}=await service.from("xrmovi_hml_card_subscriptions")
+    .update(update).eq("id","card-sandbox-only").eq("provider_id",row.provider_id);
+  if(error)throw new Error("Isolated webhook persistence failed");
+  console.info("XRMOVI test recurring webhook verified",{
+    type:topic,provider_status:update.provider_status,payment_status:paymentStatus,
+    isolated_only:true
+  });
+  return send({ok:true,test:true,topic,provider_status:update.provider_status,
+    payment_status:paymentStatus,commercial_account_changed:false,
+    commercial_revenue_changed:false});
+}
+
 Deno.serve(async(request:Request)=>{
  if(request.method!=="POST")return send({error:"Method not allowed"},405);
  if(Deno.env.get("XRMOVI_BILLING_ENABLED")!=="true")return send({error:"Billing disabled"},503);
@@ -40,15 +133,37 @@ Deno.serve(async(request:Request)=>{
  if(!dataId)return send({error:"Missing notification ID"},400);
  try {
   const verification=await signed(request,dataId,secret);
-  if(!verification.ok){
-   // Log only bounded reason, never the secret, digest, request ID, resource ID or payer data.
-   console.warn("XRMOVI Mercado Pago webhook rejected",{reason:verification.reason});
+  const testSecret=Deno.env.get("XRMOVI_MP_TEST_WEBHOOK_SECRET")||"";
+  const testToken=Deno.env.get("XRMOVI_MP_TEST_ACCESS_TOKEN")||"";
+  // Two independent HMAC paths. An invalid signature never reaches provider or DB.
+  const testCheck=!verification.ok&&testSecret.length>=20&&testSecret!==secret&&
+    testToken.startsWith("APP_USR-")&&testToken!==token
+      ?await signed(request,dataId,testSecret):{ok:false,reason:"test_key_unavailable"};
+  if(!verification.ok&&!testCheck.ok){
+   console.warn("XRMOVI Mercado Pago webhook rejected",{
+     reason:"signature_mismatch",
+     production_reason:verification.reason,
+     test_key_configured:testSecret.length>=20&&testSecret!==secret
+   });
    return send({error:"Invalid notification signature"},401);
   }
-  const body=await request.json();
+  if(Number(request.headers.get("content-length")||"0")>8192)
+    return send({error:"Webhook too large"},413);
+  const raw=await request.text();
+  if(raw.length>8192)return send({error:"Webhook too large"},413);
+  let body:any;
+  try{body=JSON.parse(raw)}catch{return send({error:"Invalid JSON"},400)}
   if(body?.data?.id!=null&&String(body.data.id).toLowerCase()!==dataId.toLowerCase())
    return send({error:"Resource mismatch"},400);
-  if(body?.live_mode===false)return send({ok:true,ignored:"test_event"});
+  // Test-signed notifications NEVER enter the commercial settlement code.
+  if(testCheck.ok)
+    return await handleHomologationWebhook(body,dataId,testToken,supabaseUrl,serviceKey);
+  // Production-signed test-mode notifications also reconcile only the isolated test row.
+  if(body?.live_mode===false){
+    if(testToken.startsWith("APP_USR-")&&testToken!==token)
+      return await handleHomologationWebhook(body,dataId,testToken,supabaseUrl,serviceKey);
+    return send({ok:true,ignored:"test_event"});
+  }
   const type=getType(body?.type||body?.topic);
   const service=createClient(supabaseUrl,serviceKey,{auth:{persistSession:false}});
   const mpGet=async(path:string)=>{
