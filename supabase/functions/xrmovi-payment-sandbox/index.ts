@@ -66,6 +66,76 @@ Deno.serve(async(req:Request)=>{
    return reply(origin,publicTestOrder(data));
   }catch{return reply(origin,{error:"Não foi possível consultar o ambiente de teste"},502)}
  }
+ if(action==="create_card_hml"||action==="inspect_card_hml"){
+   // Test subscriptions only: no real payer, no production checkout or ledger writes.
+   const liveKey=Deno.env.get("XRMOVI_MP_ACCESS_TOKEN")||Deno.env.get("MP_ACCESS_TOKEN")||"";
+   if(!mpToken.startsWith("APP_USR-")||mpToken===liveKey)
+     return reply(origin,{error:"Credencial de teste não está separada da produção"},503);
+   const serviceKey=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")||"";
+   if(!serviceKey)return reply(origin,{error:"Armazenamento de homologação indisponível"},503);
+   const service=createClient(url,serviceKey,{auth:{autoRefreshToken:false,persistSession:false}});
+   const {data:record,error:recordError}=await service.from("xrmovi_hml_card_subscriptions")
+     .select("id,provider_id,status,checkout_url").eq("id","card-sandbox-only").single();
+   if(recordError||!record)return reply(origin,{error:"Registro isolado indisponível"},503);
+   const mpHeaders={Authorization:"Bearer "+mpToken,Accept:"application/json"};
+   const safeCheckout=(value:unknown)=>{
+     if(typeof value!=="string")return null;
+     try{const u=new URL(value);const host=u.hostname.toLowerCase();
+      return u.protocol==="https:"&&["mercadopago.com","mercadopago.com.br"].some(d=>host===d||host.endsWith("."+d))?u.href:null;
+     }catch{return null}
+   };
+   if(action==="inspect_card_hml"){
+     if(!record.provider_id)return reply(origin,{test:true,created:false,status:record.status});
+     try{
+       const response=await fetch("https://api.mercadopago.com/preapproval/"+encodeURIComponent(record.provider_id),{
+         headers:mpHeaders,signal:AbortSignal.timeout(12000)});
+       if(!response.ok)return reply(origin,{error:"Não foi possível verificar a assinatura de teste",http_status:response.status},502);
+       const item=await response.json();
+       if(String(item.external_reference)!=="xrmovi_hml_card_sandbox_only"||
+          Math.abs(Number(item.auto_recurring?.transaction_amount)-19.90)>.009)
+         return reply(origin,{error:"A assinatura não pertence ao ambiente isolado"},403);
+       const status=String(item.status||"unknown");
+       return reply(origin,{test:true,created:true,provider_id:String(item.id),
+         status,checkout_url:safeCheckout(item.init_point),
+         real_customer_changed:false,revenue_changed:false});
+     }catch{return reply(origin,{error:"Consulta Mercado Pago indisponível"},502)}
+   }
+   if(record.provider_id)return reply(origin,{test:true,created:true,reused:true,
+     provider_id:record.provider_id,status:record.status,checkout_url:safeCheckout(record.checkout_url),
+     real_customer_changed:false,revenue_changed:false});
+   if(record.status!=="not_created")return reply(origin,{error:"Existe uma tentativa anterior de homologação. Nenhuma assinatura adicional foi criada."},409);
+   // Atomic single-use claim prevents accidental duplicate recurring subscriptions.
+   const {data:claimed,error:claimError}=await service.from("xrmovi_hml_card_subscriptions")
+     .update({status:"pending",updated_at:new Date().toISOString()})
+     .eq("id","card-sandbox-only").eq("status","not_created").select("id").maybeSingle();
+   if(claimError||!claimed)return reply(origin,{error:"Uma tentativa já está em andamento. Não criamos outra assinatura."},409);
+   const payload={
+     reason:"XRMOVI HOMOLOGAÇÃO — Start — CARTÃO DE TESTE",
+     external_reference:"xrmovi_hml_card_sandbox_only",
+     payer_email:"test_payer@example.com",
+     auto_recurring:{frequency:1,frequency_type:"months",transaction_amount:19.90,currency_id:"BRL"},
+     back_url:"https://xrmovi.com.br/#planos",status:"pending"
+   };
+   try{
+     const response=await fetch("https://api.mercadopago.com/preapproval",{
+       method:"POST",headers:{...mpHeaders,"Content-Type":"application/json","X-Idempotency-Key":"xrmovi_hml_card_sandbox_only"},
+       body:JSON.stringify(payload),signal:AbortSignal.timeout(15000)});
+     const item=await response.json().catch(()=>({}));
+     if(!response.ok){
+       console.error("XRMOVI test preapproval rejected",{status:response.status,code:String(item.error||"").slice(0,60)});
+       return reply(origin,{error:"Mercado Pago não aceitou a assinatura de teste. A tentativa foi bloqueada para evitar duplicidade.",http_status:response.status},502);
+     }
+     const id=String(item.id||""),checkout=safeCheckout(item.init_point);
+     if(!id||String(item.external_reference)!==payload.external_reference)
+       return reply(origin,{error:"Resposta inesperada. Nenhuma nova assinatura será criada até conferência."},502);
+     const {error:saveError}=await service.from("xrmovi_hml_card_subscriptions")
+       .update({provider_id:id,checkout_url:checkout,status:"pending",updated_at:new Date().toISOString()})
+       .eq("id","card-sandbox-only");
+     if(saveError)return reply(origin,{error:"Assinatura criada no ambiente de teste, mas não vinculada. Não tente novamente."},502);
+     return reply(origin,{test:true,created:true,reused:false,status:String(item.status||"pending"),
+       provider_id:id,checkout_url:checkout,real_customer_changed:false,revenue_changed:false});
+   }catch{return reply(origin,{error:"Não foi possível concluir a tentativa de teste. Evite repetir até conferir o status."},502)}
+ }
  if(action==="run_signed_webhook_hml"){
    const id=String(input.order_id||"");
    if(!orderId.test(id))return reply(origin,{error:"Identificador de homologação inválido"},400);
