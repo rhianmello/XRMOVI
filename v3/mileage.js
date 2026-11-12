@@ -1,17 +1,17 @@
 /* XRMOVI | Controle de KM e revisões; funções públicas limitadas à empresa autenticada. */
-export function setupMileage({client,getCompany,getVehicles,getFilteredIds,onReload,onEditVehicle,canWrite}){
+export function setupMileage({client,getCompany,getVehicles,getFilteredIds,onReload,onEditVehicle,canWrite,onAlertsChange}){
  const id=x=>document.getElementById(x);
  const money=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
  const km=n=>Number(n||0).toLocaleString('pt-BR',{maximumFractionDigits:0});
  const day=date=>{if(!date)return 'Nunca';const text=String(date);return new Date(/^\d{4}-\d{2}-\d{2}$/.test(text)?text+'T12:00:00':text).toLocaleDateString('pt-BR')};
  const dateTime=date=>date?new Date(date).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):'Não registrado';
  const days=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
- let state=null,companyId=null,request=0,loadError='',busy=false,flash='',flashKind='';
+ let state=null,stateCompanyId=null,companyId=null,request=0,loadError='',busy=false,flash='',flashKind='';
  const rpc=async(name,args)=>{const {data,error}=await client.rpc('xrmovi_'+name,args);if(error)throw Error(error.message);return data};
  const add=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e};
  const btn=(label,fn,cls='')=>{const b=add('button','xrm-mileage-btn '+cls,label);b.type='button';b.onclick=fn;return b};
  const company=()=>getCompany();
- const rows=()=>state?.vehicles||[];
+ const rows=()=>stateCompanyId===company()?.id?state?.vehicles||[]:[];
  const scoped=()=>{const ids=getFilteredIds();return ids?rows().filter(v=>ids.has(v.id)):rows()};
  const toStatus=v=>v.oil_status==='overdue'?'Vencida':v.oil_status==='soon'?'Próxima':v.oil_status==='ok'?'Em dia':'Não configurada';
  const toStatusClass=v=>'xrm-oil-'+(v.oil_status||'unconfigured');
@@ -22,18 +22,19 @@ export function setupMileage({client,getCompany,getVehicles,getFilteredIds,onRel
  async function refresh(cid=company()?.id){
   if(!cid)return;
   const current=++request;companyId=cid;
-  try{const data=await rpc('mileage_dashboard',{cid});if(current!==request||company()?.id!==cid)return;state=data||{vehicles:[],pending:[],weekday:1};loadError='';render()}
-  catch(error){if(current!==request)return;loadError=error.message;state={vehicles:[],pending:[],weekday:1};render();status('Falha ao consultar KM: '+error.message,'error')}
+  try{const data=await rpc('mileage_dashboard',{cid});if(current!==request||company()?.id!==cid)return;stateCompanyId=cid;state=data||{vehicles:[],pending:[],weekday:1};loadError='';render();onAlertsChange?.()}
+  catch(error){if(current!==request||company()?.id!==cid)return;loadError=error.message;stateCompanyId=cid;state={vehicles:[],pending:[],weekday:1};render();onAlertsChange?.();status('Falha ao consultar KM: '+error.message,'error')}
  }
+ function oilAlerts(){return scoped().filter(v=>v.oil_status==='overdue'||v.oil_status==='soon')}
  function planFor(vid){return rows().find(v=>v.id===vid)||null}
  function render(){
   const consoleRoot=id('xrm-mileage-console');
   const dboard=id('xrm-mileage-dashboard'),alerts=id('xrm-mileage-alerts');
   if(!consoleRoot||!dboard||!alerts)return;
   const all=scoped();
-  const oil=all.filter(v=>v.oil_status==='overdue'||v.oil_status==='soon');
+  const oil=oilAlerts();
   const reminders=all.filter(weeklyDue);
-  const pending=(state?.pending||[]).filter(r=>!getFilteredIds()||getFilteredIds().has(r.vehicle_id));
+  const pending=(stateCompanyId===company()?.id?state?.pending||[]:[]).filter(r=>!getFilteredIds()||getFilteredIds().has(r.vehicle_id));
   dboard.replaceChildren();
   const head=add('div','xrm-mileage-dash-head');
   const text=add('div');text.append(add('strong','','Quilometragem e óleo'),add('small','','Alertas vinculados ao hodômetro informado'));
@@ -489,5 +490,5 @@ export function setupMileage({client,getCompany,getVehicles,getFilteredIds,onRel
   }catch(error){help.textContent='Falha ao gerar o QR Code: '+error.message+' O link continua disponível.'}
  }
 
- return {refresh,render,planFor};
+ return {refresh,render,planFor,oilAlerts};
 }
