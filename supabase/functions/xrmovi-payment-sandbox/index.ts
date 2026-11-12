@@ -161,8 +161,16 @@ Deno.serve(async(req:Request)=>{
        body:JSON.stringify(payload),signal:AbortSignal.timeout(15000)});
      const item=await response.json().catch(()=>({}));
      if(!response.ok){
-       console.error("XRMOVI test preapproval rejected",{status:response.status,code:String(item.error||"").slice(0,60)});
-       return reply(origin,{error:"Mercado Pago não aceitou a assinatura de teste. A tentativa foi bloqueada para evitar duplicidade.",http_status:response.status},502);
+       // Only sanitized provider diagnostic categories may enter logs or admin-only responses.
+       // Never emit credentials, full payer details, tokens or the entire provider response.
+       const safeField=(v:unknown)=>String(v??"").replace(/[^a-zA-Z0-9_. :\-]/g,"").slice(0,120);
+       const causes=Array.isArray(item.cause)?item.cause.slice(0,5).map((x:any)=>({
+         code:safeField(x?.code),description:safeField(x?.description)
+       })):[];
+       const diagnostic={status:response.status,error:safeField(item.error),message:safeField(item.message),causes};
+       console.error("XRMOVI test preapproval rejected",diagnostic);
+       return reply(origin,{error:"Mercado Pago não aceitou a assinatura de teste. Tentativa bloqueada para evitar duplicidade.",http_status:response.status,
+         provider_diagnostic:diagnostic},502);
      }
      const id=String(item.id||""),checkout=safeCheckout(item.init_point);
      if(!id||String(item.external_reference)!==payload.external_reference)
