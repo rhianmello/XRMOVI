@@ -85,7 +85,7 @@ Deno.serve(async(req:Request)=>{
      const account=await res.json().catch(()=>({}));
      const email=String(account.email||"").trim().toLowerCase();
      const verified=res.ok&&String(account.id)==="3674938694"&&
-       /^[^@\\s]+@testuser\\.com$/.test(email);
+       email.endsWith("@testuser.com")&&!email.includes(" ")&&email.length>15;
      return {verified,email:verified?email:null,http_status:res.status};
    };
    const safeCheckout=(value:unknown)=>{
@@ -101,7 +101,7 @@ Deno.serve(async(req:Request)=>{
          headers:mpHeaders,signal:AbortSignal.timeout(12000)});
        const seller=await sellerResponse.json().catch(()=>({}));
        const email=String(seller.email||"").toLowerCase();
-       const sellerIsTest=sellerResponse.ok&&email.endsWith("@testuser.com");
+       const sellerIsTest=sellerResponse.ok&&(email.endsWith("@testuser.com")||String(seller.nickname||"").toUpperCase().startsWith("TEST"));
        return reply(origin,{test:true,diagnostic:true,buyer_verified:buyer.verified,
          buyer_http_status:buyer.http_status,seller_is_test:sellerIsTest,
          seller_http_status:sellerResponse.status,record_status:record.status,
@@ -169,13 +169,19 @@ Deno.serve(async(req:Request)=>{
      provider_id:record.provider_id,status:record.status,checkout_url:safeCheckout(record.checkout_url),
      real_customer_changed:false,revenue_changed:false});
    if(record.status!=="not_created")return reply(origin,{error:"Existe uma tentativa anterior de homologação. Nenhuma assinatura adicional foi criada."},409);
+   const buyer=await validateTestBuyer();
+   if(!buyer.verified||!buyer.email)return reply(origin,{error:"A API não confirmou o e-mail do comprador de teste. Nenhuma assinatura foi criada.",buyer_http_status:buyer.http_status},503);
+   const sellerResponse=await fetch("https://api.mercadopago.com/users/me",{
+     headers:mpHeaders,signal:AbortSignal.timeout(12000)});
+   const seller=await sellerResponse.json().catch(()=>({}));
+   const sellerIsTest=sellerResponse.ok&&(String(seller.email||"").toLowerCase().endsWith("@testuser.com")||
+     String(seller.nickname||"").toUpperCase().startsWith("TEST"));
+   if(!sellerIsTest)return reply(origin,{error:"A credencial atual não foi confirmada como vendedor de teste. Nenhuma assinatura foi criada.",seller_http_status:sellerResponse.status},503);
    // Atomic single-use claim prevents accidental duplicate recurring subscriptions.
    const {data:claimed,error:claimError}=await service.from("xrmovi_hml_card_subscriptions")
      .update({status:"pending",updated_at:new Date().toISOString()})
      .eq("id","card-sandbox-only").eq("status","not_created").select("id").maybeSingle();
    if(claimError||!claimed)return reply(origin,{error:"Uma tentativa já está em andamento. Não criamos outra assinatura."},409);
-   const buyer=await validateTestBuyer();
-   if(!buyer.verified||!buyer.email)return reply(origin,{error:"Não foi possível validar o e-mail da conta compradora de teste no Mercado Pago. Nenhuma assinatura foi criada.",buyer_http_status:buyer.http_status},503);
    const payload={
      reason:"XRMOVI HOMOLOGAÇÃO — Start — CARTÃO DE TESTE",
      external_reference:"xrmovi_hml_card_sandbox_only",
