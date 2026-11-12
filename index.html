@@ -1187,7 +1187,7 @@ document.addEventListener('DOMContentLoaded',function(){
  try{
   if(typeof window.QRCode!=='function')throw Error('Módulo de QR indisponível');
   root.replaceChildren();
-  const demoUrl=new URL('/#demo-qr',location.origin).href;
+  const demoUrl=new URL('/recursos/#demo-qr',location.origin).href;
   new window.QRCode(root,{text:demoUrl,width:165,height:165,colorDark:'#082735',colorLight:'#ffffff',correctLevel:window.QRCode.CorrectLevel.M});
   root.title='QR demonstrativo que abre esta apresentação, sem acesso a veículos reais';
  }catch(error){
