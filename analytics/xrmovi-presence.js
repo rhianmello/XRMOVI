@@ -10,14 +10,20 @@ try {
  const internal=window.XrmoviAnalytics?.isInternal?.()===true;
  if(!owner&&!internal){
   const id=(()=>{try{let v=sessionStorage.getItem('xrmovi_presence_id');if(!v){v=crypto.randomUUID();sessionStorage.setItem('xrmovi_presence_id',v)}return v}catch{return crypto.randomUUID()}})();
-  const channel=db.channel('xrmovi-online-visitors-v1',{config:{presence:{key:id}}});
-  let tracked=false;
-  const update=async()=>{
-   if(document.visibilityState==='visible'&&!tracked){tracked=true;await channel.track({id,at:Date.now()})}
-   else if(document.visibilityState!=='visible'&&tracked){tracked=false;await channel.untrack()}
-  };
-  channel.subscribe(status=>{if(status==='SUBSCRIBED')void update()});
-  document.addEventListener('visibilitychange',()=>void update());
-  window.addEventListener('pagehide',()=>{void channel.untrack()});
+  const channel=db.channel('xrmovi-online-visitors-v1',{config:{presence:{key:id,enabled:true}}});
+  let joined=false,pageOpen=true;
+  channel.subscribe(status=>{
+   joined=status==='SUBSCRIBED';
+   if(joined&&pageOpen)void channel.track({id});
+  });
+  window.addEventListener('pagehide',()=>{
+   pageOpen=false;
+   if(joined)void channel.untrack();
+  });
+  window.addEventListener('pageshow',()=>{
+   if(pageOpen)return;
+   pageOpen=true;
+   if(joined)void channel.track({id});
+  });
  }
 }catch(error){console.warn('Indicador de presença indisponível:',error.message)}
