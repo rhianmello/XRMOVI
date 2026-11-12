@@ -46,8 +46,7 @@ jobs:
         env:
           PGPASSWORD: postgres
         run: |
-          psql -X -v ON_ERROR_STOP=1 -h 127.0.0.1 -p 54322 -U postgres -d postgres \\
-            -f "${GITHUB_WORKSPACE}/supabase/tests/xrmovi-fleet-local-smoke.sql"
+          psql -X -v ON_ERROR_STOP=1 -h 127.0.0.1 -p 54322 -U postgres -d postgres -f "${GITHUB_WORKSPACE}/supabase/tests/xrmovi-fleet-local-smoke.sql"
 
       - name: Verify migrations installed
         working-directory: ${{ runner.temp }}/xrmovi-db-check
