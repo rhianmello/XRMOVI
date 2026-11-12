@@ -328,8 +328,10 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
     <select id="xrm-preview-plan"><option value="19.90">Start — R$ 19,90/mês</option><option value="39.90">Pro — R$ 39,90/mês</option><option value="64.90">Business — R$ 64,90/mês</option><option value="99.90">Advanced — R$ 99,90/mês</option></select>
     <fieldset><legend>Forma de pagamento (demonstração)</legend><label><input type="radio" name="xrm-preview-method" value="pix" checked> Pix mensal</label><label><input type="radio" name="xrm-preview-method" value="card"> Cartão recorrente</label></fieldset>
     <button class="btn" id="xrm-preview-next" type="button">Continuar simulação</button>
+    <button class="btn outline" id="xrm-preview-connectivity" type="button">Verificar conexão com pagamentos (sem cobrança)</button>
+    <div id="xrm-preview-connectivity-result" role="status" aria-live="polite" hidden></div>
     <div id="xrm-preview-result" role="status" aria-live="polite" hidden></div>
-    <p class="xrm-preview-caption">O pagamento real exige uma conta autenticada e aprovação confirmada pelo servidor. Esta demonstração não acessa Mercado Pago nem Supabase.</p>
+    <p class="xrm-preview-caption">A simulação não acessa Mercado Pago nem Supabase. A verificação de conexão consulta somente a disponibilidade do serviço, sem criar pagamento. Para homologação completa com sandbox, são necessárias credenciais de teste isoladas e backend dedicado.</p>
     <a href="/?login=1" class="btn outline">Ir para contratação real</a>
   </div>
 </dialog>
@@ -346,6 +348,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
 .xrm-checkout-preview fieldset{border:1px solid #456475;border-radius:10px;display:flex;flex-wrap:wrap;gap:16px;padding:12px}
 .xrm-checkout-preview fieldset label{display:flex;align-items:center;gap:8px}
 #xrm-preview-result{border:1px solid #2c8170;background:#0a403e;padding:14px;border-radius:10px;font-size:13px;line-height:1.6}
+#xrm-preview-connectivity-result{border:1px solid #456475;background:#0b3143;padding:14px;border-radius:10px;font-size:13px;line-height:1.6}
 .xrm-checkout-preview .xrm-preview-caption{font-size:11px}
 @media(max-width:520px){.xrm-checkout-preview-content{padding:16px}.xrm-checkout-preview{width:calc(100vw - 20px)}}
 </style>
@@ -357,8 +360,10 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
  const next=document.getElementById('xrm-preview-next');
  const result=document.getElementById('xrm-preview-result');
  const plan=document.getElementById('xrm-preview-plan');
- if(!modal||!open||!close||!next||!result||!plan)return;
- open.addEventListener('click',()=>{result.hidden=true;modal.showModal()});
+ const connectivity=document.getElementById('xrm-preview-connectivity');
+ const connectionResult=document.getElementById('xrm-preview-connectivity-result');
+ if(!modal||!open||!close||!next||!result||!plan||!connectivity||!connectionResult)return;
+ open.addEventListener('click',()=>{result.hidden=true;connectionResult.hidden=true;modal.showModal()});
  close.addEventListener('click',()=>modal.close());
  modal.addEventListener('click',e=>{if(e.target===modal)modal.close()});
  next.addEventListener('click',()=>{
@@ -371,6 +376,27 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
   const heading=document.createElement('strong');heading.textContent='Simulação concluída — '+option;
   const body=document.createElement('p');body.textContent=info+' Nenhum pagamento foi gerado nesta simulação.';
   result.append(heading,body);result.hidden=false;
+ });
+ connectivity.addEventListener('click',async()=>{
+  connectivity.disabled=true;connectionResult.hidden=false;
+  connectionResult.textContent='Verificando disponibilidade do servidor de pagamentos…';
+  try{
+   const controller=new AbortController();
+   const timeout=setTimeout(()=>controller.abort(),12000);
+   let response;
+   try{response=await fetch('https://ztqtcbzjesrkuaijmylm.supabase.co/functions/v1/xrmovi-billing-readiness',{method:'GET',mode:'cors',cache:'no-store',signal:controller.signal,headers:{'Accept':'application/json'}})}
+   finally{clearTimeout(timeout)}
+   if(!response.ok)throw Error('Serviço respondeu HTTP '+response.status);
+   const data=await response.json();
+   if(data.provider!=='mercadopago')throw Error('Resposta inesperada do serviço');
+   const message=data.enabled
+    ? 'A integração de pagamentos de produção está acessível ('+(data.mode==='pilot'?'acesso piloto':'produção')+'). Isto NÃO é um ambiente de teste, nem confirma a geração de Pix ou assinatura. Nenhuma cobrança foi criada.'
+    : data.reason==='pilot_only'
+      ? 'Conexão ativa. A contratação ainda está restrita a usuários autorizados para teste. Nenhuma cobrança foi criada.'
+      : 'O servidor respondeu, mas informou que os pagamentos não estão liberados. Nenhuma cobrança foi criada.';
+   connectionResult.textContent=message;
+  }catch(error){connectionResult.textContent='Não foi possível validar a conexão: '+(error?.name==='AbortError'?'tempo limite excedido':error?.message||'falha de rede')+'. Nenhuma cobrança foi criada.'}
+  finally{connectivity.disabled=false}
  });
 })();
 </script>
