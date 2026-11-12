@@ -152,7 +152,9 @@ Deno.serve(async(req:Request)=>{
      reason:"XRMOVI HOMOLOGAÇÃO — Start — CARTÃO DE TESTE",
      external_reference:"xrmovi_hml_card_sandbox_only",
      payer_email:"test_payer@example.com",
-     auto_recurring:{frequency:1,frequency_type:"months",transaction_amount:19.90,currency_id:"BRL"},
+     auto_recurring:{frequency:1,frequency_type:"months",
+       end_date:new Date(Date.now()+365*24*60*60*1000).toISOString(),
+       transaction_amount:19.90,currency_id:"BRL"},
      back_url:"https://xrmovi.com.br/#planos",status:"pending"
    };
    try{
