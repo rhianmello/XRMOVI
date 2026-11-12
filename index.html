@@ -312,11 +312,68 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
     <div class="xrm-trial-actions">
       <a class="btn" href="/?login=1">Criar conta e escolher plano</a>
       <a class="btn outline" href="/perguntas-frequentes/">Entender as regras</a>
+      <button class="btn outline" type="button" id="xrm-checkout-preview-open" aria-haspopup="dialog">Simular pagamento sem cadastro</button>
     </div>
   </div>
   
  </div>
 </section>
+
+<dialog id="xrm-checkout-preview" aria-labelledby="xrm-checkout-preview-title" aria-describedby="xrm-checkout-preview-desc" class="xrm-checkout-preview">
+  <div class="xrm-checkout-preview-content">
+    <div class="xrm-checkout-preview-top"><strong>AMBIENTE DE SIMULAÇÃO — SEM COBRANÇA</strong><button type="button" id="xrm-checkout-preview-close" aria-label="Fechar simulação">×</button></div>
+    <h2 id="xrm-checkout-preview-title">Teste o processo de pagamento</h2>
+    <p id="xrm-checkout-preview-desc">Confira como o cliente escolhe o plano e o meio de pagamento. Nenhum Pix ou assinatura será criado, e nenhum cartão será solicitado.</p>
+    <label for="xrm-preview-plan">Plano</label>
+    <select id="xrm-preview-plan"><option value="19.90">Start — R$ 19,90/mês</option><option value="39.90">Pro — R$ 39,90/mês</option><option value="64.90">Business — R$ 64,90/mês</option><option value="99.90">Advanced — R$ 99,90/mês</option></select>
+    <fieldset><legend>Forma de pagamento (demonstração)</legend><label><input type="radio" name="xrm-preview-method" value="pix" checked> Pix mensal</label><label><input type="radio" name="xrm-preview-method" value="card"> Cartão recorrente</label></fieldset>
+    <button class="btn" id="xrm-preview-next" type="button">Continuar simulação</button>
+    <div id="xrm-preview-result" role="status" aria-live="polite" hidden></div>
+    <p class="xrm-preview-caption">O pagamento real exige uma conta autenticada e aprovação confirmada pelo servidor. Esta demonstração não acessa Mercado Pago nem Supabase.</p>
+    <a href="/?login=1" class="btn outline">Ir para contratação real</a>
+  </div>
+</dialog>
+<style>
+.xrm-checkout-preview{width:min(95vw,520px);max-height:90dvh;overflow:auto;border:1px solid #3a6979;border-radius:18px;background:#0b2637;color:#e9faff;padding:0;box-shadow:0 18px 90px #0009}
+.xrm-checkout-preview::backdrop{background:#020e19c9}
+.xrm-checkout-preview-content{padding:24px;display:grid;gap:14px;font:inherit}
+.xrm-checkout-preview-top{display:flex;justify-content:space-between;align-items:center;gap:12px;color:#69e3c2;font-size:11px;letter-spacing:.02em}
+#xrm-checkout-preview-close{border:1px solid #476576;border-radius:8px;background:transparent;color:white;font-size:24px;width:40px;height:40px;cursor:pointer}
+.xrm-checkout-preview h2{font-size:22px;margin:0}
+.xrm-checkout-preview p{font-size:13px;line-height:1.6;margin:0;color:#c3d9e4}
+.xrm-checkout-preview label,.xrm-checkout-preview legend{font-size:13px;font-weight:650}
+.xrm-checkout-preview select{width:100%;padding:12px;border:1px solid #597c8b;border-radius:8px;background:#071925;color:white}
+.xrm-checkout-preview fieldset{border:1px solid #456475;border-radius:10px;display:flex;flex-wrap:wrap;gap:16px;padding:12px}
+.xrm-checkout-preview fieldset label{display:flex;align-items:center;gap:8px}
+#xrm-preview-result{border:1px solid #2c8170;background:#0a403e;padding:14px;border-radius:10px;font-size:13px;line-height:1.6}
+.xrm-checkout-preview .xrm-preview-caption{font-size:11px}
+@media(max-width:520px){.xrm-checkout-preview-content{padding:16px}.xrm-checkout-preview{width:calc(100vw - 20px)}}
+</style>
+<script>
+(()=>{
+ const modal=document.getElementById('xrm-checkout-preview');
+ const open=document.getElementById('xrm-checkout-preview-open');
+ const close=document.getElementById('xrm-checkout-preview-close');
+ const next=document.getElementById('xrm-preview-next');
+ const result=document.getElementById('xrm-preview-result');
+ const plan=document.getElementById('xrm-preview-plan');
+ if(!modal||!open||!close||!next||!result||!plan)return;
+ open.addEventListener('click',()=>{result.hidden=true;modal.showModal()});
+ close.addEventListener('click',()=>modal.close());
+ modal.addEventListener('click',e=>{if(e.target===modal)modal.close()});
+ next.addEventListener('click',()=>{
+  const option=plan.selectedOptions[0]?.textContent||'Plano selecionado';
+  const method=modal.querySelector('input[name="xrm-preview-method"]:checked')?.value;
+  const info=method==='card'
+    ? 'No fluxo real, o cliente recebe um checkout seguro para autorizar a assinatura recorrente no cartão.'
+    : 'No fluxo real, o sistema gera uma cobrança Pix individual, com QR Code e código copia e cola, e aguarda confirmação do provedor.';
+  result.replaceChildren();
+  const heading=document.createElement('strong');heading.textContent='Simulação concluída — '+option;
+  const body=document.createElement('p');body.textContent=info+' Nenhum pagamento foi gerado nesta simulação.';
+  result.append(heading,body);result.hidden=false;
+ });
+})();
+</script>
 
 <section class="section xrm-contact-section" id="contato" aria-labelledby="contact-title">
  <div class="shell">
