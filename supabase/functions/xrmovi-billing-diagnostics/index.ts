@@ -10,7 +10,7 @@ Deno.serve(async (request:Request)=>{
  const origin=request.headers.get("origin");
  if(origin&&!origins.has(origin))return respond({error:"Origin not permitted"},403);
  if(request.method==="OPTIONS")return new Response(null,{status:204,headers:{
-  "access-control-allow-origin":origin||"https://frota.nospassa.com.br",
+  "access-control-allow-origin":origin||"https://xrmovi.com.br",
   "access-control-allow-headers":"authorization, apikey, content-type, x-client-info",
   "access-control-allow-methods":"POST, OPTIONS","vary":"Origin"
  }});
