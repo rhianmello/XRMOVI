@@ -245,6 +245,80 @@ Deno.serve(async(req:Request)=>{
      return cardError("Resultado incerto. Consulte a assinatura antes de qualquer nova tentativa.",502,{status:"creating"});
    }
  }
+
+ if(action==="test_signed_card_webhook_hml"){
+   // Owner-only, internally generated HMAC exercise of the live URL's TEST branch.
+   // This is NOT an actual Mercado Pago delivery. Absolutely no new payment/order.
+   const secret=Deno.env.get("XRMOVI_MP_TEST_WEBHOOK_SECRET")||"";
+   const key=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")||"";
+   if(secret.length<20||!key)return reply(origin,{error:"Teste de webhook indisponível."},503);
+   const service=createClient(url,key,{auth:{autoRefreshToken:false,persistSession:false}});
+   const {data:row,error:lookupError}=await service.from("xrmovi_hml_card_subscriptions")
+     .select("provider_id,status,external_reference").eq("id","card-sandbox-only").maybeSingle();
+   if(lookupError||row?.status!=="created"||!row?.provider_id||
+     row.external_reference!=="xrmovi_hml_card_sandbox_only")
+     return reply(origin,{error:"Não existe assinatura fictícia válida para testar.",test:true},409);
+   const testGet=async(path:string)=>{
+     const res=await fetch("https://api.mercadopago.com"+path,{
+       headers:{Authorization:"Bearer "+mpToken,Accept:"application/json"},
+       signal:AbortSignal.timeout(12000)});
+     if(!res.ok)throw Error("test_provider_not_available");
+     return res.json();
+   };
+   try{
+     const sub=await testGet("/preapproval/"+encodeURIComponent(row.provider_id));
+     if(String(sub.id)!==row.provider_id||
+       String(sub.external_reference)!=="xrmovi_hml_card_sandbox_only"||
+       sub.auto_recurring?.currency_id!=="BRL"||
+       Math.abs(Number(sub.auto_recurring?.transaction_amount)-19.90)>0.009)
+       return reply(origin,{error:"Assinatura não pertence ao teste isolado.",test:true},403);
+     const invoices=await testGet("/authorized_payments/search?preapproval_id="+
+       encodeURIComponent(row.provider_id)+"&limit=50");
+     const approved=Array.isArray(invoices.results)?invoices.results.find((v:any)=>
+       String(v.preapproval_id)===row.provider_id&&v.currency_id==="BRL"&&
+       Math.abs(Number(v.transaction_amount)-19.90)<0.009&&
+       v.payment?.status==="approved"&&/^\d+$/.test(String(v.id||""))):null;
+     const events=[{topic:"subscription_preapproval",id:row.provider_id}];
+     if(approved)events.push({topic:"subscription_authorized_payment",id:String(approved.id)});
+     const received:any[]=[];
+     for(const event of events){
+       const ts=String(Math.floor(Date.now()/1000));
+       const requestId=crypto.randomUUID();
+       const manifest="id:"+event.id.toLowerCase()+";request-id:"+requestId+";ts:"+ts+";";
+       const hmacKey=await crypto.subtle.importKey("raw",new TextEncoder().encode(secret),
+         {name:"HMAC",hash:"SHA-256"},false,["sign"]);
+       const digest=Array.from(new Uint8Array(await crypto.subtle.sign("HMAC",hmacKey,
+          new TextEncoder().encode(manifest)))).map(b=>b.toString(16).padStart(2,"0")).join("");
+       const endpoint=url+"/functions/v1/xrmovi-billing-webhook?data.id="+
+         encodeURIComponent(event.id)+"&type="+encodeURIComponent(event.topic);
+       const response=await fetch(endpoint,{method:"POST",headers:{
+         "content-type":"application/json","x-request-id":requestId,
+         "x-signature":"ts="+ts+",v1="+digest
+       },body:JSON.stringify({type:event.topic,action:event.topic+".updated",
+         live_mode:false,data:{id:event.id}}),signal:AbortSignal.timeout(20000)});
+       const body=await response.json().catch(()=>({}));
+       received.push({topic:event.topic,http_status:response.status,
+         acknowledged:response.ok&&body.test===true&&body.ok===true,
+         provider_status:body.provider_status||null,payment_status:body.payment_status||null});
+       if(!response.ok||body.ok!==true||body.test!==true)
+         break;
+     }
+     const {data:after,error:dbError}=await service.from("xrmovi_hml_card_subscriptions")
+       .select("provider_status,last_payment_status,webhook_verified_at,webhook_last_topic")
+       .eq("id","card-sandbox-only").maybeSingle();
+     const passed=!dbError&&!!after?.webhook_verified_at&&
+       received.length===events.length&&received.every(x=>x.acknowledged);
+     return reply(origin,{test:true,passed,simulated_only:true,
+       webhook_event_source:"internally_signed_simulation",
+       real_mercadopago_webhook_delivery_tested:false,
+       subscription_provider_status:after?.provider_status||null,
+       payment_status:after?.last_payment_status||null,
+       test_invoice_found:!!approved,deliveries:received,
+       real_customer_changed:false,revenue_changed:false},passed?200:502);
+   }catch{return reply(origin,{test:true,passed:false,
+     error:"Falha no teste de webhook de cartão. Não foi criada nova cobrança.",
+     simulated_only:true,real_mercadopago_webhook_delivery_tested:false},502)}
+ }
  if(action==="run_signed_webhook_hml"){
    const id=String(input.order_id||"");
    if(!orderId.test(id))return reply(origin,{error:"Identificador de homologação inválido"},400);
