@@ -19,7 +19,13 @@ test('webhooks require signed notifications and reject outdated timestamps',()=>
 
 test('test events cannot reach live settlement',()=>{
  assert.match(pix,/body\?\.live_mode===false\)return respond\(\{ok:true,ignored:"sandbox"\}/);
- assert.match(recurring,/body\?\.live_mode===false\)return send\(\{ok:true,ignored:"test_event"\}/);
+ assert.match(recurring,/if\(body\?\.live_mode===false\)\{/);
+ assert.match(recurring,/handleHomologationWebhook\(body,dataId,testToken,supabaseUrl,serviceKey\)/);
+ assert.match(recurring,/if\(testCheck\.ok\)/);
+ assert.match(recurring,/testCheck=!verification\.ok&&testSecret\.length>=20/);
+ const isolated=recurring.split('async function handleHomologationWebhook')[1]?.split('Deno.serve')[0]||'';
+ assert.ok(isolated.includes('xrmovi_hml_card_subscriptions'));
+ assert.doesNotMatch(isolated,/xrmovi_checkout_settle|xrmovi_pix_settle|billing_ledger|xrmovi_hml_entitlements/);
  assert.ok(pix.indexOf('body?.live_mode===false')<pix.indexOf('xrmovi_pix_settle'));
  assert.ok(recurring.indexOf('body?.live_mode===false')<recurring.indexOf('xrmovi_checkout_settle'));
 });
@@ -74,4 +80,18 @@ test('recurring card sandbox uses test credential and a single isolated preappro
  assert.match(sandbox,/preapproval/);
  assert.match(sandbox,/status","not_created"/);
  assert.doesNotMatch(sandbox,/xrmovi_checkout_settle|xrmovi_pix_settle/);
+});
+
+test('verified TEST webhook cannot update commercial billing, and requires provider proof',()=>{
+ assert.match(recurring,/testSecret!==secret/);
+ assert.match(recurring,/testToken!==token/);
+ assert.match(recurring,/if\(!verification\.ok&&!testCheck\.ok\)/);
+ assert.match(recurring,/body\?\.data\?\.id/);
+ assert.match(recurring,/xrmovi_hml_card_sandbox_only/);
+ assert.match(recurring,/String\(sub\.external_reference\)!==/);
+ assert.match(recurring,/19\.90/);
+ assert.match(recurring,/payment\.status==="approved"/);
+ assert.match(recurring,/last_payment_verified_at/);
+ assert.match(recurring,/webhook_verified_at/);
+ assert.match(recurring,/testCheck\.ok\)/);
 });
