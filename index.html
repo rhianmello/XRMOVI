@@ -642,8 +642,13 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
        ' (HTTP '+info.buyer_http_status+'). Vendedor de teste: '+
        (info.seller_is_test?'CONFIRMADO':'NÃO CONFIRMADO')+
        ' (HTTP '+info.seller_http_status+'). '+
-       (info.can_safely_prepare?'As contas são compatíveis; a tentativa antiga continua bloqueada até conclusão da recuperação.':
-       'Não faremos nova cobrança enquanto a identidade das contas não estiver correta.')+
+       'ID comprador correto: '+(info.buyer_id_matches?'SIM':'NÃO')+
+       '; nome de usuário de teste: '+(info.buyer_nickname_is_test?'SIM':'NÃO')+
+       '; e-mail disponível: '+(info.buyer_email_available?'SIM':'NÃO')+
+       '; e-mail de domínio de teste: '+(info.buyer_email_is_test_domain?'SIM':'NÃO')+
+       '; mesmo país: '+(info.same_country?'SIM':'NÃO')+'. '+
+       (info.can_safely_prepare?'Identidades compatíveis. A tentativa anterior continua bloqueada até liberação controlada.':
+       'Nenhuma nova assinatura será criada enquanto a validação não estiver completa.')+
        ' Nenhuma assinatura foi criada.';
    }catch(e){sandboxCardResult.textContent='Não foi possível conferir as contas: '+(e?.message||'erro desconhecido')}
    finally{sandboxCardDiagnose.disabled=false}
