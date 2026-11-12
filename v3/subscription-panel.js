@@ -261,9 +261,11 @@ export function setupSubscriptionPanel({client,getCompany,onCompanyCreated,onDat
       if(!lookupError&&attempt?.intent_id&&['created','pending'].includes(attempt.intent_status)){
        const original=String(attempt.requested_plan||'');
        const choices=root.querySelector('#xrm-bill-plan-form input[name="plan"]');
-       if([...choices.options].some(option=>option.value===original)){
+       if(original){
         if(!/^fleet_\d+$/.test(original))lockedLegacyCheckout=original;
-         choices.value=original;if(/^fleet_\d+$/.test(original))fleetCalculator?.setCount(Number(original.slice(6)));
+        if(/^fleet_\d+$/.test(original))fleetCalculator?.setCount(Number(original.slice(6)));
+        choices.value=original;
+        root.querySelectorAll('#xrm-bill-plan-form [data-fleet-count],#xrm-bill-plan-form [data-fleet-slider],#xrm-bill-plan-form [data-fleet-minus],#xrm-bill-plan-form [data-fleet-plus]').forEach(node=>node.disabled=true);
        }
        checkoutButton.textContent='Retomar pagamento pendente';
        billingNotice.textContent='Identificamos uma tentativa anterior de '+(original||'assinatura')+'. O sistema reutilizará a mesma referência no Mercado Pago; não será criada outra assinatura independente.';
