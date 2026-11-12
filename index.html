@@ -343,10 +343,11 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
       <div class="xrm-sandbox-card" aria-label="Assinatura recorrente com cartão de teste">
         <strong>Cartão recorrente — ambiente de teste</strong>
         <p>Plano Start fictício: R$ 19,90/mês. Somente cartão de teste do Mercado Pago. Nenhum usuário do XRMOVI será liberado e nenhum valor entrará no faturamento real.</p>
+        <label for="xrm-sandbox-card-payer-email">E-mail para cobrança</label>
+        <input id="xrm-sandbox-card-payer-email" type="email" autocomplete="email" maxlength="254" required>
         <button type="button" class="btn outline" id="xrm-sandbox-card-create">Preparar checkout de cartão de teste</button>
         <button type="button" class="btn outline" id="xrm-sandbox-card-status">Consultar assinatura de teste</button>
-        <button type="button" class="btn outline" id="xrm-sandbox-buyer-prepare">Preparar um novo comprador fictício (sem cobrança)</button>
-        <button type="button" class="btn outline" id="xrm-sandbox-card-diagnose">Diagnosticar contas de teste (sem cobrança)</button>
+        <button type="button" class="btn outline" id="xrm-sandbox-card-diagnose">Verificar disponibilidade do teste</button>
         <a id="xrm-sandbox-card-checkout" class="btn" target="_blank" rel="noopener noreferrer" hidden>Abrir checkout de TESTE no Mercado Pago</a>
         <p id="xrm-sandbox-card-result" role="status" aria-live="polite">Nenhuma assinatura de cartão foi criada nesta sessão.</p>
       </div>
@@ -426,7 +427,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
  const sandboxCardCreate=document.getElementById('xrm-sandbox-card-create');
  const sandboxCardStatus=document.getElementById('xrm-sandbox-card-status');
  const sandboxCardDiagnose=document.getElementById('xrm-sandbox-card-diagnose');
- const sandboxBuyerPrepare=document.getElementById('xrm-sandbox-buyer-prepare');
+ const sandboxCardPayerEmail=document.getElementById('xrm-sandbox-card-payer-email');
  const sandboxCardCheckout=document.getElementById('xrm-sandbox-card-checkout');
  const sandboxCardResult=document.getElementById('xrm-sandbox-card-result');
  const sandboxWebhookResult=document.getElementById('xrm-sandbox-webhook-result');
@@ -625,52 +626,31 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
      'Nenhum cliente ou plano real foi liberado.';
  }
  sandboxCardCreate?.addEventListener('click',async()=>{
+   const payerEmail=sandboxCardPayerEmail.value.trim();
+   if(!sandboxCardPayerEmail.validity.valid||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(payerEmail)){
+     sandboxCardResult.textContent='Informe um e-mail para cobrança válido.';
+     sandboxCardPayerEmail.focus();
+     return;
+   }
    if(!confirm('Preparar uma assinatura recorrente FICTÍCIA Start de R$ 19,90/mês usando apenas o ambiente de TESTE do Mercado Pago? Não utilize cartão real.'))return;
    sandboxCardCreate.disabled=true;sandboxCardResult.textContent='Conferindo credenciais e criando uma única assinatura de teste…';
    try{
-     const data=await sandboxRequest({action:'create_card_hml'});
+     const data=await sandboxRequest({action:'create_card_hml',payer_email:payerEmail});
      if(data.test!==true||data.real_customer_changed!==false||data.revenue_changed!==false)throw Error('Resposta não confirmada como teste');
      cardSandboxShow(data);
    }catch(e){sandboxCardResult.textContent='Teste não iniciado: '+(e?.message||'falha de conexão')+'. Não repita a criação em caso de erro; consulte o status.';}
    finally{sandboxCardCreate.disabled=false}
  });
- sandboxBuyerPrepare?.addEventListener('click',async()=>{
-   if(!confirm('Autorizar criação de UMA conta compradora FICTÍCIA? O Mercado Pago exige autenticação da conta real SOMENTE para cadastrar usuários de teste. O XRMOVI não usará a credencial real para assinaturas ou pagamentos nesta operação. A conta de teste não poderá ser excluída. Continuar?'))return;
-   sandboxBuyerPrepare.disabled=true;
-   sandboxCardResult.textContent='Criando um comprador fictício pela API oficial, com autorização da conta real exclusivamente para cadastramento. Nenhuma assinatura ou pagamento será enviado…';
-   try{
-     const item=await sandboxRequest({action:'prepare_buyer_hml'});
-     if(item.test!==true||item.prepared!==true||item.created_subscription!==false)
-       throw Error('Preparação não confirmada');
-     const check=await sandboxRequest({action:'diagnose_card_hml'});
-     sandboxCardResult.textContent='Comprador fictício preparado (e-mail mantido no backend). '+
-       'Comprador validado: '+(check.buyer_verified?'SIM':'NÃO')+
-       '; vendedor validado: '+(check.seller_is_test?'SIM':'NÃO')+
-       '; mesmo país: '+(check.same_country?'SIM':'NÃO')+
-       '. Nenhuma assinatura foi criada. A tentativa anterior permanece bloqueada para conciliação.';
-   }catch(e){sandboxCardResult.textContent='Não foi possível preparar o comprador: '+(e?.message||'falha inesperada')+
-     '. Não repita a operação sem conferir o estado da homologação.';}
-   finally{sandboxBuyerPrepare.disabled=false}
- });
  sandboxCardDiagnose?.addEventListener('click',async()=>{
    sandboxCardDiagnose.disabled=true;
-   sandboxCardResult.textContent='Conferindo as contas de comprador e vendedor no Mercado Pago, sem criar assinatura…';
+   sandboxCardResult.textContent='Consultando a disponibilidade do checkout de teste…';
    try{
      const info=await sandboxRequest({action:'diagnose_card_hml'});
      if(!info.test||!info.diagnostic)throw Error('Diagnóstico indisponível');
-     sandboxCardResult.textContent='Comprador de teste: '+(info.buyer_verified?'CONFIRMADO':'NÃO CONFIRMADO')+
-       ' (HTTP '+info.buyer_http_status+'). Vendedor de teste: '+
-       (info.seller_is_test?'CONFIRMADO':'NÃO CONFIRMADO')+
-       ' (HTTP '+info.seller_http_status+'). '+
-       'ID comprador correto: '+(info.buyer_id_matches?'SIM':'NÃO')+
-       '; nome de usuário de teste: '+(info.buyer_nickname_is_test?'SIM':'NÃO')+
-       '; e-mail disponível: '+(info.buyer_email_available?'SIM':'NÃO')+
-       '; e-mail de domínio de teste: '+(info.buyer_email_is_test_domain?'SIM':'NÃO')+
-       '; mesmo país: '+(info.same_country?'SIM':'NÃO')+'. '+
-       (info.can_safely_prepare?'Identidades compatíveis. A tentativa anterior continua bloqueada até liberação controlada.':
-       'Nenhuma nova assinatura será criada enquanto a validação não estiver completa.')+
-       ' Nenhuma assinatura foi criada.';
-   }catch(e){sandboxCardResult.textContent='Não foi possível conferir as contas: '+(e?.message||'erro desconhecido')}
+     sandboxCardResult.textContent=info.can_safely_prepare
+       ?'Checkout de teste disponível. Informe o e-mail para cobrança.'
+       :'Já existe uma tentativa ou assinatura de teste. Use Consultar assinatura de teste.';
+   }catch(e){sandboxCardResult.textContent='Não foi possível consultar a disponibilidade: '+(e?.message||'erro desconhecido')}
    finally{sandboxCardDiagnose.disabled=false}
  });
  sandboxCardStatus?.addEventListener('click',async()=>{

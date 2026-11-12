@@ -66,11 +66,35 @@ Deno.serve(async(req:Request)=>{
    return reply(origin,publicTestOrder(data));
   }catch{return reply(origin,{error:"Não foi possível consultar o ambiente de teste"},502)}
  }
- if(["create_card_hml","inspect_card_hml","diagnose_card_hml","prepare_buyer_hml"].includes(String(action))){
+ if(action==="prepare_buyer_hml")
+   return reply(origin,{error:"Use o Painel do Desenvolvedor para gerenciar contas de teste."},410);
+ if(["create_card_hml","inspect_card_hml","diagnose_card_hml"].includes(String(action))){
    // Homologation only. A verified platform administrator is required above this branch.
-   const liveToken=Deno.env.get("XRMOVI_MP_ACCESS_TOKEN")||Deno.env.get("MP_ACCESS_TOKEN")||"";
-   if(!mpToken.startsWith("APP_USR-")||mpToken===liveToken)
+   const liveTokens=[Deno.env.get("XRMOVI_MP_ACCESS_TOKEN"),Deno.env.get("MP_ACCESS_TOKEN")];
+   if(!mpToken.startsWith("APP_USR-")||liveTokens.includes(mpToken))
      return reply(origin,{error:"Credenciais de teste e produção não estão separadas."},503);
+   const errorId=crypto.randomUUID();
+   const payerEmail=typeof input.payer_email==="string"?input.payer_email.trim():"";
+   let maskedEmail:string|undefined;
+   const cardError=(error:string,status:number,details:Record<string,unknown>={})=>{
+     console.error("XRMOVI sandbox card issue",{error_id:errorId,http_status:status,
+       payer_email:maskedEmail,reason:error,...details});
+     return reply(origin,{error,error_id:errorId,...details},status);
+   };
+   if(action==="create_card_hml"){
+     if(!payerEmail)return cardError("Informe o e-mail para cobrança (payer_email).",400);
+     if(payerEmail.length>254||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(payerEmail))
+       return cardError("Informe um e-mail para cobrança válido.",400);
+     const [local,domain]=payerEmail.split("@");
+     maskedEmail=local.slice(0,Math.min(2,local.length-1))+"***@"+domain;
+     const normalized=payerEmail.toLowerCase();
+     if(normalized===Deno.env.get("MP_TEST_SELLER_EMAIL")?.trim().toLowerCase())
+       return cardError("O e-mail de cobrança precisa ser diferente do e-mail do vendedor.",400);
+     const allowlist=(Deno.env.get("MP_TEST_PAYER_EMAIL_ALLOWLIST")??"").split(",")
+       .map(email=>email.trim().toLowerCase()).filter(Boolean);
+     if(Deno.env.get("MP_TEST_MODE")==="true"&&allowlist.length&&!allowlist.includes(normalized))
+       return cardError("E-mail de cobrança fora da lista de homologação.",400);
+   }
    const key=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")||"";
    if(!key)return reply(origin,{error:"Persistência da homologação indisponível."},503);
    const service=createClient(url,key,{auth:{autoRefreshToken:false,persistSession:false}});
@@ -86,18 +110,6 @@ Deno.serve(async(req:Request)=>{
          .some(d=>h===d||h.endsWith("."+d))?u.href:null;
      }catch{return null}
    };
-   const safeText=(value:unknown)=>{
-     const v=typeof value==="string"?value:"";
-     return v.replace(/[^\x20-\x7eÀ-ÿ]/g," ").replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,"[redacted]")
-       .replace(/\b\d{11,16}\b/g,"[redacted]").replace(/(?:APP_USR|TEST)-[A-Za-z0-9-]+/g,"[redacted]")
-       .slice(0,180);
-   };
-   const mpError=(raw:any,status:number)=>{
-     const cause=Array.isArray(raw?.cause)?raw.cause.slice(0,5).map((v:any)=>({
-       code:safeText(v?.code),description:safeText(v?.description)
-     })):[];
-     return {status,error:safeText(raw?.error),message:safeText(raw?.message),cause};
-   };
    const patch=async(fields:Record<string,unknown>,status?:string)=>{
      const query=table().update({...fields,updated_at:new Date().toISOString()}).eq("id","card-sandbox-only");
      const {data,error}=await (status?query.eq("status",status):query).select("id,status,provider_id").maybeSingle();
@@ -109,37 +121,6 @@ Deno.serve(async(req:Request)=>{
        headers:mpHeaders,signal:AbortSignal.timeout(12000)});
      const data=await response.json().catch(()=>({}));
      return {response,data};
-   };
-   const identities=async()=>{
-     const knownBuyerId=String(record.test_buyer_id||"3674938694");
-     const [buyerResult,sellerResult]=await Promise.allSettled([
-       mpGet("/users/"+encodeURIComponent(knownBuyerId)),mpGet("/users/me")
-     ]);
-     const buyer=buyerResult.status==="fulfilled"?buyerResult.value:null;
-     const seller=sellerResult.status==="fulfilled"?sellerResult.value:null;
-     // Existing test users' public GET /users/{id} may not return email.
-     // Only use a stored email issued by official POST /users/test for the same ID.
-     const emailFromCreation=record.test_buyer_state==="ready"?
-       String(record.test_buyer_email||"").trim().toLowerCase():"";
-     const buyerEmail=String(emailFromCreation||buyer?.data?.email||"").trim().toLowerCase();
-     const sellerEmail=String(seller?.data?.email||"").trim().toLowerCase();
-     const buyerIdMatches=String(buyer?.data?.id||"")===knownBuyerId;
-     const buyerNickname=String(buyer?.data?.nickname||"").toUpperCase();
-     const sellerNickname=String(seller?.data?.nickname||"").toUpperCase();
-     const buyerTestIdentity=buyerIdMatches&&
-       (buyerEmail.endsWith("@testuser.com")||buyerNickname.startsWith("TEST"));
-     const buyerEmailAvailable=/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(buyerEmail);
-     const sellerTest=seller?.response?.ok===true&&
-       (sellerEmail.endsWith("@testuser.com")||sellerNickname.startsWith("TEST"));
-     const buyerTest=buyer?.response?.ok===true&&buyerTestIdentity&&buyerEmailAvailable;
-     const buyerSite=String(buyer?.data?.site_id||"");
-     const sellerSite=String(seller?.data?.site_id||"");
-     const sameCountry=!!buyerSite&&!!sellerSite&&buyerSite===sellerSite;
-     return {buyerTest,sellerTest,buyerEmail:buyerTest?buyerEmail:null,
-       buyerIdMatches,buyerNicknameIsTest:buyerNickname.startsWith("TEST"),
-       buyerEmailAvailable,buyerEmailIsTestDomain:buyerEmail.endsWith("@testuser.com"),
-       sameCountry,buyerSiteIsBR:buyerSite==="MLB",sellerSiteIsBR:sellerSite==="MLB",
-       buyerHttp:buyer?.response?.status||null,sellerHttp:seller?.response?.status||null};
    };
    // Full recovery across provider pages: never treat page-one absence as definitive.
    const recover=async()=>{
@@ -156,118 +137,11 @@ Deno.serve(async(req:Request)=>{
      }
      return {complete,found};
    };
-   if(action==="prepare_buyer_hml"){
-     // This is a deliberate, one-off operation creating a synthetic test user,
-     // NOT a subscription. Never provision repeatedly or save password/code.
-     if(record.test_buyer_state==="ready")
-       return reply(origin,{test:true,prepared:true,already_prepared:true,
-         has_email:!!record.test_buyer_email,created_subscription:false,
-         note:"Conta compradora de teste já cadastrada. Nenhuma assinatura criada."});
-     if(record.test_buyer_state!=="not_created")
-       return reply(origin,{test:true,prepared:false,state:record.test_buyer_state,
-         error:"Uma tentativa anterior de criar comprador já existe. Não criaremos outra."},409);
-     try{
-       // Account provisioning requires a productive caller according to Mercado Pago.
-       // This productive credential is NEVER used for preapproval or payments.
-       // Test subscriptions continue using mpToken (XRMOVI_MP_TEST_ACCESS_TOKEN) only.
-       const productiveToken=Deno.env.get("XRMOVI_MP_ACCESS_TOKEN")||Deno.env.get("MP_ACCESS_TOKEN")||"";
-       if(!productiveToken||productiveToken===mpToken)
-         return reply(origin,{error:"Credencial da conta real não está disponível exclusivamente para criar contas fictícias. Nenhum usuário criado."},503);
-       const [testSeller,productiveSeller]=await Promise.all([
-         mpGet("/users/me"),
-         fetch("https://api.mercadopago.com/users/me",{
-           headers:{Authorization:"Bearer "+productiveToken,Accept:"application/json"},
-           signal:AbortSignal.timeout(12000)
-         }).then(async response=>({response,data:await response.json().catch(()=>({}))}))
-       ]);
-       const realNick=String(productiveSeller.data?.nickname||"").toUpperCase();
-       const realEmail=String(productiveSeller.data?.email||"").toLowerCase();
-       const testNick=String(testSeller.data?.nickname||"").toUpperCase();
-       const testEmail=String(testSeller.data?.email||"").toLowerCase();
-       const testOk=testSeller.response.ok&&String(testSeller.data?.site_id||"")==="MLB"&&
-         (testNick.startsWith("TEST")||testEmail.endsWith("@testuser.com"));
-       const realOk=productiveSeller.response.ok&&String(productiveSeller.data?.site_id||"")==="MLB"&&
-         !realNick.startsWith("TEST")&&!realEmail.endsWith("@testuser.com")&&
-         String(productiveSeller.data?.id||"")!==String(testSeller.data?.id||"");
-       if(!testOk||!realOk)
-         return reply(origin,{error:"Não foi possível comprovar duas identidades distintas: vendedor de teste e conta real autorizada a criar usuários fictícios. Nenhuma conta criada.",
-           productive_identity_http_status:productiveSeller.response.status,
-           test_identity_http_status:testSeller.response.status},503);
-       const {data:claimed,error:claimError}=await table()
-         .update({test_buyer_state:"creating",updated_at:new Date().toISOString()})
-         .eq("id","card-sandbox-only").eq("test_buyer_state","not_created")
-         .select("id").maybeSingle();
-       if(claimError||!claimed)return reply(origin,{error:"Já existe preparação em andamento. Nenhum usuário adicional criado."},409);
-       // Official Mercado Pago test-user API. Never log its full response:
-       // it includes a password and possibly a verification code.
-       let response:Response;
-       try{
-         response=await fetch("https://api.mercadopago.com/users/test",{
-           method:"POST",
-           headers:{Authorization:"Bearer "+productiveToken,"Content-Type":"application/json"},
-           body:JSON.stringify({site_id:"MLB",description:"XRMOVI homologacao assinatura cartao"}),
-           signal:AbortSignal.timeout(15000)
-         });
-       }catch{
-         await table().update({test_buyer_state:"unknown",updated_at:new Date().toISOString()})
-           .eq("id","card-sandbox-only").eq("test_buyer_state","creating");
-         return reply(origin,{error:"Resultado incerto ao preparar comprador. Não tente novamente.",test:true},502);
-       }
-       const data=await response.json().catch(()=>({}));
-       if(!response.ok){
-         const errorId=crypto.randomUUID();
-         await table().update({test_buyer_state:"rejected",test_buyer_error_id:errorId,
-           updated_at:new Date().toISOString()})
-           .eq("id","card-sandbox-only").eq("test_buyer_state","creating");
-         console.error("XRMOVI test buyer setup rejected",{
-           error_id:errorId,status:response.status,
-           message:safeText(data?.message),error:safeText(data?.error)});
-         return reply(origin,{test:true,prepared:false,
-           error:"Mercado Pago não permitiu preparar o comprador de teste.",
-           error_id:errorId,http_status:response.status},502);
-       }
-       const id=String(data?.id||"");
-       const email=String(data?.email||"").trim().toLowerCase();
-       const nickname=String(data?.nickname||"").toUpperCase();
-       // Never use or persist data.password, access tokens or verification codes.
-       if(!/^\d{3,20}$/.test(id)||!email.endsWith("@testuser.com")||
-          !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)||
-          !nickname.startsWith("TEST")||String(data.site_id||"")!=="MLB"){
-          await table().update({test_buyer_state:"unknown",
-            updated_at:new Date().toISOString()}).eq("id","card-sandbox-only")
-            .eq("test_buyer_state","creating");
-          return reply(origin,{test:true,prepared:false,
-            error:"Conta criada, mas sua identidade não foi confirmada. Não tente novamente."},502);
-       }
-       const {data:saved,error:saveError}=await table().update({
-         test_buyer_id:id,test_buyer_email:email,test_buyer_state:"ready",
-         updated_at:new Date().toISOString()
-       }).eq("id","card-sandbox-only").eq("test_buyer_state","creating")
-         .select("id,test_buyer_state").maybeSingle();
-       if(saveError||!saved)return reply(origin,{test:true,prepared:false,
-         error:"A conta pode ter sido criada, mas a gravação falhou. Não repita a operação."},502);
-       return reply(origin,{test:true,prepared:true,created_subscription:false,
-         buyer_account_created:true,has_email:true,
-         note:"Comprador fictício preparado. Não houve assinatura ou cobrança."});
-     }catch{
-       return reply(origin,{test:true,prepared:false,
-         error:"Falha no preparo da conta de teste. Estado preservado para auditoria."},502);
-     }
-   }
    if(action==="diagnose_card_hml"){
-     try{
-       const info=await identities();
-       return reply(origin,{test:true,diagnostic:true,buyer_verified:info.buyerTest,
-         seller_is_test:info.sellerTest,buyer_http_status:info.buyerHttp,
-         seller_http_status:info.sellerHttp,buyer_id_matches:info.buyerIdMatches,
-         buyer_nickname_is_test:info.buyerNicknameIsTest,
-         buyer_email_available:info.buyerEmailAvailable,
-         buyer_email_is_test_domain:info.buyerEmailIsTestDomain,
-         same_country:info.sameCountry,record_status:record.status,
-         provider_id_exists:!!record.provider_id,
-         can_safely_prepare:info.buyerTest&&info.sellerTest&&info.sameCountry&&record.status==="not_created",
-         note:"Leitura das identidades, sem criar assinatura."});
-     }catch{return reply(origin,{error:"Não foi possível diagnosticar as contas.",test:true},502)}
+     return reply(origin,{test:true,diagnostic:true,record_status:record.status,
+       provider_id_exists:!!record.provider_id,
+       can_safely_prepare:record.status==="not_created"&&!record.provider_id,
+       note:"Informe o e-mail de cobrança antes de iniciar o checkout de teste."});
    }
    if(action==="inspect_card_hml"){
      if(record.provider_id){
@@ -315,11 +189,14 @@ Deno.serve(async(req:Request)=>{
    if(record.provider_id||record.status!=="not_created")
      return reply(origin,{error:"Tentativa anterior existente ou bloqueada. Consulte o status, sem criar outra.",
        status:record.status,error_id:record.error_id||null},409);
-   let check;
-   try{check=await identities()}catch{return reply(origin,{error:"Identidades de teste indisponíveis; nenhum POST enviado."},503)}
-   if(!check.buyerTest||!check.sellerTest||!check.sameCountry||!check.buyerEmail)
-     return reply(origin,{error:"Comprador e vendedor não foram confirmados como duas contas de teste. Nenhum POST enviado.",
-       buyer_verified:check.buyerTest,seller_is_test:check.sellerTest},503);
+   const testSellerId=Deno.env.get("XRMOVI_MP_TEST_SELLER_ID")?.trim()||"3674980618";
+   if(!/^\d+$/.test(testSellerId))
+     return cardError("O ID configurado do vendedor de teste é inválido.",503);
+   const seller=await mpGet("/users/me").catch(()=>null);
+   if(!seller?.response.ok||String(seller.data?.id)!==testSellerId||seller.data?.site_id!=="MLB")
+     return cardError("A credencial não corresponde ao vendedor de teste configurado.",503);
+   if(payerEmail.toLowerCase()===String(seller.data?.email||"").trim().toLowerCase())
+     return cardError("O e-mail de cobrança precisa ser diferente do e-mail do vendedor.",400);
    const existing=await recover().catch(()=>({complete:false,reason:"search_unavailable"}));
    if(!existing.complete||existing.found?.length){
      return reply(origin,{error:"Não foi possível comprovar ausência de assinatura anterior. Nenhum POST enviado."},409);
@@ -331,7 +208,7 @@ Deno.serve(async(req:Request)=>{
    const payload={
      reason:"XRMOVI HOMOLOGAÇÃO - Start - CARTÃO TESTE",
      external_reference:reference,
-     payer_email:check.buyerEmail,
+     payer_email:payerEmail,
      auto_recurring:{frequency:1,frequency_type:"months",
        end_date:new Date(Date.now()+365*24*60*60*1000).toISOString(),
        transaction_amount:19.90,currency_id:"BRL"},
@@ -344,17 +221,12 @@ Deno.serve(async(req:Request)=>{
        body:JSON.stringify(payload),signal:AbortSignal.timeout(15000)});
      const body=await response.json().catch(()=>({}));
      if(!response.ok){
-       const diagnostic=mpError(body,response.status),errorId=crypto.randomUUID();
-       await patch({status:"rejected",error_id:errorId,error_details:diagnostic},"creating");
-       console.error("XRMOVI sandbox preapproval rejected",{
-         error_id:errorId,status:diagnostic.status,error:diagnostic.error,
-         message:diagnostic.message,cause:diagnostic.cause});
-       return reply(origin,{error:"Mercado Pago recusou a assinatura de teste.",
-         error_id:errorId,http_status:response.status},502);
+       await patch({status:"rejected",error_id:errorId,error_details:{status:response.status}},"creating");
+       return cardError("Mercado Pago recusou a assinatura de teste.",502,{provider_status:response.status});
      }
      if(!body.id||String(body.external_reference||"")!==reference){
        // A 2xx may have created the provider resource; leave creating until recovery.
-       return reply(origin,{error:"Resposta inconclusiva. Consulte antes de repetir.",status:"creating"},502);
+       return cardError("Resposta inconclusiva. Consulte antes de repetir.",502,{status:"creating"});
      }
      const checkout=safeCheckout(body.init_point);
      await patch({status:"created",provider_id:String(body.id),
@@ -363,11 +235,9 @@ Deno.serve(async(req:Request)=>{
      return reply(origin,{test:true,created:true,status:"created",
        provider_status:String(body.status||"pending"),provider_id:String(body.id),
        checkout_url:checkout,real_customer_changed:false,revenue_changed:false});
-   }catch(e){
+   }catch{
      // Network/DB uncertainty must not become rejected or retryable.
-     console.error("XRMOVI sandbox preapproval uncertain",{category:"transport_or_persistence"});
-     return reply(origin,{error:"Resultado incerto. Consulte a assinatura antes de qualquer nova tentativa.",
-       status:"creating"},502);
+     return cardError("Resultado incerto. Consulte a assinatura antes de qualquer nova tentativa.",502,{status:"creating"});
    }
  }
  if(action==="run_signed_webhook_hml"){
