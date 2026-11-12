@@ -14,6 +14,10 @@ export function renderConversionsPanel(root, data, ga4 = null) {
   headerRow.append(el('h2','Funil comercial — últimos 30 dias'),
                    el('small','Somente pagamentos confirmados pelo servidor'));
   header.append(headerRow);
+  // The aggregate RPC still includes legacy test accounts. Explicitly disclose this,
+  // rather than presenting historical payments as production sales.
+  const historicalNote=el('p','Histórico geral do banco: inclui contas e pagamentos de teste. Estes números não devem ser interpretados como vendas reais da nova operação. A separação definitiva será feita na apuração do servidor.','conversion-note');
+  header.append(historicalNote);
   const metrics=el('div','','conversion-metrics');
   const kpis=[
     ['Contas criadas',n(data.accounts_created),'Não equivale a assinantes'],
