@@ -8,14 +8,25 @@ create or replace function public.xrmovi_vehicle_quote(p_count integer)
 returns jsonb language plpgsql security definer set search_path=''
 as $xrm_quote$
 declare
- v_count integer; v_code text; v_price numeric(12,2); record_plan xrmovi.plans%rowtype;
+ v_count integer; v_code text; v_cents bigint; v_price numeric(12,2); record_plan xrmovi.plans%rowtype;
 begin
  if auth.uid() is null then raise exception 'Entre na sua conta para contratar.' using errcode='42501'; end if;
- if p_count is null or p_count < 1 or p_count > 10000
- then raise exception 'Informe uma quantidade válida de veículos (1 a 10000).' using errcode='22023'; end if;
+ if p_count is null or p_count < 1 or p_count > 100
+ then raise exception 'Informe uma quantidade válida de veículos (1 a 100).' using errcode='22023'; end if;
  v_count:=greatest(5,p_count);
  v_code:='fleet_'||v_count::text;
- v_price:=((2990::bigint + (v_count-5)::bigint*590)::numeric/100)::numeric(12,2);
+ -- One single commercial price curve with exact integer-cent rounding.
+ -- 1..5: 19.90; 6..10: +4.00/vehicle;
+ -- 11..40: +40.00 distributed over 30 vehicles;
+ -- 41..100: +70.00 distributed over 60 vehicles.
+ -- Rounding is cumulative, never per-vehicle, so all boundary prices match exactly.
+ v_cents:=case
+  when v_count<=5 then 1990
+  when v_count<=10 then 1990+(v_count-5)*400
+  when v_count<=40 then 3990+round((v_count-10)::numeric*4000/30)::bigint
+  else 7990+round((v_count-40)::numeric*7000/60)::bigint
+ end;
+ v_price:=(v_cents::numeric/100)::numeric(12,2);
  insert into xrmovi.plans(code,title,vehicle_limit,seat_limit,company_limit,contract_limit,monthly_brl,active)
  values(v_code,'XRMOVI · '||v_count||' veículos',v_count,1000000,1000000,1000000,v_price,true)
  on conflict (code) do nothing;
@@ -25,8 +36,9 @@ begin
  then raise exception 'Tabela de preços inconsistente; a contratação foi interrompida.' using errcode='23514'; end if;
  return jsonb_build_object('code',v_code,'title',record_plan.title,
   'vehicle_limit',v_count,'included_vehicles',5,
-  'additional_vehicles',greatest(0,v_count-5),'additional_cents',590,
-  'monthly_cents',2990+greatest(0,v_count-5)*590,
+  'additional_vehicles',greatest(0,v_count-5),'base_cents',1990,
+  'additional_total_cents',v_cents-1990,'monthly_cents',v_cents,
+  'pricing_model','tiered_exact_vehicle_v2',
   'monthly_brl',record_plan.monthly_brl,'company_limit',record_plan.company_limit,
   'contract_limit',record_plan.contract_limit,'seat_limit',record_plan.seat_limit);
 end
@@ -52,7 +64,7 @@ begin
   or exists(select 1 from xrmovi.billing_checkout_intents i where i.account_id=a.id and i.status in ('created','pending','paid'))
   or exists(select 1 from xrmovi.pix_payment_intents p where p.account_id=a.id and p.status in ('pending','paid'))
  then raise exception 'O teste gratuito já foi utilizado ou existe pagamento iniciado. Verifique a contratação atual.' using errcode='23514'; end if;
- if a.plan_code !~ '^fleet_([5-9]|[1-9][0-9]+)$' then
+ if a.plan_code !~ '^fleet_([5-9]|[1-9][0-9]|100)$' then
   raise exception 'Selecione a capacidade de veículos antes de iniciar o teste.' using errcode='22023';
  end if;
  expiration:=started+interval '24 hours';
@@ -223,7 +235,7 @@ declare
  existing_account xrmovi.billing_accounts%rowtype;
 begin
  if uid is null then raise exception 'Você precisa entrar na sua conta.' using errcode='42501';end if;
- if chosen_plan !~ '^fleet_([5-9]|[1-9][0-9]+)$' then
+ if chosen_plan !~ '^fleet_([5-9]|[1-9][0-9]|100)$' then
   raise exception 'Novo cadastro requer o valor atualizado por veículo.' using errcode='22023';
  end if;
  if length(trim(coalesce(company_name,''))) not between 2 and 160
@@ -357,7 +369,7 @@ begin
  if exists(select 1 from xrmovi.billing_checkout_intents i where i.account_id=v_account_id and i.status in ('created','pending') and i.plan_code is distinct from chosen_plan)
  then raise exception 'Há um pagamento iniciado em outro plano. Retome esse pagamento antes de alterar a assinatura.' using errcode='23514';end if;
  if exists(select 1 from xrmovi.billing_accounts a where a.id=v_account_id
-  and a.plan_code ~ '^fleet_' and chosen_plan !~ '^fleet_([5-9]|[1-9][0-9]+)$')
+  and a.plan_code ~ '^fleet_' and chosen_plan !~ '^fleet_([5-9]|[1-9][0-9]|100)$')
  then raise exception 'Planos anteriores não são oferecidos para novas contratações.' using errcode='23514'; end if;
  update xrmovi.companies set name=trim(company_name) where id=cid;
  update xrmovi.billing_accounts set plan_code=chosen_plan,updated_at=now() where id=v_account_id;
