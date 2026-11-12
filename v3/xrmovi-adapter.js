@@ -2,7 +2,7 @@ import{createClient}from 'https://esm.sh/@supabase/supabase-js@2.58.0';
 import {setupTrialCountdown} from './trial-countdown.js?v=20261112';
 import { setupSubscriptionPanel } from './subscription-panel.js?v=20261112-graduated-pricing-2';
 import { renewalNotice } from './renewal-reminder.js?v=20261103-reminders-2';
-import { showXrmoviOnboarding } from './onboarding.js?v=20261112-fleet-trial-1';
+import { showXrmoviOnboarding } from './onboarding.js?v=20261112-trial-event-1';
 import { createCompanyBranding } from './company-branding.js?v=20261110-company-name-1';
 import { setupMileage } from './mileage.js?v=20261112-service-approval-1';
 import { setupVehicleExport } from './vehicle-export.js?v=20261106-vehicle-xlsx-1';
