@@ -66,7 +66,7 @@ Deno.serve(async(req:Request)=>{
    return reply(origin,publicTestOrder(data));
   }catch{return reply(origin,{error:"Não foi possível consultar o ambiente de teste"},502)}
  }
- if(action==="inspect_pix"||action==="simulate_settlement"){
+ if(action==="inspect_pix"||action==="simulate_settlement"||action==="activate_hml_access"){
   const id=String(input.order_id||"");
   if(!orderId.test(id))return reply(origin,{error:"Identificador de teste inválido"},400);
   try{
@@ -81,6 +81,23 @@ Deno.serve(async(req:Request)=>{
    const status=String(data.status||"").toLowerCase();
    const detail=String(data.status_detail||payment.status_detail||"").toLowerCase();
    const accredited=status==="processed"&&(detail==="accredited"||String(payment.status||"").toLowerCase()==="approved");
+   if(action==="activate_hml_access"){
+     // Separate sandbox-only record. Never grant access to a real user or write commercial billing tables.
+     const reference=String(data.external_reference||"");
+     const amount=Number(data.total_amount||payment.amount||0);
+     if(!reference.startsWith("xrmovi_hml_")||Math.abs(amount-50)>0.009)
+       return reply(origin,{error:"Ordem não corresponde à homologação de R$ 50,00"},403);
+     if(!accredited)return reply(origin,{test:true,activated:false,reason:"payment_not_accredited",order_id:id,status,detail});
+     const serviceKey=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")||"";
+     if(!serviceKey)return reply(origin,{error:"Serviço de homologação indisponível"},503);
+     const service=createClient(url,serviceKey,{auth:{autoRefreshToken:false,persistSession:false}});
+     const {data:row,error:upsertError}=await service.from("xrmovi_hml_entitlements").upsert({
+       id:"sandbox-only",order_id:id,external_reference:reference,status:"active",
+       activated_at:new Date().toISOString(),updated_at:new Date().toISOString()
+     },{onConflict:"id"}).select("id,order_id,status,activated_at").single();
+     if(upsertError){console.error("XRMOVI sandbox entitlement write failed",{code:upsertError.code});return reply(origin,{error:"Não foi possível registrar acesso de homologação"},500)}
+     return reply(origin,{test:true,activated:true,scope:"sandbox-only",order_id:row.order_id,status:row.status,activated_at:row.activated_at,real_customer_changed:false,revenue_changed:false});
+   }
    return reply(origin,{
      test:true,order_id:id,provider_status:status,provider_detail:detail,
      event_simulated:accredited?"payment_approved":"payment_pending",
