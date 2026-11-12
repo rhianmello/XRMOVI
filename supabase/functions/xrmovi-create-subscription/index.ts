@@ -123,7 +123,7 @@ Deno.serve(async(req:Request)=>{
     external_reference:intentId,
     payer_email:String(intent.payer_email),
     auto_recurring:{frequency:1,frequency_type:"months",transaction_amount:price,currency_id:"BRL"},
-    back_url:(origin && (origin==="https://xrmovi.com.br" || origin==="https://www.xrmovi.com.br") ? "https://xrmovi.com.br" : "https://frota.nospassa.com.br")+"/v3/#subscription",
+    back_url:(origin && (origin==="https://xrmovi.com.br" || origin==="https://www.xrmovi.com.br") ? "https://xrmovi.com.br" : "https://xrmovi.com.br")+"/v3/#subscription",
     status:"pending"
    })
   });
