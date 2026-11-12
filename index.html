@@ -351,6 +351,10 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
         <button type="button" class="btn outline" id="xrm-sandbox-card-diagnose">Verificar disponibilidade do teste</button>
         <a id="xrm-sandbox-card-checkout" class="btn" target="_blank" rel="noopener noreferrer" hidden>Abrir checkout de TESTE no Mercado Pago</a>
         <p id="xrm-sandbox-card-result" role="status" aria-live="polite">Nenhuma assinatura de cartão foi criada nesta sessão.</p>
+        <div id="xrm-sandbox-owner-session-warning" hidden role="status" aria-live="polite">
+          <p>O login atual do XRMOVI não tem permissão de proprietário. Nenhum pagamento foi executado.</p>
+          <button type="button" class="btn outline" id="xrm-sandbox-switch-owner">Trocar para a conta proprietária do XRMOVI</button>
+        </div>
       </div>
       <p id="xrm-sandbox-webhook-result" role="status" aria-live="polite" hidden></p>
       <p id="xrm-sandbox-activate-result" role="status" aria-live="polite" hidden></p>
@@ -432,6 +436,8 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
  const sandboxCardPayerEmail=document.getElementById('xrm-sandbox-card-payer-email');
  const sandboxCardCheckout=document.getElementById('xrm-sandbox-card-checkout');
  const sandboxCardResult=document.getElementById('xrm-sandbox-card-result');
+ const sandboxOwnerSessionWarning=document.getElementById('xrm-sandbox-owner-session-warning');
+ const sandboxSwitchOwner=document.getElementById('xrm-sandbox-switch-owner');
  const sandboxWebhookResult=document.getElementById('xrm-sandbox-webhook-result');
  const sandboxActivateResult=document.getElementById('xrm-sandbox-activate-result');
  const sandboxSettlementResult=document.getElementById('xrm-sandbox-settlement-result');
@@ -495,14 +501,47 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
     : 'Homologação aguardando configuração do token de teste e ativação no Supabase. Nenhuma cobrança pode ser gerada.';
   }catch(e){sandboxFeedback.textContent='Não foi possível verificar o ambiente de teste: '+(e?.message||'erro de conexão')}
  }
+ function requireOwnerSession(){
+   if(sandboxOwnerSessionWarning)sandboxOwnerSessionWarning.hidden=false;
+   const issue=new Error('Sua sessão atual do XRMOVI não pertence à conta proprietária. Clique em “Trocar para a conta proprietária” e faça login novamente. Nenhuma cobrança foi criada.');
+   issue.code='owner_session_required';
+   return issue;
+ }
+ sandboxSwitchOwner?.addEventListener('click',async()=>{
+   if(!confirm('Sair somente da conta XRMOVI aberta neste navegador e entrar novamente com a conta proprietária? Nenhum dado de cliente ou pagamento será alterado.'))return;
+   sandboxSwitchOwner.disabled=true;
+   try{
+     const config=await fetch('/v3/config.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('Configuração indisponível');return r.json()});
+     const sdk=await import('https://esm.sh/@supabase/supabase-js@2.58.0');
+     const client=sdk.createClient(config.supabaseUrl,config.supabaseAnonKey,
+       {auth:{persistSession:true,autoRefreshToken:true}});
+     const {error}=await client.auth.signOut({scope:'local'});
+     if(error)throw error;
+     window.location.assign('/?login=1');
+   }catch(e){
+     sandboxCardResult.textContent='Não foi possível trocar a sessão do XRMOVI: '+(e?.message||'erro de conexão')+
+       '. Saia da conta pelo menu do site e entre como proprietário.';
+     sandboxSwitchOwner.disabled=false;
+   }
+ });
  async function sandboxRequest(input){
   const config=await fetch('/v3/config.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('Configuração indisponível');return r.json()});
   const sdk=await import('https://esm.sh/@supabase/supabase-js@2.58.0');
   const client=sdk.createClient(config.supabaseUrl,config.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true}});
-  const {data:{session}}=await client.auth.getSession();
-  if(!session?.access_token)throw Error('Entre primeiro na sua conta de proprietário para homologar. Não é necessário criar outro cadastro.');
+  const {data:{session},error:sessionError}=await client.auth.getSession();
+  if(sessionError||!session?.access_token)throw requireOwnerSession();
+  // A cached session does not prove platform ownership. Verify it remotely,
+  // then ask the same role RPC used by the backend before ANY test call.
+  const {data:identity,error:identityError}=await client.auth.getUser(session.access_token);
+  if(identityError||!identity?.user||identity.user.id!==session.user?.id)
+    throw requireOwnerSession();
+  const {data:isAdmin,error:roleError}=await client.rpc('xrmovi_platform_is_admin');
+  if(roleError)throw Error('Não foi possível confirmar o perfil proprietário no Supabase. Tente entrar novamente; nenhuma cobrança foi criada.');
+  if(isAdmin!==true)throw requireOwnerSession();
+  if(sandboxOwnerSessionWarning)sandboxOwnerSessionWarning.hidden=true;
   const response=await fetch(sandboxEndpoint,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+session.access_token,'apikey':config.supabaseAnonKey},body:JSON.stringify(input)});
   const data=await response.json().catch(()=>({}));
+  if(response.status===403&&String(data.error||'').includes('proprietário'))throw requireOwnerSession();
   if(!response.ok){
     const id=typeof data.error_id==='string'&&/^[0-9a-f-]{36}$/i.test(data.error_id)?' (error_id: '+data.error_id+')':'';
     throw Error((data.error||'Falha na homologação (HTTP '+response.status+')')+id);
