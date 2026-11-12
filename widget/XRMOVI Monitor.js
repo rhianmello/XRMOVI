@@ -4,7 +4,7 @@
 const API = "https://ztqtcbzjesrkuaijmylm.supabase.co";
 const ANON = "sb_publishable_Lh0A_Ykm2h66ur3LojJKTQ_JdUVMK9d"; // chave pública
 const KEY = "xrmovi-monitor-auth-v1";
-const ADMIN = "https://frota.nospassa.com.br/admin/";
+const ADMIN = "https://xrmovi.com.br/admin/";
 const green = new Color("#36db73");
 const white = new Color("#f6f7f8");
 const muted = new Color("#b9b9bd");
