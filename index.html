@@ -498,7 +498,10 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
   if(!session?.access_token)throw Error('Entre primeiro na sua conta de proprietário para homologar. Não é necessário criar outro cadastro.');
   const response=await fetch(sandboxEndpoint,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+session.access_token,'apikey':config.supabaseAnonKey},body:JSON.stringify(input)});
   const data=await response.json().catch(()=>({}));
-  if(!response.ok)throw Error(data.error||'Falha na homologação (HTTP '+response.status+')');
+  if(!response.ok){
+    const id=typeof data.error_id==='string'&&/^[0-9a-f-]{36}$/i.test(data.error_id)?' (error_id: '+data.error_id+')':'';
+    throw Error((data.error||'Falha na homologação (HTTP '+response.status+')')+id);
+  }
   return data;
  }
  function showSandboxOrder(data){
@@ -593,6 +596,9 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
  });
  function cardSandboxShow(data){
    const status=String(data.status||'não criada');
+   const providerStatus=typeof data.provider_status==='string'?' | Mercado Pago: '+data.provider_status:'';
+   const lastError=data.error_id?' | error_id: '+data.error_id:'';
+   const providerError=data.provider_diagnostic?.message?' | motivo: '+String(data.provider_diagnostic.message).slice(0,180):'';
    const recovery=data.recovery||'';
    const url=data.checkout_url;
    sandboxCardCheckout.hidden=true;sandboxCardCheckout.removeAttribute('href');
@@ -612,8 +618,9 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
        : recovery==='multiple_matches'
          ? 'Há mais de uma assinatura com a referência de teste. Não crie outra. '
          : '')+
-     'Assinatura de TESTE — status: '+status+'. '+(data.provider_id?'Identificador: '+data.provider_id+'. ':'')+
-     'Somente cartões oficiais de teste. Nenhum plano real foi liberado.';
+     'Status local: '+status+providerStatus+lastError+providerError+'. '+
+     (data.provider_id?'Preapproval ID: '+data.provider_id+'. ':'')+
+     'Nenhum cliente ou plano real foi liberado.';
  }
  sandboxCardCreate?.addEventListener('click',async()=>{
    if(!confirm('Preparar uma assinatura recorrente FICTÍCIA Start de R$ 19,90/mês usando apenas o ambiente de TESTE do Mercado Pago? Não utilize cartão real.'))return;
