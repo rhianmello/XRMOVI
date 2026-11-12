@@ -544,7 +544,9 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
   if(response.status===403&&String(data.error||'').includes('proprietário'))throw requireOwnerSession();
   if(!response.ok){
     const id=typeof data.error_id==='string'&&/^[0-9a-f-]{36}$/i.test(data.error_id)?' (error_id: '+data.error_id+')':'';
-    throw Error((data.error||'Falha na homologação (HTTP '+response.status+')')+id);
+    const stage=typeof data.failed_stage==='string'&&/^[a-z_]+$/.test(data.failed_stage)?' | etapa: '+data.failed_stage:'';
+    const reason=typeof data.reason==='string'&&/^[a-z_0-9]+$/.test(data.reason)?' | diagnóstico: '+data.reason:'';
+    throw Error((data.error||'Falha na homologação (HTTP '+response.status+')')+id+stage+reason);
   }
   return data;
  }
