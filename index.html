@@ -30,13 +30,6 @@
     "name": "XRMOVI",
     "url": "https://xrmovi.com.br/"
   },
-  "offers": {
-    "@type": "Offer",
-    "price": "19.90",
-    "priceCurrency": "BRL",
-    "url": "https://xrmovi.com.br/#planos",
-    "description": "Plano Start, mensalidade a partir de R$ 19,90."
-  },
   "featureList": [
     "QR Code individual por veículo",
     "Registro de quilometragem e foto do hodômetro",
@@ -94,8 +87,8 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
 <script defer src="/analytics/xrmovi-analytics.js?v=20261110-qr-demo-1"></script>
 <script defer src="/analytics/xrmovi-widget-visits.js?v=20261108-1"></script>
 <link rel="stylesheet" href="/legal/policies.css">
-<link rel="manifest" href="/manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="icon" href="/pwa/icon.svg?v=20261110-brand-v2" type="image/svg+xml" sizes="any"></head><body>
-<header><div class="shell nav"><a class="brand" href="#inicio" aria-label="XRMOVI — voltar ao início"><img class="brand-logo" src="/assets/xrmovi-logo-oficial.svg?v=20261110-v2" alt="XRMOVI" width="248" height="61" decoding="async"></a><nav class="links" aria-label="Navegação principal"><a href="#recursos">Recursos</a><a href="#planos">Planos</a><button type="button" class="xrm-install-nav-link" data-demo>Demonstração</button><a href="/perguntas-frequentes/">Perguntas frequentes</a><button class="xrm-install-nav-link" type="button" data-xrm-install>Baixar App</button></nav><div class="actions nav-actions"><details class="xrm-mobile-nav"><summary aria-label="Abrir menu de navegação">☰ <span>Menu</span></summary><nav aria-label="Menu do celular"><a href="#recursos">Recursos</a><a href="#planos">Planos</a><button type="button" data-demo>Demonstração</button><a href="/perguntas-frequentes/">Perguntas frequentes</a><a href="#contato">Contato</a><button type="button" data-xrm-install>Baixar App</button></nav></details><a class="btn small" id="xrm-header-auth-link" href="/?login=1" aria-label="Entrar ou criar conta">Entrar / Criar conta</a></div></div></header>
+<link rel="manifest" href="/manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="icon" href="/pwa/icon.svg?v=20261110-brand-v2" type="image/svg+xml" sizes="any"><link rel="stylesheet" href="/pricing/fleet-pricing.css?v=20261112"></head><body>
+<header><div class="shell nav"><a class="brand" href="#inicio" aria-label="XRMOVI — voltar ao início"><img class="brand-logo" src="/assets/xrmovi-logo-oficial.svg?v=20261110-v2" alt="XRMOVI" width="248" height="61" decoding="async"></a><nav class="links" aria-label="Navegação principal"><a href="/recursos/">Recursos</a><a href="#planos">Nova tabela</a><button type="button" class="xrm-install-nav-link" data-demo>Demonstração</button><a href="/perguntas-frequentes/">Perguntas frequentes</a><button class="xrm-install-nav-link" type="button" data-xrm-install>Baixar App</button></nav><div class="actions nav-actions"><details class="xrm-mobile-nav"><summary aria-label="Abrir menu de navegação">☰ <span>Menu</span></summary><nav aria-label="Menu do celular"><a href="/recursos/">Recursos</a><a href="#planos">Planos</a><button type="button" data-demo>Demonstração</button><a href="/perguntas-frequentes/">Perguntas frequentes</a><a href="/recursos/#contato">Contato</a><button type="button" data-xrm-install>Baixar App</button></nav></details><a class="btn small" id="xrm-header-auth-link" href="/?login=1" aria-label="Entrar ou criar conta">Entrar / Criar conta</a></div></div></header>
 <main id="inicio">
 <div class="hero xrm-qr-hero">
  <div class="shell xrm-qr-hero-grid">
@@ -112,7 +105,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
     <span><span aria-hidden="true">✓</span> QR Code e foto do hodômetro</span>
     <span><span aria-hidden="true">✓</span> Relatórios em PDF e Excel</span>
    </div>
-   <p class="xrm-qr-plan-price"><span>Planos apresentados a partir de <strong>R$ 19,90/mês</strong></span><a href="#planos">Comparar planos <span aria-hidden="true">→</span></a></p>
+   <p class="xrm-qr-plan-price"><span>Nova tabela prevista: <strong>R$ 29,90/mês</strong></span><a href="#planos">Simular mensalidade <span aria-hidden="true">→</span></a></p>
    <p class="xrm-qr-hero-trust">Já tem conta? <a href="/?login=1">Entrar no painel</a> · <button type="button" data-demo>Explorar prévia interativa</button></p>
   </div>
   <div class="xrm-qr-hero-showcase" aria-label="Exemplo ilustrativo do registro de quilometragem por QR Code">
@@ -140,85 +133,11 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
      <div class="xrm-qr-management-alert"><span aria-hidden="true">◷</span> <span>Troca de óleo próxima · Alerta configurável</span></div>
     </div>
    </div>
-   <div class="xrm-qr-showcase-note">Escaneie o QR Code ou <a href="#demo-qr">abra a simulação</a> para testar com dados fictícios.</div>
+   <div class="xrm-qr-showcase-note">Escaneie o QR Code ou <a href="/recursos/#demo-qr">abra a simulação</a> para testar com dados fictícios.</div>
   </div>
  </div>
 </div>
 
-<section class="xrm-sales-overview" aria-labelledby="xrm-sales-overview-title">
- <div class="shell">
-  <div class="xrm-sales-benefit-strip" aria-label="Recursos de gestão"><span>🚘 Controle de veículos</span><span>⛽ Abastecimentos</span><span>🛠️ Manutenções</span><span>📁 Documentos</span><span>🔔 Alertas</span><span>📊 Relatórios</span></div>
-  <div class="xrm-sales-overview-grid">
-   <div class="xrm-sales-overview-copy"><div class="eyebrow">TUDO EM UM SÓ SISTEMA</div><h2 id="xrm-sales-overview-title">Da operação ao resultado, <em>sem perder o controle.</em></h2><p>Visualize sua operação, organize os dados da frota e identifique o que exige atenção. Uma visão clara para decidir mais rápido.</p><ul><li>Veículos ativos, em manutenção e indisponíveis</li><li>Abastecimentos, despesas e histórico de KM</li><li>Documentação e prazos importantes</li><li>Gestão de empresas e contratos conforme seu plano</li></ul><a class="btn outline" href="#recursos">Conhecer os recursos →</a></div>
-   <div class="xrm-sales-dashboard" aria-label="Prévia ilustrativa do painel XRMOVI, sem dados reais de clientes"><div class="xrm-sales-dash-top"><strong><span class="xrm-sales-dot"></span> XRMOVI / Visão geral</strong><span>EXEMPLO ILUSTRATIVO</span></div><div class="xrm-sales-dash-kpis"><div><small>VEÍCULOS</small><strong>42</strong><span>Na frota</span></div><div><small>ATIVOS</small><strong>36</strong><span>Em operação</span></div><div><small>MANUTENÇÃO</small><strong>4</strong><span>Em atendimento</span></div><div><small>ATENÇÃO</small><strong>2</strong><span>Verificar</span></div></div><div class="xrm-sales-dash-content"><div class="xrm-sales-dash-chart"><strong>Visão de despesas</strong><div class="xrm-sales-dash-bars" aria-hidden="true"><i style="height:44%"></i><i style="height:70%"></i><i style="height:56%"></i><i style="height:83%"></i><i style="height:62%"></i><i style="height:93%"></i></div><div class="xrm-sales-dash-months"><span>Jun</span><span>Jul</span><span>Ago</span><span>Set</span><span>Out</span><span>Nov</span></div></div><div class="xrm-sales-dash-alerts"><strong>Prioridades da frota</strong><p><span class="xrm-sales-alert-circle">●</span> Revisões e trocas de óleo</p><p><span class="xrm-sales-alert-circle">●</span> Documentos a vencer</p><p><span class="xrm-sales-alert-circle">●</span> KM informado por QR Code</p></div></div></div>
-  </div>
-  <div class="xrm-sales-how"><h2>Como funciona</h2><div class="xrm-sales-how-grid"><article><span>01</span><h3>Cadastre sua empresa</h3><p>Crie a conta e escolha o plano adequado à sua operação.</p></article><article><span>02</span><h3>Adicione veículos e motoristas</h3><p>Organize os cadastros e configure os controles da frota.</p></article><article><span>03</span><h3>Acompanhe no painel</h3><p>Consulte custos, alertas, documentação e informações atualizadas.</p></article></div></div>
- </div>
-</section>
-<section class="section" id="demo-qr" aria-labelledby="demo-qr-title">
- <div class="shell">
-  <div class="qr-demo-card">
-   <h2 id="demo-qr-title" tabindex="-1">Teste com um veículo fictício</h2>
-   <p>Veja o que o motorista envia e o que aparece no painel do gestor. Sem cadastro.</p>
-   <noscript><p>Ative o JavaScript para testar ou <a href="#qr-frota">veja como funciona o registro de KM</a>.</p></noscript>
-   <div class="qr-demo-steps" hidden>
-    <div data-qr-step="driver">
-     <h3 tabindex="-1">1 de 3 · Envie a leitura do motorista</h3>
-     <p>Ao abrir o QR Code da van FRT-007, o motorista informa o KM e anexa uma foto do hodômetro.</p>
-     <div class="qr-demo-reading"><span>Hodômetro de exemplo</span><strong>19.850 km</strong></div>
-     <button type="button" class="btn" data-qr-action="received">Simular envio do KM com foto</button>
-    </div>
-    <div data-qr-step="received" hidden>
-     <h3 tabindex="-1">2 de 3 · Confira a leitura no painel</h3>
-     <p>A van FRT-007 aparece com <strong>19.850 km</strong> no histórico. O gestor pode conferir a foto junto à leitura.</p>
-     <button type="button" class="btn" data-qr-action="alert">Ver alerta de troca de óleo</button>
-    </div>
-    <div data-qr-step="alert" hidden>
-     <h3 tabindex="-1">3 de 3 · Faltam 150 km para trocar o óleo</h3>
-     <p>A troca da van FRT-007 está programada para <strong>20.000 km</strong>. Com a leitura atualizada, o gestor já pode programar o serviço.</p>
-     <div class="qr-demo-actions">
-      <a class="btn" href="#planos">Ver planos</a>
-      <a class="btn outline" href="https://wa.me/5521959092414?text=Ol%C3%A1%21%20Testei%20a%20demonstra%C3%A7%C3%A3o%20do%20XRMOVI%20e%20quero%20saber%20mais%20sobre%20os%20planos." target="_blank" rel="noopener noreferrer">Tirar dúvidas no WhatsApp</a>
-      <button type="button" class="btn outline" data-qr-action="driver">Recomeçar</button>
-     </div>
-    </div>
-   </div>
-  </div>
- </div>
-</section>
-<style>
-#demo-qr{scroll-margin-top:96px}
-#demo-qr [hidden]{display:none}
-.qr-demo-card{max-width:760px;margin:auto;padding:clamp(20px,4vw,40px);background:#10293b;border:1px solid #30635f;border-radius:20px}
-.qr-demo-card h2,.qr-demo-card h3{margin-top:0}
-.qr-demo-card p{color:#c4d9e1}
-.qr-demo-steps{margin-top:24px;padding-top:24px;border-top:1px solid #366059}
-.qr-demo-reading{display:grid;gap:4px;width:fit-content;padding:10px 16px;margin:0 0 16px;background:#071722;border:1px solid #366059;border-radius:10px}
-.qr-demo-reading span{font-size:.85rem;color:#bed3df}
-.qr-demo-reading strong{font-variant-numeric:tabular-nums;color:#65e8b5;font-size:1.4rem}
-.qr-demo-actions{display:flex;flex-wrap:wrap;gap:10px}
-</style>
-<script id="xrm-qr-interactive">
-(function(){
- const section=document.getElementById('demo-qr');
- const steps=section.querySelector('.qr-demo-steps');
- const panels=Array.from(steps.querySelectorAll('[data-qr-step]'));
- let completed=false;
- steps.hidden=false;
- steps.querySelectorAll('[data-qr-action]').forEach(function(button){
-  button.addEventListener('click',function(){
-   const step=button.dataset.qrAction;
-   const panel=panels.find(function(item){return item.dataset.qrStep===step;});
-   panels.forEach(function(item){item.hidden=item!==panel;});
-   panel.querySelector('h3').focus();
-   if(step==='alert'&&!completed){
-    completed=true;
-    window.XrmoviAnalytics?.track('xrmovi_demo_complete',{location:'qr_demo'});
-   }
-  });
- });
-})();
-</script>
 <section class="section xrm-commercial-video-section" id="video-xrmovi" aria-labelledby="xrm-commercial-video-title" hidden>
  <div class="shell">
   <div class="xrm-commercial-video-header">
@@ -232,7 +151,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
     Seu navegador não oferece reprodução de vídeo HTML5.
    </video>
   </div>
-  <div class="xrm-commercial-video-actions"><a class="btn" href="#planos">Conhecer os planos</a><span>Assista no seu ritmo, com áudio opcional.</span></div>
+  <div class="xrm-commercial-video-actions"><a class="btn" href="#planos">Simular preço</a><span>Assista no seu ritmo, com áudio opcional.</span></div>
  </div>
 </section>
 <script>
@@ -250,72 +169,46 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
  }).catch(()=>{});
 })();
 </script>
-<section class="section xrm-qr-product" id="qr-frota" aria-labelledby="xrm-qr-title">
+<section class="section alt" id="planos" aria-labelledby="xrm-fleet-title">
  <div class="shell">
-  <div class="xrm-qr-section-intro">
-   <div class="eyebrow">UM QR CODE. MENOS PLANILHAS.</div>
-   <h2 id="xrm-qr-title">Sua frota registra o KM direto da rua. <span>Sua gestão enxerga tudo no painel.</span></h2>
-   <p>Você não precisa solicitar a quilometragem de cada veículo manualmente. Imprima ou compartilhe o QR Code individual e deixe o motorista informar a leitura pelo celular, com foto do painel como evidência.</p>
+  <div class="xrm-fleet-header">
+   <div class="eyebrow">PREÇO SIMPLES POR VEÍCULO</div>
+   <h2 id="xrm-fleet-title">Um plano. Sua frota. Seu controle.</h2>
+   <p>Conheça a nova tabela prevista: até 5 veículos por R$ 29,90/mês e R$ 5,90 por veículo adicional. A ativação comercial ainda está em homologação.</p>
   </div>
-  <div class="xrm-qr-steps">
-   <article><span class="xrm-qr-step-number">01</span><span class="xrm-qr-step-icon" aria-hidden="true">▦</span><h3>Um QR para cada veículo</h3><p>O gestor gera um código exclusivo para imprimir, colar no veículo ou enviar ao responsável.</p></article>
-   <article><span class="xrm-qr-step-number">02</span><span class="xrm-qr-step-icon" aria-hidden="true">▣</span><h3>KM + foto pelo celular</h3><p>O motorista abre o link na câmera, identifica o veículo e informa o KM total com uma foto legível.</p></article>
-   <article><span class="xrm-qr-step-number">03</span><span class="xrm-qr-step-icon" aria-hidden="true">◈</span><h3>Histórico e conferência</h3><p>As leituras ficam registradas no histórico da empresa. Variações suspeitas vão para aprovação ou rejeição do gestor.</p></article>
-   <article><span class="xrm-qr-step-number">04</span><span class="xrm-qr-step-icon" aria-hidden="true">◷</span><h3>Óleo e revisões em alerta</h3><p>Configure a troca a cada tantos quilômetros, receba avisos no painel e conclua o serviço com histórico.</p></article>
-  </div>
-  <div class="xrm-qr-benefits">
-   <div class="xrm-qr-benefits-copy"><span class="xrm-qr-benefits-eyebrow">FEITO PARA A ROTINA REAL DA FROTA</span><h3>Mais visibilidade. Menos cobrança de KM no WhatsApp.</h3><p>Atualização individual ou em lote, lembrete semanal com dia escolhido pelo gestor e registro de serviços. Uma leitura incomum não sobrescreve automaticamente o KM confirmado: ela é separada para conferência.</p></div>
-   <div class="xrm-qr-benefits-actions"><a class="btn" href="#planos">Conhecer os planos <span aria-hidden="true">↗</span></a><button class="btn outline" type="button" data-demo>Ver demonstração</button></div>
-  </div>
- </div>
-</section>
-<section class="section xrm-features-section" id="recursos" aria-labelledby="xrm-features-title">
- <div class="shell">
-  <div class="xrm-features-intro">
-   <div>
-    <div class="eyebrow">RECURSOS DO XRMOVI V3</div>
-    <h2 id="xrm-features-title">Muito mais que um cadastro de veículos.</h2>
-    <p>Do primeiro abastecimento ao relatório financeiro: conheça os principais controles que já fazem parte do painel de gestão da frota.</p>
+  <div class="xrm-fleet-layout">
+   <div class="xrm-fleet-benefits">
+    <span class="xrm-fleet-badge">NOVA PÁGINA DE VENDAS • PRÉVIA</span>
+    <h3>Tudo o que sua frota precisa, em um sistema.</h3>
+    <p>Distribua a capacidade contratada entre suas empresas. Você paga pelo total de veículos, não por contratos separados.</p>
+    <ul>
+     <li>Veículos, motoristas e QR Code individual</li>
+     <li>Controle de quilometragem, óleo e manutenção</li>
+     <li>Abastecimentos, gastos e multas</li>
+     <li>Central de documentos e relatórios</li>
+     <li>Alertas, histórico e painel gerencial</li>
+    </ul>
+    <a href="/recursos/" class="btn outline">Conhecer todos os recursos</a>
    </div>
-   <div class="xrm-features-count" aria-label="6 recursos principais"><strong>6</strong><span>recursos<br>principais</span></div>
-  </div>
-  <div class="cards xrm-features-grid"><article class="feature"><div class="xrm-feature-top"><span class="ico" aria-hidden="true">📊</span><span class="xrm-feature-index">01</span></div><h3>Painel gerencial</h3><p>Indicadores da frota, situação operacional, ações imediatas e vencimentos em uma visão executiva.</p></article>
-<article class="feature"><div class="xrm-feature-top"><span class="ico" aria-hidden="true">⛽</span><span class="xrm-feature-index">02</span></div><h3>Abastecimentos</h3><p>Registre litros, valores, posto, KM/H e comprovantes, com ranking de gastos por veículo.</p></article>
-<article class="feature"><div class="xrm-feature-top"><span class="ico" aria-hidden="true">🛠️</span><span class="xrm-feature-index">03</span></div><h3>Manutenção preventiva</h3><p>Programe serviços por data ou KM/horímetro e registre execução e custos realizados.</p></article>
-<article class="feature"><div class="xrm-feature-top"><span class="ico" aria-hidden="true">📁</span><span class="xrm-feature-index">04</span></div><h3>Documentos e anexos</h3><p>Consulte documentos dos ativos e anexe CRLV, CNH, notas fiscais e comprovantes aos registros.</p></article>
-<article class="feature"><div class="xrm-feature-top"><span class="ico" aria-hidden="true">🔔</span><span class="xrm-feature-index">05</span></div><h3>Alertas e vencimentos</h3><p>Identifique manutenções em atraso, prazos próximos e documentos de motoristas vencidos.</p></article>
-<article class="feature"><div class="xrm-feature-top"><span class="ico" aria-hidden="true">▦</span><span class="xrm-feature-index">06</span></div><h3>QR Code por veículo</h3><p>Motorista informa KM pelo celular com foto do painel; gestor acompanha e confere as leituras suspeitas.</p></article></div>
-  <div class="xrm-features-footer"><div><strong>Quer conhecer a experiência?</strong><span>Explore os indicadores e os módulos em uma prévia com dados fictícios.</span></div><div class="xrm-features-actions"><button type="button" class="btn" data-demo>Explorar demonstração</button><a class="btn outline" href="#planos">Ver planos</a></div></div>
- </div>
-</section>
-
-<section class="section alt" id="planos">
- <div class="shell">
-  <div class="section-head"><div class="eyebrow">Planos mensais</div><h2>Um plano. Suas empresas. Seus contratos.</h2><p>Escolha o total de veículos que sua operação precisa e distribua a capacidade entre empresas e contratos. Consulte a disponibilidade de contratação para sua conta antes de pagar.</p></div>
-  <div class="pricing">
-   <article class="plan"><h3>Start</h3><div class="price">R$ 19,90 <small>/mês</small></div><p>Para uma empresa com uma pequena frota.</p><ul><li>1 empresa</li><li>1 usuário / login</li><li>1 contrato</li><li>Até 5 veículos</li><li>Cadastros e controle básico</li></ul><p class="xrm-plan-example">Ex.: 1 contrato com 5 veículos.</p><a class="btn outline" href="https://wa.me/5521959092414?text=Ol%C3%A1!%20Tenho%20interesse%20no%20plano%20Start%20do%20XRMOVI.%20Gostaria%20de%20saber%20mais%20sobre%20a%20contrata%C3%A7%C3%A3o." target="_blank" rel="noopener noreferrer">Tenho interesse</a></article>
-   <article class="plan featured"><h3>Pro ★</h3><div class="price">R$ 39,90 <small>/mês</small></div><p>Para administrar contratos e empresas em crescimento.</p><ul><li>Até 3 empresas</li><li>Até 3 usuários / logins</li><li>Até 15 contratos</li><li>15 veículos no total</li><li>Visão gerencial</li></ul><p class="xrm-plan-example">Ex.: 3 empresas com 5 veículos cada, ou 1 empresa com 15.</p><a class="btn" href="https://wa.me/5521959092414?text=Ol%C3%A1!%20Tenho%20interesse%20no%20plano%20Pro%20do%20XRMOVI.%20Gostaria%20de%20saber%20mais%20sobre%20a%20contrata%C3%A7%C3%A3o." target="_blank" rel="noopener noreferrer">Tenho interesse</a></article>
-   <article class="plan"><h3>Business</h3><div class="price">R$ 64,90 <small>/mês</small></div><p>Para múltiplas empresas e operações estruturadas.</p><ul><li>Até 5 empresas</li><li>Até 5 usuários / logins</li><li>Até 30 contratos</li><li>30 veículos no total</li><li>Gestão multiempresa</li></ul><p class="xrm-plan-example">Ex.: 5 empresas com 6 veículos cada.</p><a class="btn outline" href="https://wa.me/5521959092414?text=Ol%C3%A1!%20Tenho%20interesse%20no%20plano%20Business%20do%20XRMOVI.%20Gostaria%20de%20saber%20mais%20sobre%20a%20contrata%C3%A7%C3%A3o." target="_blank" rel="noopener noreferrer">Tenho interesse</a></article>
-   <article class="plan"><h3>Advanced</h3><div class="price">R$ 99,90 <small>/mês</small></div><p>Para operações com várias frentes e contratos.</p><ul><li>Até 10 empresas</li><li>Até 10 usuários / logins</li><li>Até 60 contratos</li><li>60 veículos no total</li><li>Gestão ampliada</li></ul><p class="xrm-plan-example">Ex.: 10 empresas com 6 veículos cada.</p><a class="btn outline" href="https://wa.me/5521959092414?text=Ol%C3%A1!%20Tenho%20interesse%20no%20plano%20Advanced%20do%20XRMOVI.%20Gostaria%20de%20saber%20mais%20sobre%20a%20contrata%C3%A7%C3%A3o." target="_blank" rel="noopener noreferrer">Tenho interesse</a></article>
-   <article class="plan"><h3>Enterprise</h3><div class="price">Sob consulta</div><p>Para necessidades superiores aos planos padrão.</p><ul><li>Empresas sob medida</li><li>Usuários sob medida</li><li>Contratos sob medida</li><li>A partir de 61 veículos</li><li>Implantação personalizada</li></ul><p class="xrm-plan-example">Plano adaptado à quantidade e estrutura da operação.</p><a class="btn outline" href="https://wa.me/5521959092414?text=Ol%C3%A1!%20Tenho%20interesse%20no%20plano%20Enterprise%20do%20XRMOVI.%20Gostaria%20de%20saber%20mais%20sobre%20a%20contrata%C3%A7%C3%A3o." target="_blank" rel="noopener noreferrer">Tenho interesse</a></article>
-  </div>
-  <p class="xrm-plan-rule"><strong>Importante:</strong> o limite de veículos é compartilhado entre empresas e contratos. <a href="/perguntas-frequentes/">Entenda as regras e tire dúvidas</a>.</p>
-  
-  
-  <div class="xrm-commercial-trial" aria-labelledby="xrm-trial-title">
-    <div class="xrm-trial-content">
-      <span class="xrm-trial-eyebrow">COMECE PELO START</span>
-      <h3 id="xrm-trial-title">Crie sua conta. Escolha seu plano. Comece com controle.</h3>
-      <p>Crie sua conta sem custo inicial e escolha o plano adequado à sua frota. Na área da assinatura, consulte a disponibilidade do pagamento por cartão ou Pix. O acesso operacional depende de pagamento confirmado ou de uma liberação autorizada.</p>
-      <small>Cadastro de conta gratuito. Cartão: cobrança recorrente até o cancelamento. Pix: pagamento mensal com renovação manual.</small>
+   <div class="xrm-fleet-simulator" data-fleet-calculator aria-label="Simulador de mensalidade">
+    <div><div class="eyebrow">SIMULE A FUTURA MENSALIDADE</div><strong class="xrm-fleet-price"><span data-fleet-price>R$ 29,90</span> <small>/ mês</small></strong></div>
+    <label for="fleet-cars">Quantos veículos deseja administrar?</label>
+    <div class="xrm-fleet-counter">
+     <button type="button" data-fleet-minus aria-label="Diminuir um veículo">−</button>
+     <input id="fleet-cars" type="number" min="1" max="10000" value="5" inputmode="numeric" data-fleet-count aria-label="Quantidade de veículos">
+     <button type="button" data-fleet-plus aria-label="Adicionar um veículo">+</button>
     </div>
-    <div class="xrm-trial-actions">
-      <a class="btn" href="/?login=1">Criar conta e escolher plano</a>
-      <a class="btn outline" href="/perguntas-frequentes/">Entender as regras</a>
-      <button class="btn outline" type="button" id="xrm-checkout-preview-open" aria-haspopup="dialog">Simular pagamento sem cadastro</button>
+    <input type="range" min="5" max="200" step="1" value="5" data-fleet-slider class="xrm-fleet-range" aria-label="Capacidade da frota">
+    <div class="xrm-fleet-breakdown"><span>5 veículos incluídos</span><strong>R$ 29,90</strong></div>
+    <div class="xrm-fleet-breakdown"><span>Veículos adicionais: <b data-fleet-extra>0</b> × R$ 5,90</span><strong data-fleet-extra-cost>R$ 0,00</strong></div>
+    <div class="xrm-fleet-breakdown"><span>Capacidade total</span><strong><span data-fleet-total>5</span> veículos</strong></div>
+    <div class="xrm-fleet-actions">
+     <a class="btn" href="/?login=1" data-fleet-cta>Entrar / Criar conta</a>
+     <a class="btn outline" href="/recursos/">Conhecer os recursos</a>
     </div>
+    <p class="xrm-fleet-footnote">Prévia da futura tabela, ainda não ativada no checkout. Assinaturas e preços atuais continuam valendo até a migração. O teste de 24 horas ainda não está disponível.</p>
+   </div>
   </div>
-  
  </div>
 </section>
 
@@ -324,8 +217,8 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
     <div class="xrm-checkout-preview-top"><strong>AMBIENTE DE SIMULAÇÃO — SEM COBRANÇA</strong><button type="button" id="xrm-checkout-preview-close" aria-label="Fechar simulação">×</button></div>
     <h2 id="xrm-checkout-preview-title">Teste o processo de pagamento</h2>
     <p id="xrm-checkout-preview-desc">Confira como o cliente escolhe o plano e o meio de pagamento. Nenhum Pix ou assinatura será criado, e nenhum cartão será solicitado.</p>
-    <label for="xrm-preview-plan">Plano</label>
-    <select id="xrm-preview-plan"><option value="19.90">Start — R$ 19,90/mês</option><option value="39.90">Pro — R$ 39,90/mês</option><option value="64.90">Business — R$ 64,90/mês</option><option value="99.90">Advanced — R$ 99,90/mês</option></select>
+    <label for="xrm-preview-plan">Veículos contratados (simulação)</label>
+    <input id="xrm-preview-plan" type="number" min="1" max="10000" value="5" inputmode="numeric">
     <fieldset><legend>Forma de pagamento (demonstração)</legend><label><input type="radio" name="xrm-preview-method" value="pix" checked> Pix mensal</label><label><input type="radio" name="xrm-preview-method" value="card"> Cartão recorrente</label></fieldset>
     <button class="btn" id="xrm-preview-next" type="button">Continuar simulação</button>
     <button class="btn outline" id="xrm-preview-connectivity" type="button">Verificar conexão com pagamentos (sem cobrança)</button>
@@ -456,7 +349,7 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
  close.addEventListener('click',()=>modal.close());
  modal.addEventListener('click',e=>{if(e.target===modal)modal.close()});
  next.addEventListener('click',()=>{
-  const option=plan.selectedOptions[0]?.textContent||'Plano selecionado';
+  const count=Math.max(5,Math.min(10000,Number(plan.value)||5));const option=count+' veículos · '+((2990+(count-5)*590)/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})+'/mês';
   const method=modal.querySelector('input[name="xrm-preview-method"]:checked')?.value;
   const info=method==='card'
     ? 'No fluxo real, o cliente recebe um checkout seguro para autorizar a assinatura recorrente no cartão.'
@@ -729,38 +622,6 @@ header .brand-logo{display:block;width:248px;height:auto;max-height:64px;object-
 })();
 </script>
 
-<section class="section xrm-contact-section" id="contato" aria-labelledby="contact-title">
- <div class="shell">
-  <div class="xrm-contact-layout">
-   <div class="xrm-contact-copy">
-    <div class="eyebrow">FALE COM O XRMOVI</div>
-    <h2 id="contact-title">Vamos colocar sua frota em movimento?</h2>
-    <p>Tire dúvidas sobre os planos, conte o que precisa ou conheça a plataforma antes de decidir.</p>
-   </div>
-   <div class="xrm-contact-actions">
-    <a class="btn" href="https://wa.me/5521959092414?text=Ol%C3%A1%21%20Gostaria%20de%20conversar%20sobre%20o%20XRMOVI." target="_blank" rel="noopener noreferrer">Conversar no WhatsApp <span aria-hidden="true">↗</span></a>
-    <button class="btn outline" type="button" data-demo>Explorar demonstração</button>
-   </div>
-  </div>
- </div>
-</section>
-
-
-<section class="seo-hub" id="guias-gestao" aria-labelledby="xrm-seo-hub-title">
- <div class="shell">
-  <div class="eyebrow">APRENDA SOBRE GESTÃO DE FROTAS</div>
-  <h2 id="xrm-seo-hub-title">Soluções para controlar veículos, manutenção e combustível.</h2>
-  <p class="seo-hub-intro">Conheça como o XRMOVI ajuda a organizar as rotinas da frota. Explore cada solução e veja quais controles fazem sentido para sua operação.</p>
-  <nav class="seo-hub-grid" aria-label="Soluções de gestão de frotas">
-   <a class="seo-hub-link" href="/gestao-de-frotas/"><strong>Software de gestão de frotas</strong><span>Veículos, motoristas, empresas, contratos e relatórios em um só lugar.</span></a>
-   <a class="seo-hub-link" href="/controle-de-manutencao/"><strong>Controle de manutenção de frotas</strong><span>Revisões por data ou KM, troca de óleo, custos e histórico de serviços.</span></a>
-   <a class="seo-hub-link" href="/controle-de-abastecimento/"><strong>Controle de abastecimento</strong><span>Registros de combustível, comprovantes, gastos por veículo e período.</span></a>
-   <a class="seo-hub-link" href="/calculadora-consumo-combustivel/"><strong>Calculadora de combustível gratuita</strong><span>Descubra consumo em km/L, litros por 100 km e custo por quilômetro.</span></a>
-   <a class="seo-hub-link" href="/planilha-controle-frotas/"><strong>Planilha de frota gratuita</strong><span>Baixe modelos CSV de veículos, abastecimentos e manutenções.</span></a>
-  </nav>
- </div>
-</section>
-</main>
 <footer><div class="shell foot"><div>© <span id="year"></span> XRMOVI Fleet · Sua frota em movimento. Sua gestão no controle.</div><div>Versão demonstrativa · Sem dados de clientes</div><nav class="xrm-policy-links" aria-label="Políticas do serviço"><a href="/termos/">Termos de Uso</a><a href="/privacidade/">Privacidade</a><a href="/cancelamento/">Cancelamento</a></nav></div></footer>
 <div class="modal" id="demo" role="dialog" aria-modal="true" aria-label="Prévia do painel XRMOVI V3" aria-hidden="true"><div class="dialog xrm-preview-dialog"><button class="close" id="close" aria-label="Fechar">×</button><div class="eyebrow">DEMONSTRAÇÃO INTERATIVA · XRMOVI V3</div><h2>Central de gestão da frota</h2><p>Conheça a organização do painel atual. Os valores abaixo são ilustrativos e não representam dados de clientes.</p><div class="xrm-preview-tabs" role="tablist" aria-label="Explorar módulos"><button class="active" data-tab="dashboard" type="button">Visão Geral</button><button data-tab="assets" type="button">Ativos</button><button data-tab="maintenance" type="button">Manutenção</button><button data-tab="financial" type="button">Financeiro</button></div><div id="demoContent" aria-live="polite"></div><div class="demo-note">Prévia ilustrativa baseada nos módulos da V3. Para usar o painel real, entre ou crie sua conta.</div><a class="btn" href="/?login=1" id="xrm-preview-login">Entrar / Criar conta</a></div></div><style>
 .xrm-preview-dialog{width:min(1050px,95vw)!important;max-height:min(90vh,900px);overflow-y:auto}
@@ -796,7 +657,7 @@ function selectTab(id){const item=previewData[id]||previewData.dashboard;documen
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>selectTab(b.dataset.tab)));selectTab('dashboard');
 document.getElementById('xrm-preview-login').addEventListener('click',shut);
 </script>
-<section class="section alt xrm-auth-modal" id="acesso" role="dialog" aria-modal="true" aria-labelledby="xrm-auth-title" aria-hidden="true"><div class="shell"><button class="xrm-auth-close" id="xrm-auth-close" type="button" aria-label="Fechar janela de acesso">×</button><div class="section-head"><div class="eyebrow">ÁREA DO CLIENTE</div><h2 id="xrm-auth-title">Entre ou crie sua conta XRMOVI</h2><p>Conheça os planos acima e acesse sua empresa com segurança.</p></div><div class="xrm-auth"><form id="xrm-public-auth"><div class="xrm-auth-tabs"><button type="button" data-auth-mode="signin" class="active">Entrar</button><button type="button" data-auth-mode="signup">Criar conta</button></div><label>E-mail<input name="email" type="email" autocomplete="email" required placeholder="seu@email.com"></label><label id="xrm-password-row">Senha<input name="password" type="password" autocomplete="current-password" minlength="8" required></label><label id="xrm-confirm-row" hidden>Confirmar senha<input name="confirmation" type="password" autocomplete="new-password"></label><button type="button" id="xrm-auth-forgot">Esqueci minha senha</button><button id="xrm-auth-submit" type="submit" class="btn">Entrar no painel</button><p class="xrm-auth-policies">Consulte os <a href="/termos/" target="_blank" rel="noopener">Termos de Uso</a>, a <a href="/privacidade/" target="_blank" rel="noopener">Política de Privacidade</a> e as <a href="/cancelamento/" target="_blank" rel="noopener">regras de cancelamento</a> antes de contratar.</p><p id="xrm-auth-message" role="status" aria-live="polite"></p></form><div class="xrm-auth-aside"><h3>Uma plataforma, toda a frota.</h3><p>Faça login com sua conta atual ou crie uma nova. Os planos Start, Pro, Business, Advanced e Enterprise continuam disponíveis para consulta nesta página.</p><a class="btn outline" href="#planos">Ver planos</a></div></div></div></section>
+<section class="section alt xrm-auth-modal" id="acesso" role="dialog" aria-modal="true" aria-labelledby="xrm-auth-title" aria-hidden="true"><div class="shell"><button class="xrm-auth-close" id="xrm-auth-close" type="button" aria-label="Fechar janela de acesso">×</button><div class="section-head"><div class="eyebrow">ÁREA DO CLIENTE</div><h2 id="xrm-auth-title">Entre ou crie sua conta XRMOVI</h2><p>Escolha a quantidade de veículos e acesse sua empresa com segurança.</p></div><div class="xrm-auth"><form id="xrm-public-auth"><div class="xrm-auth-tabs"><button type="button" data-auth-mode="signin" class="active">Entrar</button><button type="button" data-auth-mode="signup">Criar conta</button></div><label>E-mail<input name="email" type="email" autocomplete="email" required placeholder="seu@email.com"></label><label id="xrm-password-row">Senha<input name="password" type="password" autocomplete="current-password" minlength="8" required></label><label id="xrm-confirm-row" hidden>Confirmar senha<input name="confirmation" type="password" autocomplete="new-password"></label><button type="button" id="xrm-auth-forgot">Esqueci minha senha</button><button id="xrm-auth-submit" type="submit" class="btn">Entrar no painel</button><p class="xrm-auth-policies">Consulte os <a href="/termos/" target="_blank" rel="noopener">Termos de Uso</a>, a <a href="/privacidade/" target="_blank" rel="noopener">Política de Privacidade</a> e as <a href="/cancelamento/" target="_blank" rel="noopener">regras de cancelamento</a> antes de contratar.</p><p id="xrm-auth-message" role="status" aria-live="polite"></p></form><div class="xrm-auth-aside"><h3>Uma plataforma, toda a frota.</h3><p>Faça login com sua conta atual ou crie uma nova. Você escolhe quantos veículos deseja administrar: até cinco por R$ 29,90/mês, mais R$ 5,90 por adicional.</p><a class="btn outline" href="#planos">Ver planos</a></div></div></div></section>
 <style>.xrm-auth{display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,.8fr);gap:24px;align-items:stretch;max-width:900px;margin:auto}.xrm-auth form,.xrm-auth-aside{padding:26px;border:1px solid #315366;border-radius:18px;background:#0c2638;display:grid;align-content:start;gap:16px}.xrm-auth label{display:grid;gap:7px;font-weight:600;font-size:13px;color:#c5dce8}.xrm-auth input{padding:13px;color:white;background:#071c2d;border:1px solid #496a7c;border-radius:9px;min-width:0}.xrm-auth-tabs{display:flex;gap:8px}.xrm-auth-tabs button{flex:1;border:1px solid #42657a;border-radius:9px;padding:11px;background:transparent;color:#d9eff6;cursor:pointer}.xrm-auth-tabs button.active{background:#25c7aa;color:#062b2c;font-weight:800}.xrm-auth #xrm-auth-message{font-size:12px;color:#7de9d3;margin:0}#xrm-auth-forgot{background:none;border:0;padding:0;justify-self:start;color:#82e5e0;text-decoration:underline;font-size:13px;cursor:pointer}#xrm-password-row[hidden],#xrm-auth-forgot[hidden]{display:none!important}.xrm-auth-aside h3{margin:0}.xrm-auth-aside p{color:#bdd1dc}.xrm-auth-aside .btn{justify-self:start}@media(max-width:700px){.xrm-auth{grid-template-columns:1fr}}</style>
 <style>
 /* Login/signup is a dialog, never a footer jump. */
@@ -1319,7 +1180,7 @@ document.addEventListener('DOMContentLoaded',function(){
  try{
   if(typeof window.QRCode!=='function')throw Error('Módulo de QR indisponível');
   root.replaceChildren();
-  const demoUrl=new URL('/#demo-qr',location.origin).href;
+  const demoUrl=new URL('/recursos/#demo-qr',location.origin).href;
   new window.QRCode(root,{text:demoUrl,width:165,height:165,colorDark:'#082735',colorLight:'#ffffff',correctLevel:window.QRCode.CorrectLevel.M});
   root.title='QR demonstrativo que abre esta apresentação, sem acesso a veículos reais';
  }catch(error){
@@ -1330,4 +1191,5 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 </script>
 <style>#inicio .xrm-qr-plan-price{display:flex;align-items:center;gap:7px 14px;flex-wrap:wrap;font-size:11px;line-height:1.5;margin:13px 0 0;color:#a8c7d0}#inicio .xrm-qr-plan-price strong{font-weight:850;color:#f0faff}#inicio .xrm-qr-plan-price a{color:#7eeaca;font-weight:750;text-decoration:underline;text-underline-offset:3px}</style><script type="module" src="/analytics/xrmovi-presence.js?v=20261109-1"></script>
-<script defer src="/pwa/install.js?v=20261110-menu-1"></script></body></html>
+<script defer src="/pwa/install.js?v=20261110-menu-1"></script><script type="module" src="/pricing/fleet-landing.js?v=20261112"></script>
+</body></html>
