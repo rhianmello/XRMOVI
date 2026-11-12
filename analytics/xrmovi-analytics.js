@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 var GA_ID='G-1Z1PSN1SJD',KEY='xrmovi_ga4_consent_v1';
-var allowed={xrmovi_view_plans:1,xrmovi_contact:1,xrmovi_signup_start:1,xrmovi_demo_open:1,xrmovi_demo_complete:1,sign_up:1};
+var allowed={xrmovi_view_plans:1,xrmovi_contact:1,xrmovi_signup_start:1,xrmovi_demo_open:1,xrmovi_demo_complete:1,sign_up:1,xrmovi_trial_started:1};
 var status=null,loaded=false,box,notice;
 
 var ATTR_KEY='xrmovi_campaign_first_touch_v1',ATTR_AGE=30*24*60*60*1000;
