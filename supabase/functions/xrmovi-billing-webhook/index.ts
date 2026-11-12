@@ -141,8 +141,7 @@ Deno.serve(async(request:Request)=>{
       ?await signed(request,dataId,testSecret):{ok:false,reason:"test_key_unavailable"};
   if(!verification.ok&&!testCheck.ok){
    console.warn("XRMOVI Mercado Pago webhook rejected",{
-     reason:"signature_mismatch",
-     production_reason:verification.reason,
+     reason:verification.reason,
      test_key_configured:testSecret.length>=20&&testSecret!==secret
    });
    return send({error:"Invalid notification signature"},401);
@@ -158,12 +157,9 @@ Deno.serve(async(request:Request)=>{
   // Test-signed notifications NEVER enter the commercial settlement code.
   if(testCheck.ok)
     return await handleHomologationWebhook(body,dataId,testToken,supabaseUrl,serviceKey);
-  // Production-signed test-mode notifications also reconcile only the isolated test row.
-  if(body?.live_mode===false){
-    if(testToken.startsWith("APP_USR-")&&testToken!==token)
-      return await handleHomologationWebhook(body,dataId,testToken,supabaseUrl,serviceKey);
-    return send({ok:true,ignored:"test_event"});
-  }
+  // Keep historical behavior for production-signed simulation events:
+  // acknowledge and ignore. Only independently TEST-signed events reconcile the sandbox.
+  if(body?.live_mode===false)return send({ok:true,ignored:"test_event"});
   const type=getType(body?.type||body?.topic);
   const service=createClient(supabaseUrl,serviceKey,{auth:{persistSession:false}});
   const mpGet=async(path:string)=>{
