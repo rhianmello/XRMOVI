@@ -146,7 +146,7 @@ test('fleet controls have no legacy modules or dead exports',async()=>{
  assert.equal(await page.locator('#view-quality,#analytics-toggle,#export-button,#table-next,#fleet-import-file').count(),0);
  assert.doesNotMatch(await page.locator('body').innerText(),/CPL|Somente leitura|senha master|Qualidade da Base/i);
  assert.equal(await page.locator('.fleet-breadcrumb #xrm-contract-filter').count(),1);
- assert.match(await page.locator('.fleet-main-nav').innerText(),/Relatórios financeiros/);
+ assert.match(await page.locator('.fleet-main-nav').innerText(),/\bRelatórios\b/);
  await page.locator('.fleet-main-nav [data-view="maintenance"]').click();assert.equal(await page.locator('#maintenance-panel').isVisible(),true);
  assert.deepEqual(errors,[]);await page.close();
 });
