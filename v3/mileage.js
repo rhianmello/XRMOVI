@@ -117,7 +117,7 @@ export function setupMileage({client,getCompany,getVehicles,getFilteredIds,onRel
   if(pending.length){
    const box=add('div','xrm-mileage-review');
    const head=add('div','xrm-mileage-review-head');
-   head.append(add('h3','','Leituras suspeitas aguardando conferência'));
+   head.append(add('h3','','Leituras de KM aguardando conferência'));
    head.append(add('small','','Rejeitar remove da fila, mas preserva o registro no histórico. Consulte a origem pelo botão ao lado de cada leitura.'));
    box.append(head);
    const toolbar=add('div','xrm-mileage-review-toolbar');
