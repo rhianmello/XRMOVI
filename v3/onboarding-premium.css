@@ -216,3 +216,18 @@
 }
 #v3login.xrm-signup .wizard-pending-payment strong{font-size:12px;color:#8ff0cc}
 #v3login.xrm-signup select option:disabled{color:#63869a;background:#12283a}
+
+/* Per-vehicle simulator in guided signup */
+.xrm-signup .wizard-vehicle-quote{display:grid;gap:9px;min-width:0}
+.xrm-signup .wizard-vehicle-quote>label{font-size:12px;font-weight:750;color:#d4e7ee}
+.xrm-signup .wizard-vehicle-counter{display:grid;grid-template-columns:42px minmax(0,1fr) 42px;gap:8px}
+.xrm-signup .wizard-vehicle-counter input{min-width:0;text-align:center;font-size:19px;font-weight:850;background:#071d2b;border:1px solid #426a77;color:#efffff;border-radius:9px;padding:8px}
+.xrm-signup .wizard-vehicle-counter button{background:#10394b;border:1px solid #447487;color:#e1fcf6;border-radius:9px;font-size:21px;cursor:pointer}
+.xrm-signup .wizard-vehicle-quote input[type=range]{width:100%;accent-color:#54e0ad}
+.xrm-signup .wizard-vehicle-breakdown{margin:0;font-size:12px;line-height:1.5;color:#c2dce4}
+.xrm-signup .wizard-vehicle-breakdown strong{color:#7ce7c4}
+.xrm-signup .wizard-payment-choice{display:grid;gap:8px;min-width:0}
+.xrm-signup .wizard-payment-option:has(input:checked){border-color:#5cdabb;background:#143e47}
+.xrm-signup .wizard-verify-payment{width:100%;margin:8px 0;padding:12px;border-radius:9px;border:1px solid #55c7ce;background:#28b5aa;color:#052c35;font-weight:800;cursor:pointer}
+.xrm-signup .wizard-pending-payment{border:1px solid #bc9859;background:#473e2d;color:#ffdf9c;border-radius:9px;padding:11px;font-size:12px}
+@media(max-width:700px){.xrm-signup .wizard-vehicle-counter{grid-template-columns:40px minmax(0,1fr) 40px}.xrm-signup .wizard-vehicle-breakdown{font-size:11px}}
