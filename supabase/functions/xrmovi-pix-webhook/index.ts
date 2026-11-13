@@ -24,6 +24,15 @@ Deno.serve(async req=>{
  const reqUrl=new URL(req.url);
  const id=reqUrl.searchParams.get("data.id")||reqUrl.searchParams.get("data_id")||"";
  if(!id){
+  // Legacy Mercado Pago IPN is UNSIGNED. Acknowledge a well-formed notice to
+  // stop retries, but NEVER consult a provider, settle a payment or grant access.
+  // Only signed modern Webhooks below can trigger reconciliation.
+  const legacyId=reqUrl.searchParams.get("id")||"";
+  if(!req.headers.get("x-signature")
+    && reqUrl.searchParams.get("topic")==="payment" && /^\d{5,22}$/.test(legacyId)){
+    console.warn("XRMOVI Pix legacy notification ignored",{reason:"legacy_unsigned_ipn_ignored"});
+    return respond({ok:true,ignored:"legacy_unsigned_ipn"},200);
+  }
   console.warn('XRMOVI Pix webhook rejected',{reason:'missing_data_id',legacy_ipn:reqUrl.searchParams.has('topic')});
   return respond({error:"Missing ID"},400);
  }
