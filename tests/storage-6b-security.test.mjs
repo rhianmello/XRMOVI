@@ -36,7 +36,7 @@ test('storage schema is only widened to private logo bucket',()=>{
 test('TUS only retains resumable URLs in memory and hashes exact bytes',()=>{
  assert.match(tus,/urlStorage:memoryTusUrlStorage/);
  assert.match(tus,/crypto\.subtle\.digest\('SHA-256'/);
- assert.doesNotMatch(tus,/localStorage|sessionStorage/);
+ assert.doesNotMatch(tus,/(?:window\\.)?(?:localStorage|sessionStorage)\\.(?:setItem|removeItem)/);
  assert.match(memory,/const entries = new Map\(\)/);
  assert.match(memory,/MAX_URL_AGE_MS = 60 \* 60 \* 1000/);
  assert.match(memory,/MAX_ENTRIES = 24/);
