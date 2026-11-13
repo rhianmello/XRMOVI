@@ -101,6 +101,21 @@ async function boot({admin=true,pathname='/admin/storage-hml.html',width=390}={}
  return {page,errors};
 }
 
+async function waitApprovedOrExplain(page,timeout=15000){
+ try{
+  await page.waitForFunction(()=>document.getElementById('hml-status').textContent.includes('APROVADO'),
+   null,{timeout});
+ }catch(error){
+  const diagnostics=await page.evaluate(()=>({
+   status:document.getElementById('hml-status')?.textContent,
+   fileCount:window.hmlMock?.files?.size,
+   apiCalls:window.hmlMock?.calls?.map(c=>c.name||c.kind).slice(-14),
+   evidence:document.getElementById('hml-results')?.innerText?.slice(0,600)
+  }));
+  throw new Error('HML browser scenario did not approve: '+JSON.stringify(diagnostics));
+ }
+}
+
 test('admin HML does not create files until explicit click',async()=>{
  const {page,errors}=await boot();
  try{
@@ -130,7 +145,7 @@ test('small synthetic PDF exercises Storage register, SHA, anon deny and duplica
  try{
   await page.locator('#hml-small').waitFor({state:'visible'});
   await page.locator('#hml-small').click();
-  await page.waitForFunction(()=>document.getElementById('hml-status').textContent.includes('APROVADO'),null,{timeout:15000});
+  await waitApprovedOrExplain(page,15000);
   const result=await page.evaluate(()=>{
    const paths=window.hmlMock.uploaded;
    const calls=window.hmlMock.calls;
@@ -159,7 +174,7 @@ test('large synthetic PDF takes TUS, measures intermediate progress, no billing 
  try{
   await page.locator('#hml-large').waitFor({state:'visible'});
   await page.locator('#hml-large').click();
-  await page.waitForFunction(()=>document.getElementById('hml-status').textContent.includes('APROVADO'),null,{timeout:30000});
+  await waitApprovedOrExplain(page,30000);
   const result=await page.evaluate(()=>({
    files:[...window.hmlMock.files.values()].map(b=>b.size),
    transportText:document.getElementById('hml-results').innerText,
@@ -180,7 +195,7 @@ test('manual cleanup touches only generated HML bucket object and requires confi
  try{
   await page.locator('#hml-small').waitFor({state:'visible'});
   await page.locator('#hml-small').click();
-  await page.waitForFunction(()=>document.getElementById('hml-status').textContent.includes('APROVADO'));
+  await waitApprovedOrExplain(page,15000);
   page.once('dialog',dialog=>dialog.accept());
   await page.locator('#hml-clean').click();
   await page.waitForFunction(()=>document.getElementById('hml-status').textContent.includes('Limpeza restrita'));
