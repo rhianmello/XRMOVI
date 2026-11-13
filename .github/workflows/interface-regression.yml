@@ -1,9 +1,9 @@
 name: XRMOVI interface and public access
 on:
   push:
-    paths: ['index.html', 'auth/**', 'v3/**', 'termos/**', 'privacidade/**', 'cancelamento/**', 'legal/**', 'tests/**', 'package*.json', '.github/workflows/interface-regression.yml']
+    paths: ['index.html', 'manifest.webmanifest', 'sw.js', 'pwa/**', 'auth/**', 'admin/**', 'analytics/**', 'v3/**', 'termos/**', 'privacidade/**', 'cancelamento/**', 'legal/**', 'tests/**', 'package*.json', '.github/workflows/interface-regression.yml']
   pull_request:
-    paths: ['index.html', 'auth/**', 'v3/**', 'termos/**', 'privacidade/**', 'cancelamento/**', 'legal/**', 'tests/**', 'package*.json', '.github/workflows/interface-regression.yml']
+    paths: ['index.html', 'manifest.webmanifest', 'sw.js', 'pwa/**', 'auth/**', 'admin/**', 'analytics/**', 'v3/**', 'termos/**', 'privacidade/**', 'cancelamento/**', 'legal/**', 'tests/**', 'package*.json', '.github/workflows/interface-regression.yml']
   workflow_dispatch:
 permissions:
   contents: read
