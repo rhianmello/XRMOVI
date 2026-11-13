@@ -242,3 +242,79 @@ test('interrupted QR upload reports an error, unlocks button, and does not silen
   assert.deepEqual(errors,[]);
  } finally{await page.close();}
 });
+
+
+test('legacy fuel receipts preserve JPEG base64 wire contract and legible dimensions',async()=>{
+ const {page,errors}=await pageFor(390);
+ try{
+  const result=await page.evaluate(async()=>{
+   const {optimizeLegacyFuelDataUri}=await import('/v3/upload-optimizer.js');
+   const canvas=document.createElement('canvas');
+   canvas.width=2300;canvas.height=1500;
+   const ctx=canvas.getContext('2d');
+   ctx.fillStyle='white';ctx.fillRect(0,0,canvas.width,canvas.height);
+   ctx.fillStyle='black';ctx.font='bold 78px sans-serif';
+   for(let y=160;y<1200;y+=150)ctx.fillText('NF 1234567890 TOTAL R$ 987,65',90,y);
+   const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+   const file=new File([blob],'comprovante.png',{type:'image/png'});
+   const data=await optimizeLegacyFuelDataUri(file);
+   const image=new Image();image.src=data;await image.decode();
+   return {prefix:data.slice(0,23),chars:data.length,sourceBytes:file.size,
+    width:image.naturalWidth,height:image.naturalHeight};
+  });
+  assert.equal(result.prefix,'data:image/jpeg;base64,');
+  assert.ok(result.chars<=650000);
+  assert.ok(result.width<=1400);
+  assert.ok(result.height>0);
+  assert.deepEqual(errors,[]);
+ }finally{await page.close();}
+});
+
+test('legacy fuel receipt rejects corrupted input without touching existing saved notes',async()=>{
+ const {page,errors}=await pageFor();
+ try {
+  const message=await page.evaluate(async()=>{
+   const {optimizeLegacyFuelDataUri}=await import('/v3/upload-optimizer.js');
+   try{await optimizeLegacyFuelDataUri(new File(['not image'],'corrupt.jpg',{type:'image/jpeg'}));return 'unexpected success';}
+   catch(e){return e.message;}
+  });
+  assert.match(message,/corrompida|ilegível/i);
+  assert.deepEqual(errors,[]);
+ }finally{await page.close();}
+});
+
+test('EXIF orientation 6 is applied before re-encoding large mobile photo',async()=>{
+ const {page,errors}=await pageFor(390);
+ try{
+  const result=await page.evaluate(async()=>{
+   const {optimizeUploadFile}=await import('/v3/upload-optimizer.js');
+   const canvas=document.createElement('canvas');canvas.width=3000;canvas.height=1600;
+   const ctx=canvas.getContext('2d');
+   const g=ctx.createLinearGradient(0,0,3000,1600);
+   g.addColorStop(0,'#dd3311');g.addColorStop(1,'#224466');
+   ctx.fillStyle=g;ctx.fillRect(0,0,3000,1600);
+   ctx.fillStyle='#000';ctx.font='bold 100px sans-serif';ctx.fillText('KM 12345',140,250);
+   const raw=new Uint8Array(await (await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',1))).arrayBuffer());
+   // JPEG APP1 Exif, little-endian TIFF orientation tag 0x0112 = 6 (90 degrees clockwise).
+   const exif=new Uint8Array([0x45,0x78,0x69,0x66,0,0,0x49,0x49,0x2a,0,8,0,0,0,
+    1,0,0x12,1,3,0,1,0,0,0,6,0,0,0,0,0,0,0]);
+   const payload=new Uint8Array(raw.length+exif.length+4);
+   payload.set(raw.slice(0,2),0);payload[2]=255;payload[3]=225;
+   const sectionLength=exif.length+2;
+   payload[4]=sectionLength>>8;payload[5]=sectionLength&255;
+   payload.set(exif,6);payload.set(raw.slice(2),6+exif.length);
+   const original=new File([payload],'foto-mobil.jpg',{type:'image/jpeg'});
+   const decoded=await createImageBitmap(original,{imageOrientation:'from-image'});
+   const before={width:decoded.width,height:decoded.height};decoded.close();
+   const {file,stats}=await optimizeUploadFile(original,{purpose:'proof',maxBytes:5*1024*1024});
+   const final=await createImageBitmap(file);
+   const after={width:final.width,height:final.height};
+   final.close();
+   return {before,after,reduced:stats.reduced,sourceBytes:stats.originalBytes};
+  });
+  assert.ok(result.before.height>result.before.width,'EXIF orientation should rotate tall');
+  assert.ok(result.reduced,'large original should compress');
+  assert.ok(result.after.height>result.after.width,'optimized output must preserve orientation');
+  assert.deepEqual(errors,[]);
+ }finally{await page.close();}
+});
