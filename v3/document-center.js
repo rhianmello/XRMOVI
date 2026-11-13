@@ -366,7 +366,9 @@ export function createDocumentCenter({
       const f=n=>formatStorageBytes(Number(n)||0);
       historyMetrics.textContent='Histórico registrado: '+Number(data?.completed||0)+
        ' upload(s) · '+f(data?.verified_stored_bytes)+' armazenados verificados · '+
-       f(data?.savings_client_reported_bytes)+' de economia informada pelo navegador (não verificada independentemente).';
+       f(data?.savings_client_reported_bytes)+' de economia informada pelo navegador (não verificada independentemente) · '+
+       Number(data?.failures_client_reported||0)+' falha(s) e '+
+       Number(data?.interruptions_client_reported||0)+' interrupção(ões) informadas.';
     }).catch(()=>{
       if(!backdrop.hidden&&getCompany()?.id===cid)historyMetrics.textContent='Histórico indisponível.';
     });
@@ -419,7 +421,15 @@ export function createDocumentCenter({
         query('[data-session-metrics]').textContent=storageSessionSummary(cid);
         notify('Documento anexado ao cadastro. '+uploadSummary(stats));
       }catch(error){
-        if(!storedAndRegistered) recordStorageMetric(cid,error?.name==='AbortError'?'interrupted':'failed');
+        if(!storedAndRegistered){
+          const event=error?.name==='AbortError'?'interrupted':'failed';
+          recordStorageMetric(cid,event);
+          // Advisory only: this event is client-reported, rate-limited and has no
+          // file path. Failing telemetry must never affect customer documents.
+          void Promise.resolve().then(()=>rpc('storage_attempt_event',{
+            cid,p_entity_kind:kind,p_event:event
+          })).catch(()=>{});
+        }
         query('[data-session-metrics]').textContent=storageSessionSummary(cid);
         progress.hidden=true;stop.hidden=true;
         if(storedAndRegistered){
