@@ -15,7 +15,7 @@ function abortError() {
  return error;
 }
 function validatePath(path, bucket, file) {
- if (!/^xrmovi-[a-z-]+$/.test(bucket) || typeof path !== 'string' ||
+ if (!( /^xrmovi-[a-z-]+$/.test(bucket) || bucket === 'hml-xrmovi-storage') || typeof path !== 'string' ||
      path.includes('..') || path.startsWith('/') || path.length > 450 ||
      !/^[\w-]+\/[\w-]+\/[\w-]+\/[\w.-]+$/.test(path)) {
   throw new Error('Destino de armazenamento inválido.');
