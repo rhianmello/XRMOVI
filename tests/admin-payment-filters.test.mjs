@@ -5,7 +5,7 @@ const source=readFileSync(new URL('../admin/index.html',import.meta.url),'utf8')
 const begin=source.indexOf('let showTestAccounts=false;');
 const end=source.indexOf('function status(',begin);
 assert.ok(begin>0&&end>begin,'account classification source must be available');
-const helpers=source.slice(begin,end);
+const helpers=source.slice(begin,end)+source.slice(source.indexOf('function commercialAccounts(){'),source.indexOf('function render(){'));
 const fixtures={
  accounts:[
   {id:'a-owner',email:'rhian.udm@gmail.com',commercial_classification:'external'},
