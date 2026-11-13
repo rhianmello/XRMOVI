@@ -87,3 +87,27 @@ test('PWA install help fits 430px, 768px and desktop without horizontal scrollin
   } finally { await context.close(); }
  }
 });
+
+
+test('PWA modal remains clickable above a visible analytics consent notice', async()=>{
+ const {context,page,errors}=await openInstall({width:390,height:700});
+ try{
+  await page.evaluate(()=>{
+   const notice=document.createElement('section');
+   notice.id='xrm-ga4-consent';
+   notice.style.cssText='position:fixed;bottom:0;left:0;width:100vw;height:55vh;z-index:2147483600;background:#123;';
+   notice.textContent='Podemos medir as visitas ao XRMOVI?';
+   document.body.appendChild(notice);
+  });
+  await page.locator('[data-xrm-install]').click();
+  const stacking=await page.evaluate(()=>{
+   const overlay=document.getElementById('xrm-install-overlay');
+   const consent=document.getElementById('xrm-ga4-consent');
+   return {overlay:Number(getComputedStyle(overlay).zIndex),consent:Number(getComputedStyle(consent).zIndex)};
+  });
+  assert.ok(stacking.overlay>stacking.consent,'PWA modal must sit above analytics consent UI');
+  await page.locator('#xrm-install-close').click({timeout:3000});
+  assert.equal(await page.locator('#xrm-install-overlay').isVisible(),false);
+  assert.deepEqual(errors,[]);
+ }finally{await context.close();}
+});

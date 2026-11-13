@@ -6,6 +6,8 @@ on:
     paths:
       - '.github/workflows/production-live-smoke.yml'
       - 'tests/production-live-smoke.live.cjs'
+      - 'pwa/**'
+      - 'index.html'
   workflow_run:
     workflows: ["pages build and deployment"]
     types: [completed]
