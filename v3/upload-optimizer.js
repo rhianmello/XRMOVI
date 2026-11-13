@@ -92,10 +92,14 @@ export async function optimizeUploadFile(input, {
  let candidate = input;
  onPhase('optimizing', stats);
  let decoded;
+ try { decoded = await decodeForCanvas(input); }
+ catch { throw new Error('Imagem corrompida ou ilegível. Selecione outra foto.'); }
+ const {width, height} = decoded;
+ if (!width || !height || width * height > MAX_PIXELS) {
+  decoded.close();
+  throw new Error('Imagem com resolução excessiva ou inválida.');
+ }
  try {
-  decoded = await decodeForCanvas(input);
-  const {width, height} = decoded;
-  if (!width || !height || width * height > MAX_PIXELS) throw new Error('Imagem com resolução excessiva ou inválida.');
   const scale = Math.min(1, preset.maxEdge / Math.max(width, height));
   // For PNG, do not remove alpha or introduce JPEG artifacts in document text.
   // PNG re-encoding without downscaling has no reliable benefit.
