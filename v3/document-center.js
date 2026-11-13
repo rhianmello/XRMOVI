@@ -95,7 +95,7 @@ export function createDocumentCenter({
    '<p class="xrm-doc-summary" data-summary></p><div data-record-list></div>'+
    '<div data-upload class="xrm-doc-upload" hidden><input data-file type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" aria-label="Selecionar documento (PDF ou imagem)">'+
    '<button data-upload-button type="button" class="fleet-button primary">Adicionar documento</button></div>'+
-   '<p class="xrm-doc-feedback" role="status" data-feedback></p><progress data-upload-progress max="100" hidden aria-label="Progresso do envio de documento" style="width:100%;height:7px;margin:8px 0 0"></progress></section>';
+   '<p class="xrm-doc-feedback" role="status" data-feedback></p><progress data-upload-progress max="100" hidden aria-label="Progresso do envio de documento" style="width:100%;height:7px;margin:8px 0 0"></progress><button type="button" data-cancel-upload hidden class="fleet-button" style="margin-top:8px">Interromper envio</button></section>';
   document.body.append(backdrop);
   const query=(selector)=>backdrop.querySelector(selector);
   const dialog=backdrop.querySelector('[role="dialog"]');
@@ -363,25 +363,50 @@ export function createDocumentCenter({
       busy=true;uploadButton.disabled=true;
       query('[data-file]').disabled=true;
       const progress=query('[data-upload-progress]');progress.hidden=false;progress.removeAttribute('value');
-      const report=(phase,stats)=>{
+      const stop=query('[data-cancel-upload]'), controller=new AbortController();
+      stop.hidden=true;stop.disabled=false;
+      stop.onclick=()=>{
+        if(controller.signal.aborted)return;
+        controller.abort();
+        stop.disabled=true;
+        notice('Interrompendo o envio. Selecione o mesmo arquivo para tentar retomar.');
+      };
+      const report=(phase,stats,transfer)=>{
+       if(transfer?.transport==='tus'&&phase!=='complete'&&phase!=='uploaded'){
+        stop.hidden=false;
+        if(Number.isFinite(transfer.percentage))progress.value=transfer.percentage;
+        else progress.removeAttribute('value');
+       }
        const message={
         validating:'Validando integridade do arquivo…',
         optimizing:'Otimizando imagem…',
-        uploading:'Enviando ao armazenamento privado… '+uploadSummary(stats),
+        uploading:'Iniciando transferência privada… '+uploadSummary(stats),
+        preparing:'Preparando envio retomável… '+uploadSummary(stats),
+        resuming:'Retomando transferência anterior… '+uploadSummary(stats),
+        sending:transfer?.transport==='tus'&&Number.isFinite(transfer.percentage)
+          ?'Enviando '+transfer.percentage+'%… '+uploadSummary(stats)
+          :'Enviando arquivo ao armazenamento privado… '+uploadSummary(stats),
+        uploaded:'Arquivo recebido. Registrando o anexo…',
         registering:'Registrando o anexo… '+uploadSummary(stats)
        }[phase];
        if(message)notice(message);
       };
       try{
-        const stats=await upload(cid,kind,record.id,file,report);
-        progress.value=100;
+        const stats=await upload(cid,kind,record.id,file,report,controller.signal);
+        stop.hidden=true;progress.value=100;
         query('[data-file]').value='';
         await refresh();
         renderCentral();renderModal();
         notice('Documento anexado. '+uploadSummary(stats));
         notify('Documento anexado ao cadastro. '+uploadSummary(stats));
-      }catch(error){progress.hidden=true;notice('Falha ao anexar: '+error.message+' Você pode tentar novamente.');}
-      finally{busy=false;uploadButton.disabled=false;query('[data-file]').disabled=false;query('[data-close]').disabled=false;}
+      }catch(error){
+        progress.hidden=true;stop.hidden=true;
+        notice((error?.name==='AbortError'?'Envio interrompido. ':'Falha ao anexar: ')+
+          (error?.message||'Tente novamente.')+' Você pode selecionar o mesmo arquivo e tentar retomar.');
+      }finally{
+        busy=false;stop.hidden=true;stop.disabled=false;
+        uploadButton.disabled=false;query('[data-file]').disabled=false;query('[data-close]').disabled=false;
+      }
     };
     let history=query('[data-record-history]');
     if(!history){
