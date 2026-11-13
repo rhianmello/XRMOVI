@@ -19,7 +19,7 @@ a{color:#8ef0d9}#status{min-height:30px;font-size:13px}#status[data-error="true"
 <main>
 <a href="./?login=1">← Voltar ao XRMOVI</a>
 <h1>Crie uma nova senha</h1>
-<p>Use uma senha de pelo menos 8 caracteres. Esta página só altera a senha de uma sessão validada pelo Supabase.</p>
+<p>Use uma senha de pelo menos 8 caracteres. Por segurança, esta página exige um link de recuperação validado pelo Supabase.</p>
 <form id="reset-form">
 <label>Nova senha<input type="password" name="password" autocomplete="new-password" minlength="8" required></label>
 <label>Confirmar nova senha<input type="password" name="confirm" autocomplete="new-password" minlength="8" required></label>
@@ -37,12 +37,16 @@ try{
  if(!response.ok)throw Error('Configuração indisponível.');
  const config=await response.json();
  client=createClient(config.supabaseUrl,config.supabaseAnonKey,{auth:{detectSessionInUrl:true}});
- const enable=()=>{ready=true;button.disabled=false;button.textContent='Salvar nova senha';say('Link validado. Defina sua nova senha.')};
- client.auth.onAuthStateChange((event,session)=>{if(session&&(event==='PASSWORD_RECOVERY'||event==='SIGNED_IN'||event==='INITIAL_SESSION'))enable()});
+ const enable=()=>{ready=true;button.disabled=false;button.textContent='Salvar nova senha';say('Link de recuperação validado. Defina sua nova senha.')};
+ // SIGNED_IN/INITIAL_SESSION may refer to an ordinary existing login.
+ // Only Supabase's verified recovery event authorizes this reset form.
+ client.auth.onAuthStateChange((event,session)=>{
+  if(event==='PASSWORD_RECOVERY'&&session)enable();
+  if(event==='SIGNED_OUT'){ready=false;button.disabled=true;say('Sessão encerrada. Solicite um novo link de recuperação.',true)}
+ });
  const {data,error}=await client.auth.getSession();
  if(error)throw error;
- if(data.session)enable();
- else say('Link inválido ou expirado. Solicite um novo link em Entrar → Esqueci minha senha.',true);
+ if(!ready)say(data.session?'A sessão de login não é um link de recuperação. Solicite um novo link em Entrar → Esqueci minha senha.':'Link inválido ou expirado. Solicite um novo link em Entrar → Esqueci minha senha.',true);
 }catch(error){say('Não foi possível validar o link: '+(error.message||'erro de conexão'),true)}
 form.addEventListener('submit',async event=>{
  event.preventDefault();
@@ -51,6 +55,9 @@ form.addEventListener('submit',async event=>{
  if(password.length<8||password!==confirmation){say('As senhas precisam coincidir e ter no mínimo 8 caracteres.',true);return}
  button.disabled=true;say('Atualizando senha...');
  try{
+  // Recheck against GoTrue; getSession() alone only reads persisted session state.
+  const {data:verified,error:verificationError}=await client.auth.getUser();
+  if(verificationError||!verified?.user)throw Error('Não foi possível validar a sessão. Solicite um novo link.');
   const {error}=await client.auth.updateUser({password});
   if(error)throw error;
   await client.auth.signOut();
