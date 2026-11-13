@@ -7,7 +7,7 @@ const sitemap=read('sitemap.xml');
 const robots=read('robots.txt');
 
 test('SEO pages have indexable canonical metadata and a single H1',()=>{
- for(const path of ['','gestao-de-frotas/','controle-de-manutencao/','controle-de-abastecimento/','calculadora-consumo-combustivel/','planilha-controle-frotas/']){
+ for(const path of ['','gestao-de-frotas/','controle-de-manutencao/','controle-de-abastecimento/','calculadora-consumo-combustivel/','planilha-controle-frotas/','preco-sistema-gestao-frotas/','controle-quilometragem-qr-code/']){
   const file=read((path||'')+'index.html');
   const url=site+'/'+path;
   assert.ok(file.includes('<link rel="canonical" href="'+url+'">'),url+' canonical');
@@ -35,4 +35,25 @@ test('homepage structured data and social metadata use canonical URL',()=>{
  assert.ok(ld.some(item=>item['@type']==='SoftwareApplication'&&item.url===site+'/'));
  assert.match(home,/<meta property="og:site_name" content="XRMOVI">/);
  assert.match(home,/<meta property="og:locale" content="pt_BR">/);
+});
+
+
+test('public sales pages have internal links, factual prices and structured content',()=>{
+ const home=read('index.html');
+ assert.ok(home.includes('href="/preco-sistema-gestao-frotas/"'));
+ assert.ok(home.includes('href="/controle-quilometragem-qr-code/"'));
+ const prices=read('preco-sistema-gestao-frotas/index.html');
+ const qr=read('controle-quilometragem-qr-code/index.html');
+ for(const price of ['R$ 19,90','R$ 39,90','R$ 79,90','R$ 149,90']) assert.ok(prices.includes(price));
+ assert.ok(prices.includes('/pricing/fleet-pricing.js'));
+ assert.ok(prices.includes('vehicles=5&amp;trial=1'));
+ assert.match(qr,/foto do hodômetro/i);
+ assert.match(qr,/não é um rastreador GPS/i);
+ for(const html of [prices,qr]){
+  assert.ok(html.includes('name="robots" content="index, follow'));
+  assert.ok(html.includes('/analytics/xrmovi-analytics.js'));
+  const schemas=Array.from(html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g),v=>JSON.parse(v[1]));
+  assert.ok(schemas.some(v=>v['@type']==='BreadcrumbList'));
+  assert.ok(schemas.some(v=>v['@type']==='WebPage'));
+ }
 });
