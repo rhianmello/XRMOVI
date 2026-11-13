@@ -2,7 +2,7 @@
 -- Does not change any customer bucket, membership, plan, or existing policy.
 -- No test data is created by this migration; only the empty private bucket.
 insert into storage.buckets (id,name,public,file_size_limit,allowed_mime_types)
-values ('xrmovi-hml-storage','xrmovi-hml-storage',false,10485760,array['application/pdf']::text[])
+values ('hml-xrmovi-storage','hml-xrmovi-storage',false,10485760,array['application/pdf']::text[])
 on conflict (id) do nothing;
 
 -- Only the signed-in platform administrator may read/write paths under
@@ -25,13 +25,13 @@ grant execute on function public.xrmovi_hml_storage_path_allowed(text) to authen
 
 create policy xrmovi_hml_admin_select on storage.objects
 for select to authenticated
-using (bucket_id='xrmovi-hml-storage'
+using (bucket_id='hml-xrmovi-storage'
   and public.xrmovi_hml_storage_path_allowed(name)
   and owner_id=(select auth.uid())::text);
 
 create policy xrmovi_hml_admin_insert on storage.objects
 for insert to authenticated
-with check (bucket_id='xrmovi-hml-storage'
+with check (bucket_id='hml-xrmovi-storage'
   and public.xrmovi_hml_storage_path_allowed(name)
   and owner_id=(select auth.uid())::text);
 
@@ -39,7 +39,7 @@ with check (bucket_id='xrmovi-hml-storage'
 -- This never authorizes deleting an object from a customer bucket.
 create policy xrmovi_hml_admin_delete on storage.objects
 for delete to authenticated
-using (bucket_id='xrmovi-hml-storage'
+using (bucket_id='hml-xrmovi-storage'
   and public.xrmovi_hml_storage_path_allowed(name)
   and owner_id=(select auth.uid())::text);
 
@@ -61,10 +61,10 @@ begin
   select count(*),coalesce(sum((o.metadata->>'size')::bigint),0)
     into n,bytes
   from storage.objects o
-  where o.bucket_id='xrmovi-hml-storage'
+  where o.bucket_id='hml-xrmovi-storage'
     and o.owner_id=actor::text and o.name=p_path;
   return jsonb_build_object('registered',n=1,'object_count',n,
-    'stored_bytes',bytes,'bucket','xrmovi-hml-storage');
+    'stored_bytes',bytes,'bucket','hml-xrmovi-storage');
 end;
 $function$;
 
