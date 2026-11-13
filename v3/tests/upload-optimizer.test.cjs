@@ -190,7 +190,17 @@ test('QR driver upload actually sends optimized image and handles network interr
     const dt=new DataTransfer();dt.items.add(file);input.files=dt.files;input.dispatchEvent(new Event('change',{bubbles:true}));
    });
    await page.locator('#send').click();
-   await page.waitForFunction(()=>document.getElementById('result').textContent.includes('aguardando aprovação'),{timeout:8000});
+   try {
+    await page.waitForFunction(()=>document.getElementById('result').textContent.includes('aguardando aprovação'),null,{timeout:8000});
+   } catch(error) {
+    const snapshot=await page.evaluate(()=>({
+     status:document.getElementById('result')?.textContent,
+     progress:document.getElementById('upload-progress')?.getAttribute('value'),
+     hidden:document.getElementById('result')?.style.display,
+     buttonDisabled:document.getElementById('send')?.disabled
+    }));
+    throw new Error('QR portal at '+width+'px: '+JSON.stringify({submissions,bytes,mime,snapshot,errors})+' / '+error.message);
+   }
    assert.equal(submissions,1,'exactly one request');
    assert.ok(bytes>0 && mime==='image/jpeg');
    assert.equal(await page.locator('#upload-progress').getAttribute('value'),'100');
