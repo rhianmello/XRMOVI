@@ -248,3 +248,84 @@ test('session metrics never combine two companies and reflect measured byte savi
   assert.deepEqual(errors,[]);
  }finally{await page.close();}
 });
+
+
+test('private TUS upload URLs remain memory-only and vanish on a new page',async()=>{
+ const {page,errors}=await open();
+ try{
+  const value=await page.evaluate(async()=>{
+   const {memoryTusUrlStorage,clearMemoryTusUploads}=await import('/v3/storage-tus-memory.js');
+   clearMemoryTusUploads();
+   const key=await memoryTusUrlStorage.addUpload('tenant-file-digest',{
+     uploadUrl:'https://ztqtcbzjesrkuaijmylm.storage.supabase.co/storage/v1/upload/resumable/upload-a',
+     creationTime:new Date().toISOString(),size:7000000,
+     metadata:{bucketName:'xrmovi-record-attachments',objectName:'controlled/path'}
+   });
+   const found=await memoryTusUrlStorage.findUploadsByFingerprint('tenant-file-digest');
+   return {keyIsOpaque:key.startsWith('xrmovi-private-tus-'),entries:found.length,
+     uploadUrl:found[0]?.uploadUrl,localKeys:Object.keys(localStorage),sessionKeys:Object.keys(sessionStorage)};
+  });
+  assert.equal(value.entries,1);
+  assert.equal(value.keyIsOpaque,true);
+  assert.deepEqual(value.localKeys,[]);
+  assert.deepEqual(value.sessionKeys,[]);
+  await page.reload();
+  const after=await page.evaluate(async()=>{
+   const {memoryTusUrlStorage}=await import('/v3/storage-tus-memory.js');
+   return (await memoryTusUrlStorage.findAllUploads()).length;
+  });
+  assert.equal(after,0);
+  assert.deepEqual(errors,[]);
+ }finally{await page.close();}
+});
+
+test('in-memory TUS storage rejects arbitrary origins and non-resumable endpoints',async()=>{
+ const {page,errors}=await open();
+ try{
+  const value=await page.evaluate(async()=>{
+   const {memoryTusUrlStorage,clearMemoryTusUploads}=await import('/v3/storage-tus-memory.js');
+   clearMemoryTusUploads();
+   const tries=[
+    'https://evil.test/storage/v1/upload/resumable/private',
+    'https://ztqtcbzjesrkuaijmylm.supabase.co/storage/v1/upload/resumable/a',
+    'https://ztqtcbzjesrkuaijmylm.storage.supabase.co/auth/v1/token'
+   ];
+   let rejected=0;
+   for(const uploadUrl of tries){
+    try{await memoryTusUrlStorage.addUpload('x',{uploadUrl,size:7});}
+    catch{rejected++;}
+   }
+   return {rejected,length:(await memoryTusUrlStorage.findAllUploads()).length};
+  });
+  assert.deepEqual(value,{rejected:3,length:0});
+  assert.deepEqual(errors,[]);
+ }finally{await page.close();}
+});
+
+test('TUS resumption fingerprint distinguishes equal-size files with different bytes',async()=>{
+ const {page,errors}=await open();
+ try{
+  const result=await page.evaluate(async path=>{
+   const {transferPrivateObject,TUS_THRESHOLD_BYTES}=await import('/v3/storage-transfer.js');
+   let fingerprints=[];
+   class Upload{
+    constructor(_file,opts){this.opts=opts;}
+    findPreviousUploads(){return Promise.resolve([]);}
+    start(){Promise.resolve(this.opts.fingerprint()).then(s=>{
+      fingerprints.push(s);this.opts.onSuccess();
+    });}
+   }
+   const client={supabaseKey:'anon-test',auth:{getSession:async()=>({
+     data:{session:{access_token:'test-token',user:{id:'test-user'}}}
+   })}};
+   const a=new Uint8Array(TUS_THRESHOLD_BYTES+1);
+   const b=new Uint8Array(TUS_THRESHOLD_BYTES+1);b[0]=42;
+   await transferPrivateObject({client,path,file:new File([a],'same.pdf',{type:'application/pdf'}),loadTus:async()=>({Upload})});
+   await transferPrivateObject({client,path,file:new File([b],'same.pdf',{type:'application/pdf'}),loadTus:async()=>({Upload})});
+   return fingerprints;
+  },objectPath);
+  assert.equal(result.length,2);
+  assert.notEqual(result[0],result[1]);
+  assert.deepEqual(errors,[]);
+ }finally{await page.close();}
+});
