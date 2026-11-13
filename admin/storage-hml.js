@@ -1,11 +1,11 @@
 // XRMOVI 7B — opt-in administrator-only production Storage homologation.
 // No payment, client record, plan change or upload takes place on page load.
-// Only the dedicated private xrmovi-hml-storage bucket can be written to.
+// Only the dedicated private hml-xrmovi-storage bucket can be written to.
 import { transferPrivateObject, TUS_THRESHOLD_BYTES } from '../v3/storage-transfer.js?v=20261113-7b-1';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.58.0';
 
 const PROJECT_ID='ztqtcbzjesrkuaijmylm';
-const BUCKET='xrmovi-hml-storage';
+const BUCKET='hml-xrmovi-storage';
 const el=id=>document.getElementById(id);
 const reports=[];
 const objects=new Map();
