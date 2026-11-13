@@ -6,7 +6,7 @@
 <title>XRMOVI — Homologação real de armazenamento</title>
 <style>
 :root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color-scheme:dark;background:#0c1928;color:#edf5fc}
-*{box-sizing:border-box}
+*{box-sizing:border-box} .panel,.controls,button,input{min-width:0;max-width:100%} .panel{overflow-wrap:anywhere} .controls>*{white-space:normal;overflow-wrap:anywhere}
 body{margin:0 auto;max-width:1000px;padding:22px 18px 60px}
 a{color:#87d3ff}
 h1{font-size:1.65rem;margin:.45rem 0}
@@ -18,7 +18,7 @@ main{display:grid;gap:15px}
 .muted{color:#bad0de;font-size:.92rem}
 .note{padding:9px 11px;background:#102034;border-left:3px solid #7fbded}
 .controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
-button,input[type=file]{font:inherit}
+button,input[type=file]{font:inherit} input[type=file]{width:100%;min-width:0;max-width:100%}
 button{border:1px solid #3a87b1;color:white;background:#176084;padding:11px 14px;border-radius:9px;cursor:pointer}
 button:disabled{opacity:.52;cursor:default}
 button.secondary{background:#223a50}
