@@ -59,7 +59,7 @@ create index if not exists xrmovi_storage_attempts_period_idx
 create or replace function public.xrmovi_storage_attempt_event(
  cid uuid,p_entity_kind text,p_event text
 ) returns boolean language plpgsql security definer set search_path=''
-as $
+as $$
 declare caller uuid := (select auth.uid());
 begin
  perform public.xrmovi_assert_company_access(cid);
@@ -76,7 +76,7 @@ begin
   values(cid,caller,p_entity_kind,p_event);
  return true;
 end;
-$;
+$$;
 revoke all on function public.xrmovi_storage_attempt_event(uuid,text,text) from public,anon;
 grant execute on function public.xrmovi_storage_attempt_event(uuid,text,text) to authenticated;
 
