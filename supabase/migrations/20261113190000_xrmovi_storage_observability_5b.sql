@@ -167,9 +167,9 @@ begin
     'stored_bytes',coalesce(sum((metadata->>'size')::bigint),0)
   ) into summary from storage.objects where bucket_id like 'xrmovi-%';
 
-  select coalesce(jsonb_agg(to_jsonb(q) order by q.day desc, q.category),'[]'::jsonb)
+  select coalesce(jsonb_agg(to_jsonb(q) order by q.upload_day desc, q.category),'[]'::jsonb)
   into daily from (
-    select date_trunc('day',m.recorded_at)::date day,
+    select date_trunc('day',m.recorded_at)::date as upload_day,
       m.entity_kind category,count(*) completed,
       sum(m.stored_bytes) verified_stored_bytes,
       sum(m.client_original_bytes) client_original_bytes,
@@ -178,18 +178,18 @@ begin
     group by date_trunc('day',m.recorded_at)::date,m.entity_kind
   ) q;
 
-  select coalesce(jsonb_agg(to_jsonb(q) order by q.day desc,q.category),'[]'::jsonb)
+  select coalesce(jsonb_agg(to_jsonb(q) order by q.upload_day desc,q.category),'[]'::jsonb)
   into attempts from (
-    select date_trunc('day',e.recorded_at)::date day,e.entity_kind category,
+    select date_trunc('day',e.recorded_at)::date as upload_day,e.entity_kind category,
       count(*) filter(where e.event_type='failed') failures_client_reported,
       count(*) filter(where e.event_type='interrupted') interruptions_client_reported
     from xrmovi.storage_upload_attempt_events e
     group by date_trunc('day',e.recorded_at)::date,e.entity_kind
   ) q;
 
-  select coalesce(jsonb_agg(to_jsonb(q) order by q.month desc,q.bucket_id),'[]'::jsonb)
+  select coalesce(jsonb_agg(to_jsonb(q) order by q.storage_month desc,q.bucket_id),'[]'::jsonb)
   into growth from (
-    select date_trunc('month',o.created_at)::date month,o.bucket_id,
+    select date_trunc('month',o.created_at)::date as storage_month,o.bucket_id,
       count(*) existing_objects,
       coalesce(sum((o.metadata->>'size')::bigint),0) current_bytes
     from storage.objects o where o.bucket_id like 'xrmovi-%'
@@ -212,7 +212,7 @@ begin
       exists(select 1 from refs r where r.bucket=o.bucket_id and r.object_path=o.name) currently_referenced
     from storage.objects o where o.bucket_id like 'xrmovi-%'
   ),
-  rows as (
+  review_candidates as (
     select o.id object_id,o.bucket_id,o.created_at,o.stored_bytes,
       coalesce(d.review_status,'requires_evidence') review_status,
       coalesce(d.note,'') reviewer_note,d.reviewed_at,
@@ -224,7 +224,7 @@ begin
     where not o.currently_referenced
   )
   select coalesce(jsonb_agg(to_jsonb(r) order by r.stored_bytes desc),'[]'::jsonb)
-    into candidates from rows r;
+    into candidates from review_candidates r;
 
   return jsonb_build_object('summary',summary,'daily',daily,'attempts',attempts,
     'growth_existing_objects',growth,'candidates',candidates,
