@@ -329,3 +329,28 @@ test('TUS resumption fingerprint distinguishes equal-size files with different b
   assert.deepEqual(errors,[]);
  }finally{await page.close();}
 });
+
+
+test('only legacy XRMOVI TUS keys are removed; auth and other sites remain untouched',async()=>{
+ const {page,errors}=await open();
+ try {
+  const result=await page.evaluate(async()=>{
+   localStorage.setItem('tus::xrmovi-v1:old-user:xrmovi-record-attachments:private::999',
+    JSON.stringify({uploadUrl:'https://ztqtcbzjesrkuaijmylm.storage.supabase.co/storage/v1/upload/resumable/old'}));
+   localStorage.setItem('tus::another-app::999','another-app');
+   localStorage.setItem('sb-session-safe','not-a-real-token');
+   const mod=await import('/v3/storage-tus-memory.js');
+   return {
+    old:localStorage.getItem('tus::xrmovi-v1:old-user:xrmovi-record-attachments:private::999'),
+    other:localStorage.getItem('tus::another-app::999'),
+    auth:localStorage.getItem('sb-session-safe'),
+    rerun:mod.purgeLegacyTusBrowserKeys()
+   };
+  });
+  assert.equal(result.old,null);
+  assert.equal(result.other,'another-app');
+  assert.equal(result.auth,'not-a-real-token');
+  assert.equal(result.rerun,0);
+  assert.deepEqual(errors,[]);
+ }finally{await page.close();}
+});
