@@ -75,6 +75,6 @@ function render(){
  cta.textContent='Testar grátis com '+q.count+' veículos';
  cta.href='/?login=1&vehicles='+q.count+'&trial=1';
 }
-input.addEventListener('change',render);input.addEventListener('input',()=>{if(input.value)render()});
+input.addEventListener('change',render);input.addEventListener('input',()=>{const n=Number(input.value);if(Number.isInteger(n)&&n>=5&&n<=100)render()});
 render();
 </script></body></html>
