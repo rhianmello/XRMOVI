@@ -40,12 +40,12 @@ footer{padding:20px;text-align:center;color:#849eae;font-size:11px}
   <div class="head"><div><div class="eyebrow">BI COMERCIAL · CLIENTES E FATURAMENTO</div><h1>Central do proprietário</h1><p>Controle a entrada de clientes, status de acesso, mensagens e movimentações financeiras.</p></div><div class="account-identity" id="user-label"></div></div>
   <div class="kpis">
    <div class="kpi"><span><span style="color:#4fe2b8">●</span> Pessoas online agora</span><b id="k-online">—</b><small id="online-detail">Conectando… · sem seu acesso</small></div>
-   <div class="kpi"><span>Contas cadastradas</span><b id="k-accounts">—</b><small>Clientes (sem o proprietário)</small></div>
-   <div class="kpi"><span>Aguardando pagamento</span><b id="k-trial">—</b><small>Contas sem assinatura ativa</small></div>
-   <div class="kpi"><span>Assinaturas ativas</span><b id="k-active">—</b><small>Situação registrada</small></div>
+   <div class="kpi"><span>Clientes externos classificados</span><b id="k-accounts">—</b><small>Classificação explícita, não por pagamento</small></div>
+   <div class="kpi"><span>Clientes externos pendentes</span><b id="k-trial">—</b><small>Sem assinatura ativa</small></div>
+   <div class="kpi"><span>Assinaturas externas ativas</span><b id="k-active">—</b><small>Status comercial, não nova venda</small></div>
    <div class="kpi warning"><span>Canceladas ou vencidas</span><b id="k-expired">—</b><small>Assinatura inativa</small></div>
    <div class="kpi blocked"><span>Bloqueados</span><b id="k-blocked">—</b><small>Acesso à frota suspenso</small></div>
-   <div class="kpi money"><span>Recebimentos confirmados</span><b id="k-paid">—</b><small>Histórico do banco</small></div>
+   <div class="kpi money"><span>Recebimentos externos</span><b id="k-paid">—</b><small>Pagos e classificados como externos</small></div><div class="kpi warning"><span>A classificar</span><b id="k-unclassified">—</b><small>Revisar antes de atribuir vendas</small></div>
   </div>
   <div class="notice billing-notice" role="status" aria-live="polite"><strong>Pagamentos do XRMOVI:</strong> <span id="xrm-billing-health">Conferindo liberação de compras…</span></div>
   <details id="xrm-billing-setup" class="xrm-billing-setup">
@@ -76,18 +76,18 @@ footer{padding:20px;text-align:center;color:#849eae;font-size:11px}
   <nav class="tabs" aria-label="Áreas da administração">
    <button data-tab="overview" aria-selected="true">Visão executiva</button><button data-tab="customers" aria-selected="false">Clientes</button><button data-tab="signups" aria-selected="false">Todos os cadastros</button><button data-tab="messages" aria-selected="false">Mensagens <span id="nav-unread"></span></button><button data-tab="payments" aria-selected="false">Pagamentos</button><button data-tab="requests" aria-selected="false">Solicitações</button><button data-tab="seo" aria-selected="false">SEO no Google</button><button data-tab="conversions" aria-selected="false">Vendas e conversões</button>
   </nav>
-  <div class="notice" id="commercial-filter-notice" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:10px 0 14px"><span id="commercial-filter-label">Visão de produção: empresas de teste ocultas dos indicadores. Os dados continuam preservados.</span><button class="btn ghost" id="commercial-filter-toggle" type="button">Mostrar testes</button></div>
+  <div class="notice" id="commercial-filter-notice" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:10px 0 14px"><span id="commercial-filter-label">Contas pendentes de classificação aparecem para revisão, mas não entram nos indicadores comerciais.</span><button class="btn ghost" id="commercial-filter-toggle" type="button">Mostrar internos e testes</button></div>
   <div id="view-overview" class="tab-view">
    <div class="two-col">
-    <section class="panel"><div class="panel-head"><h2>Receita confirmada por mês</h2><small id="revenue-total"></small></div><div id="revenue-chart" class="chart" aria-label="Receita confirmada por mês"></div></section>
+    <section class="panel"><div class="panel-head"><h2>Recebimentos de clientes externos por mês</h2><small id="revenue-total"></small></div><div id="revenue-chart" class="chart" aria-label="Receita confirmada por mês"></div></section>
     <section class="panel"><div class="panel-head"><h2>Carteira de clientes</h2><small>Contas e acessos</small></div><div style="padding:18px;display:grid;gap:13px" id="portfolio-breakdown"></div></section>
    </div>
    <section class="panel" style="margin-top:17px"><div class="panel-head"><h2>Últimos cadastros</h2><button class="btn ghost" data-goto="customers">Ver clientes</button></div><div class="table-wrap"><table><thead><tr><th>Cliente / empresa</th><th>Plano</th><th>Situação</th><th>Entrada</th><th>Autorização</th></tr></thead><tbody id="recent-customers"></tbody></table></div></section>
-   <div class="notice">Os valores financeiros exibidos são os recebimentos efetivamente confirmados no histórico do banco. O painel não considera mensalidades previstas como dinheiro recebido. A situação das credenciais aparece no diagnóstico acima.</div>
+   <div class="notice">Os indicadores mostram somente contas classificadas explicitamente como <strong>Cliente externo</strong> e pagamentos confirmados dessas contas. Contas pendentes de classificação não entram como vendas; todo pagamento permanece preservado no histórico do banco.</div>
   </div>
-  <section id="view-customers" class="panel tab-view" hidden><div class="panel-head"><h2>Clientes cadastrados</h2><input class="search" id="customer-search" placeholder="Buscar cliente ou empresa…" type="search"></div><div class="notice" style="margin:0 18px 12px">A autorização manual libera a operação por prazo definido, mas <strong>não confirma pagamento</strong>. Somente o proprietário pode conceder ou revogar. Toda ação é auditada.</div><div class="table-wrap"><table><thead><tr><th>Cliente / empresas</th><th>Plano</th><th>Assinatura</th><th>Veículos</th><th>Acesso</th><th>Entrada</th><th>Ações</th></tr></thead><tbody id="customers-body"></tbody></table></div></section>
+  <section id="view-customers" class="panel tab-view" hidden><div class="panel-head"><h2>Contas cadastradas e classificação</h2><input class="search" id="customer-search" placeholder="Buscar cliente ou empresa…" type="search"></div><div class="notice" style="margin:0 18px 12px">A autorização manual libera a operação por prazo definido, mas <strong>não confirma pagamento</strong>. A classificação externa/interna/homologação exige confirmação e justificativa auditada; <strong>não altera acesso, pagamento ou assinatura</strong>. Contas sem classificação não entram nos KPIs comerciais.</div><div class="table-wrap"><table><thead><tr><th>Cliente / empresas</th><th>Plano</th><th>Assinatura</th><th>Veículos</th><th>Acesso</th><th>Entrada</th><th>Ações</th></tr></thead><tbody id="customers-body"></tbody></table></div></section>
   <section id="view-signups" class="panel tab-view" hidden><div class="panel-head"><h2>Todos os cadastros</h2><input class="search" id="signup-search" placeholder="Buscar e-mail…" type="search"></div><div class="notice" style="margin:0 18px 12px">Inclui usuários que ainda não escolheram plano ou não possuem empresa. Dados disponíveis somente ao administrador. Não são enviados e-mails automaticamente; campanhas futuras deverão respeitar consentimento e opção de descadastro.</div><div class="table-wrap"><table><thead><tr><th>E-mail</th><th>Cadastro</th><th>E-mail confirmado</th><th>Já entrou</th><th>Situação</th></tr></thead><tbody id="signups-body"></tbody></table></div></section><section id="view-messages" class="panel tab-view" hidden><div class="panel-head"><h2>Caixa de mensagens</h2><small>Conversa privada com o titular de cada conta</small></div><div class="inbox"><div class="contacts" id="contacts"></div><div class="conversation"><div class="conversation-top" id="thread-title">Selecione um cliente</div><div class="messages" id="thread-messages"><p class="empty">Escolha uma conta para conversar.</p></div><form class="compose" id="message-form"><textarea id="message-body" placeholder="Digite sua mensagem ao cliente…" maxlength="3000" required></textarea><button class="btn primary" type="submit">Enviar</button></form></div></div></section>
-  <section id="view-payments" class="panel tab-view" hidden><div class="panel-head"><h2>Recebimentos confirmados</h2><small>Não inclui tentativas sem confirmação</small></div><div class="table-wrap"><table><thead><tr><th>Data</th><th>Cliente</th><th>Valor</th><th>Provedor</th></tr></thead><tbody id="payments-body"></tbody></table></div></section>
+  <section id="view-payments" class="panel tab-view" hidden><div class="panel-head"><h2>Recebimentos confirmados</h2><small>Mostra externos; opção acima permite auditar internos e pendentes</small></div><div class="table-wrap"><table><thead><tr><th>Data</th><th>Conta</th><th>Classificação</th><th>Valor</th><th>Provedor</th></tr></thead><tbody id="payments-body"></tbody></table></div></section>
   <section id="view-requests" class="panel tab-view" hidden><div class="panel-head"><h2>Solicitações de plano</h2><small>Acompanhe os interessados</small></div><div class="table-wrap"><table><thead><tr><th>Data</th><th>Empresa</th><th>Plano solicitado</th><th>Estado</th></tr></thead><tbody id="requests-body"></tbody></table></div></section>
   <section id="view-seo" class="tab-view" hidden aria-label="SEO e desempenho no Google"><p class="empty">Abra esta aba para consultar as métricas e a situação de indexação.</p></section>
   <section id="view-conversions" class="tab-view" hidden aria-label="Aquisição de clientes e vendas verificadas"><p class="empty">Abra esta aba para consultar os pagamentos confirmados e a origem das campanhas.</p></section>
@@ -103,13 +103,21 @@ const pill=(tr,text,tone='')=>{const td=node('td'),span=node('span',text,'pill '
 const show=id=>{for(const x of ['loading','unauthorized','content'])el(x).hidden=x!==id};
 let db,info={accounts:[],summary:{},revenue:[],payments:[],requests:[]},signups=[],threadId=null,tab='overview';
 let showTestAccounts=false;
-const isTestAccount=a=>(a.companies||[]).some(company=>/^empresa\s+teste(?:\b|\s|\d)/i.test(String(company.name||'').trim()));
 const isOwnerAccount=a=>String(a.email||'').trim().toLowerCase()==='rhian.udm@gmail.com';
-function excludedTestEmails(){return new Set((info.accounts||[]).filter(isTestAccount).map(a=>String(a.email||'').trim().toLowerCase()))}
-function visiblePayments(){const excluded=excludedTestEmails();return (info.payments||[]).filter(p=>!isOwnerAccount(p)&&(showTestAccounts||!excluded.has(String(p.email||'').trim().toLowerCase())))}
-function refreshFilterLabel(){const hidden=(info.accounts||[]).filter(a=>!isOwnerAccount(a)&&isTestAccount(a)).length;
- el('commercial-filter-label').textContent=showTestAccounts?'Visão completa: empresas e pagamentos de teste visíveis.':'Visão de produção: '+hidden+' conta(s) de teste ocultas. Nenhum dado foi excluído.';
- el('commercial-filter-toggle').textContent=showTestAccounts?'Ocultar testes':'Mostrar testes';
+const classes={external:'Cliente externo',internal:'Interno',homologation:'Homologação',unclassified:'A classificar'};
+function classificationOf(a){return classes[a?.commercial_classification]?a.commercial_classification:'unclassified'}
+function classificationLabel(a){return classes[classificationOf(a)]}
+function paymentAccount(p){return (info.accounts||[]).find(a=>a.id===p.account_id)||null}
+function commercialPayments(){return (info.payments||[]).filter(p=>{const a=paymentAccount(p);return a&&!isOwnerAccount(a)&&classificationOf(a)==='external'})}
+function visiblePayments(){return (info.payments||[]).filter(p=>{const a=paymentAccount(p);return a&&!isOwnerAccount(a)&&(showTestAccounts||classificationOf(a)==='external')})}
+function refreshFilterLabel(){
+ const a=(info.accounts||[]).filter(x=>!isOwnerAccount(x));
+ const pending=a.filter(x=>classificationOf(x)==='unclassified').length;
+ const hidden=a.filter(x=>['internal','homologation'].includes(classificationOf(x))).length;
+ el('commercial-filter-label').textContent=showTestAccounts
+   ?'Exibindo internos, testes e contas a classificar ('+pending+'). KPIs continuam somente externos.'
+   :'Exibindo externos e '+pending+' conta(s) a classificar. '+hidden+' conta(s) internas/homologação ocultas. Nenhum dado apagado.';
+ el('commercial-filter-toggle').textContent=showTestAccounts?'Ocultar internos e testes':'Mostrar internos e testes';
 }
 function status(text,type=''){el('feedback').textContent=text;el('feedback').className='status '+type}
 async function rpc(fn,args){const {data,error}=await db.rpc('xrmovi_'+fn,args);if(error)throw Error(error.message);return data}
@@ -117,7 +125,7 @@ function rowCustomer(c,full=false){
  const manual=Boolean(c.manual_access?.active&&Date.parse(c.manual_access.valid_until)>Date.now());
   const recurring=Boolean(c.recurring?.has_recurring);
  const manualUntil=manual?date(c.manual_access.valid_until):'';
- const tr=node('tr');const first=node('td');const bold=node('b',c.email),companies=node('span',(c.companies||[]).map(x=>x.name).join(' · ')||'Sem empresa','sub');first.append(bold,companies);tr.append(first);
+ const tr=node('tr');const first=node('td');const bold=node('b',c.email),companies=node('span',(c.companies||[]).map(x=>x.name).join(' · ')||'Sem empresa','sub'),classification=node('span',classificationLabel(c),'sub');first.append(bold,companies,classification);tr.append(first);
  cell(tr,(c.plan||'—').toUpperCase()+(c.price?' · '+money(c.price):''));
  const expired=c.status==='trial'&&c.trial_end&&Date.parse(c.trial_end)<Date.now();
  // Show manual operating access in the recent list; preserve financial status in full customer details.
@@ -148,6 +156,13 @@ function rowCustomer(c,full=false){
   const chat=node('button','Mensagem'+(c.unread?' ('+c.unread+')':''),'btn');
   chat.type='button';chat.onclick=()=>{threadId=c.id;openTab('messages');void loadThread()};
   actions.append(toggle,chat);
+   const chooser=node('select','','search');
+   chooser.style.cssText='max-width:160px;min-width:145px;font-size:12px';
+   chooser.setAttribute('aria-label','Classificação comercial: '+c.email);
+   for(const [value,label] of Object.entries(classes)){const option=node('option',label);option.value=value;chooser.append(option)}
+   chooser.value=classificationOf(c);
+   chooser.onchange=()=>void changeAccountClassification(c,chooser);
+   actions.prepend(chooser);
    if(recurring&&c.status==='active'){
     const cancel=node('button','Cancelar renovação','btn danger');
     cancel.type='button';cancel.title='Cancelar as próximas cobranças no Mercado Pago, mantendo o período já pago.';
@@ -159,13 +174,16 @@ function rowCustomer(c,full=false){
  return tr;
 }
 function commercialAccounts(){
- // A conta proprietária é administrativa, não um cliente comercial.
- return (info.accounts||[]).filter(a=>!isOwnerAccount(a)&&(showTestAccounts||!isTestAccount(a)));
+ // Accounts awaiting review remain visible, but NEVER become sales by default.
+ return (info.accounts||[]).filter(a=>!isOwnerAccount(a)&&(showTestAccounts||!['internal','homologation'].includes(classificationOf(a))));
+}
+function classifiedExternalAccounts(){
+ return (info.accounts||[]).filter(a=>!isOwnerAccount(a)&&classificationOf(a)==='external');
 }
 function render(){
  refreshFilterLabel();
- const customerList=commercialAccounts();
- const payments=visiblePayments();
+ const customerList=classifiedExternalAccounts();
+ const payments=commercialPayments();
  const s={...(info.summary||{})};
  s.accounts=customerList.length;
  s.trial=customerList.filter(a=>a.status==='pending'||a.status==='trial').length;
@@ -175,6 +193,8 @@ function render(){
  s.unread=customerList.reduce((sum,a)=>sum+Number(a.unread||0),0);
  s.mrr=customerList.filter(a=>a.status==='active').reduce((sum,a)=>sum+Number(a.price||0),0);
  s.paid_total=payments.reduce((sum,p)=>sum+Number(p.amount||0),0);
+ s.unclassified=(info.accounts||[]).filter(a=>!isOwnerAccount(a)&&classificationOf(a)==='unclassified').length;
+ el('k-unclassified').textContent=number(s.unclassified);
  for(const [key,id] of [['accounts','k-accounts'],['trial','k-trial'],['active','k-active'],['expired','k-expired'],['blocked','k-blocked']])el(id).textContent=number(s[key]);
  el('k-paid').textContent=money(s.paid_total);
  el('nav-unread').textContent=s.unread?'('+s.unread+')':'';
@@ -186,7 +206,7 @@ function render(){
  for(const month of months){const value=monthly.get(month)||0;const col=node('div','','chart-col'),space=node('div','','chart-space'),bar=node('div','','chart-bar');bar.style.height=Math.max(2,value/max*100)+'%';bar.title=month+': '+money(value);space.append(bar);col.append(space,node('span',month.slice(5),'chart-label'),node('span',value?money(value):'—','chart-value'));chart.append(col)}
  el('revenue-total').textContent='Total: '+money(s.paid_total);
  const portfolio=el('portfolio-breakdown');portfolio.replaceChildren();
- for(const [label,value,tone] of [['Aguardando pagamento',s.trial,'pending'],['Assinaturas ativas',s.active,'active'],['Assinaturas vencidas/canceladas',s.expired,'blocked'],['Contas bloqueadas',s.blocked,'blocked'],['Mensagens não lidas',s.unread,'pending'],['Mensalidades de referência',money(s.mrr),'active']]){
+ for(const [label,value,tone] of [['Clientes externos pendentes',s.trial,'pending'],['Assinaturas externas ativas',s.active,'active'],['Assinaturas vencidas/canceladas',s.expired,'blocked'],['Contas bloqueadas',s.blocked,'blocked'],['Mensagens não lidas',s.unread,'pending'],['Mensalidades externas de referência',money(s.mrr),'active'],['Contas a classificar',s.unclassified,'pending']]){
   const line=node('div');line.style.cssText='display:flex;justify-content:space-between;align-items:center;gap:12px';line.append(node('span',label),node('span',value,'pill '+tone));portfolio.append(line)
  }
  const recent=el('recent-customers');recent.replaceChildren();commercialAccounts().slice(0,7).forEach(c=>recent.append(rowCustomer(c)));if(!recent.children.length)emptyRows(recent,5,'Ainda não há clientes.');
@@ -210,13 +230,27 @@ function renderSignups(){
  }
  if(!rows.length)emptyRows(root,5,'Nenhum cadastro encontrado.');
 }
-function renderPayments(){const root=el('payments-body');root.replaceChildren();for(const p of visiblePayments()){const r=node('tr');cell(r,date(p.date));cell(r,p.email);cell(r,money(p.amount));cell(r,p.provider);root.append(r)}if(!root.children.length)emptyRows(root,4,'Nenhum pagamento confirmado registrado.')}
+function renderPayments(){const root=el('payments-body');root.replaceChildren();for(const p of visiblePayments()){const r=node('tr');cell(r,date(p.date));cell(r,p.email);cell(r,classificationLabel(paymentAccount(p)));cell(r,money(p.amount));cell(r,p.provider);root.append(r)}if(!root.children.length)emptyRows(root,5,'Nenhum recebimento comercial classificado. Use Mostrar internos e testes para auditar os demais.')}
 function renderRequests(){const root=el('requests-body');root.replaceChildren();for(const p of info.requests||[]){const r=node('tr');cell(r,date(p.date));cell(r,p.company);cell(r,p.plan);pill(r,p.status,p.status==='pending'?'pending':'');root.append(r)}if(!root.children.length)emptyRows(root,4,'Nenhuma solicitação registrada.')}
 function renderContacts(){
  const root=el('contacts');root.replaceChildren();
  const ordered=[...commercialAccounts()].sort((a,b)=>Number(b.unread>0)-Number(a.unread>0)||Date.parse(b.last_message||b.created_at)-Date.parse(a.last_message||a.created_at));
  for(const a of ordered){const b=node('button','','contact'+(a.id===threadId?' active':''));b.type='button';const title=node('b',a.email),desc=node('small',(a.companies||[]).map(x=>x.name).join(' · ')||'Sem empresa');b.append(title,desc);if(a.unread)b.append(node('span',a.unread+' nova(s)','unread'));b.onclick=()=>{threadId=a.id;renderContacts();void loadThread()};root.append(b)}
  if(!ordered.length)root.append(node('p','Nenhuma conta cadastrada.','empty'));
+}
+async function changeAccountClassification(c,chooser){
+ const previous=classificationOf(c),next=chooser.value;
+ if(next===previous)return;
+ const reason=prompt('Classificar '+c.email+' como '+classes[next]+'? Informe o motivo (10 a 500 caracteres). Isto NÃO muda acesso, cobrança ou assinatura.');
+ if(reason===null||reason.trim().length<10||reason.trim().length>500){chooser.value=previous;if(reason!==null)status('Justificativa entre 10 e 500 caracteres obrigatória.','error');return}
+ if(!confirm('Confirmar classificação de '+c.email+' como '+classes[next]+'? Alteração auditada, sem impacto na assinatura.')){chooser.value=previous;return}
+ chooser.disabled=true;
+ try{
+   const result=await rpc('admin_commercial_label_set',{p_account:c.id,p_classification:next,p_reason:reason.trim()});
+   if(result?.classification!==next)throw Error('Servidor não confirmou a classificação.');
+   await refresh();status('Classificação de '+c.email+' registrada e auditada.','success');
+ }catch(e){chooser.value=previous;status('Falha ao classificar: '+e.message,'error')}
+ finally{chooser.disabled=false}
 }
 async function changeAccess(c){
  const action=c.blocked?'LIBERAR':'BLOQUEAR';
@@ -280,7 +314,7 @@ async function loadThread(){
 }
 async function refresh(){
  const button=el('refresh');button.disabled=true;
- try{const [overview,grants,subscriptions,allSignups]=await Promise.all([rpc('commercial_admin_overview'),rpc('admin_manual_access_list'),rpc('admin_recurring_cancellations'),rpc('admin_auth_signups')]);info=overview;signups=Array.isArray(allSignups)?allSignups:[];const grantsByAccount=new Map((grants||[]).map(g=>[g.account_id,g]));const subByAccount=new Map((subscriptions||[]).map(x=>[x.account_id,x]));for(const account of info.accounts||[]){account.manual_access=grantsByAccount.get(account.id)||null;account.recurring=subByAccount.get(account.id)||null;}render();show('content');if(tab==='messages'&&threadId)await loadThread()}
+ try{const [overview,grants,subscriptions,allSignups,labels,receipts]=await Promise.all([rpc('commercial_admin_overview'),rpc('admin_manual_access_list'),rpc('admin_recurring_cancellations'),rpc('admin_auth_signups'),rpc('admin_commercial_labels'),rpc('admin_commercial_receipts')]);info=overview;info.payments=Array.isArray(receipts)?receipts:[];signups=Array.isArray(allSignups)?allSignups:[];const grantsByAccount=new Map((grants||[]).map(g=>[g.account_id,g]));const subByAccount=new Map((subscriptions||[]).map(x=>[x.account_id,x]));const classesByAccount=new Map((labels||[]).map(x=>[x.account_id,x]));for(const account of info.accounts||[]){account.manual_access=grantsByAccount.get(account.id)||null;account.recurring=subByAccount.get(account.id)||null;account.commercial_classification=classesByAccount.get(account.id)?.classification||'unclassified';}render();show('content');if(tab==='messages'&&threadId)await loadThread()}
  catch(e){status('Erro ao consultar o BI: '+e.message,'error');if(el('content').hidden){show('unauthorized');el('denied-text').textContent=e.message}}
  finally{button.disabled=false}
 }
