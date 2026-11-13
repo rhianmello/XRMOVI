@@ -1,4 +1,5 @@
 // XRMOVI — transferência privada e retomável, sem alterar ACL, RLS ou documentos.
+import { memoryTusUrlStorage } from './storage-tus-memory.js';
 // TUS só é utilizado para arquivos acima de 6 MiB; uploads pequenos seguem o SDK.
 export const TUS_THRESHOLD_BYTES = 6 * 1024 * 1024;
 export const TUS_CHUNK_BYTES = 6 * 1024 * 1024;
@@ -68,6 +69,12 @@ export async function transferPrivateObject({
  if (signal?.aborted) throw abortError();
  onProgress({ phase:'preparing', transport:'tus', percentage:0, sent:0, total:file.size });
 
+  // Prevent resuming a different file that happens to have the same name,
+  // MIME and length. The fingerprint is never written to persistent storage.
+  const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+  const sha = [...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,'0')).join('');
+  const scopedFingerprint = [ 'xrmovi-v2',session.user.id,bucket,path,file.size,file.type,sha ].join(':');
+
  return new Promise((resolve,reject)=>{
   let settled=false;
   let upload;
@@ -83,7 +90,6 @@ export async function transferPrivateObject({
    Promise.resolve(upload?.abort(false)).catch(()=>{});
    finish(abortError());
   };
-  const scopedFingerprint = [ 'xrmovi-v1',session.user.id,bucket,path,file.size,file.type ].join(':');
   try {
    upload = new tus.Upload(file,{
     endpoint:TUS_URL,
@@ -94,6 +100,10 @@ export async function transferPrivateObject({
     },
     uploadDataDuringCreation:true,
     storeFingerprintForResuming:true,
+    // The default tus-js-client stores URL + fingerprint in localStorage.
+    // Keep resumability only within this tab until a server-mediated method
+    // is reviewed; no durable URL, identity or path at rest.
+    urlStorage:memoryTusUrlStorage,
     removeFingerprintOnSuccess:true,
     chunkSize:TUS_CHUNK_BYTES,
     retryDelays:[0,1500,4000,8000],
