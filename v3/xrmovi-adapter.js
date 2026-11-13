@@ -6,7 +6,7 @@ import { showXrmoviOnboarding } from './onboarding.js?v=20261112-trial-event-1';
 import { createCompanyBranding } from './company-branding.js?v=20261113-storage-v1';
 import { setupMileage } from './mileage.js?v=20261112-service-approval-1';
 import { setupVehicleExport } from './vehicle-export.js?v=20261106-vehicle-xlsx-1';
-import { createDocumentCenter } from './document-center.js?v=20261113-4b-1';
+import { createDocumentCenter } from './document-center.js?v=20261113-5b-1';
 import { optimizeUploadFile, fingerprintUpload } from './upload-optimizer.js?v=20261113-4b-1';
 import { transferPrivateObject } from './storage-transfer.js?v=20261113-4b-1';
 import { printFuelEvidenceReport } from './finance-receipts-report.js?v=20261105-liter-audit-2';
@@ -1020,6 +1020,16 @@ async function uploadXrmRecordAttachment(cid,kind,recordId,file,onStatus=()=>{},
    cid,kind,rid:recordId,p_path:retry.path,p_name:file.name,
    p_type:prepared.type,p_size:prepared.size
   });
+  // Metrics are best-effort and must never roll back a successfully registered
+  // customer document. Server independently verifies stored size, ownership
+  // and company membership; the original size is explicitly client-reported.
+  try {
+   await rpc('storage_metric_record',{
+    cid,p_path:retry.path,p_original_bytes:stats.originalBytes
+   });
+  } catch(error) {
+   onStatus('metric-unavailable',stats);
+  }
   recoverableUploads.delete(key);
   confirmedAttachmentHashes.add(key);
   if(confirmedAttachmentHashes.size>100)confirmedAttachmentHashes.delete(confirmedAttachmentHashes.values().next().value);
