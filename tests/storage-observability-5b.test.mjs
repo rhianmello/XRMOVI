@@ -7,7 +7,7 @@ const migration=fs.readFileSync(path.join(root,'supabase/migrations/202611131900
 const html=fs.readFileSync(path.join(root,'admin/storage.html'),'utf8');
 
 test('storage tables are isolated from direct user writes and have RLS enabled',()=>{
- for(const table of ['storage_upload_metrics','storage_review_decisions','storage_review_history']){
+ for(const table of ['storage_upload_metrics','storage_review_decisions','storage_review_history','storage_upload_attempt_events']){
   assert.match(migration,new RegExp('create table if not exists xrmovi\.'+table));
   assert.match(migration,new RegExp('alter table xrmovi\.'+table+' enable row level security'));
   assert.match(migration,new RegExp('revoke all on xrmovi\.'+table+' from public, anon, authenticated'));
@@ -18,7 +18,8 @@ test('all exposed storage RPCs revoke anonymous access and limit execution to au
   'xrmovi_storage_metric_record(uuid,text,bigint)',
   'xrmovi_company_storage_history(uuid)',
   'xrmovi_admin_storage_overview()',
-  'xrmovi_admin_storage_review_mark(uuid,text,text)'
+  'xrmovi_admin_storage_review_mark(uuid,text,text)',
+  'xrmovi_storage_attempt_event(uuid,text,text)'
  ]) {
   assert.ok(migration.includes('revoke all on function public.'+sig+' from public,anon'));
   assert.ok(migration.includes('grant execute on function public.'+sig+' to authenticated'));
@@ -46,4 +47,12 @@ test('storage review tooling has no delete ability or file-path disclosure in UI
  assert.doesNotMatch(migration,/\bupdate\s+storage\.objects\b/i);
  assert.match(html,/Nenhuma opção exclui arquivos/);
  assert.doesNotMatch(html,/\.remove\(/);
+});
+
+test('attempt metrics are clearly identified as client-reported and rate-limited',()=>{
+ assert.match(migration,/storage_upload_attempt_events/);
+ assert.match(migration,/p_event not in \('failed','interrupted'\)/);
+ assert.match(migration,/interval '1 minute'\) >= 12/);
+ assert.match(html,/Falhas e interrupções são sinais enviados pelo navegador/);
+ assert.match(html,/Não equivale ao crescimento líquido histórico/);
 });
