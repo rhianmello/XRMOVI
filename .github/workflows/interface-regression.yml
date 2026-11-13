@@ -22,4 +22,4 @@ jobs:
       - name: Public authentication and fleet interface (offline mocks)
         run: npm run test:browser
       - name: Audited commercial classification and revenue regression
-        run: node --test tests/admin-payment-filters.test.mjs tests/admin-commercial-classification-sql.test.mjs tests/admin-commercial-history.test.mjs tests/admin-auth-mail-guidance.test.mjs tests/marketing-conversions.test.mjs tests/marketing-external-only.test.mjs
+        run: node --test tests/admin-payment-filters.test.mjs tests/admin-commercial-classification-sql.test.mjs tests/admin-commercial-history.test.mjs tests/admin-auth-mail-guidance.test.mjs tests/marketing-conversions.test.mjs tests/marketing-external-only.test.mjs tests/password-recovery-gate.test.mjs
