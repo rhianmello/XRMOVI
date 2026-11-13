@@ -214,8 +214,14 @@ test('mobile HML maintains visible controls without horizontal overflow',async()
  const {page,errors}=await boot({width:320});
  try{
   await page.locator('#hml-small').waitFor({state:'visible'});
-  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
-  assert.ok(overflow<=2,'Horizontal overflow '+overflow);
+  const measure=await page.evaluate(()=>({
+   overflow:document.documentElement.scrollWidth-innerWidth,
+   offenders:[...document.querySelectorAll('body *')].filter(e=>{
+     const b=e.getBoundingClientRect();return b.width>0&&b.right>innerWidth+2;
+   }).slice(0,12).map(e=>({tag:e.tagName,id:e.id,width:Math.round(e.getBoundingClientRect().width),
+      right:Math.round(e.getBoundingClientRect().right),className:String(e.className).slice(0,35)}))
+  }));
+  assert.ok(measure.overflow<=2,'Horizontal overflow '+JSON.stringify(measure));
   assert.deepEqual(errors,[]);
  }finally{await page.close();}
 });
