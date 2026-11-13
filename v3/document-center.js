@@ -357,19 +357,19 @@ export function createDocumentCenter({
     const form=query('[data-upload]');form.hidden=!canWrite();
     notice('');
     query('[data-session-metrics]').textContent=storageSessionSummary(cid);
-    const history=query('[data-historical-metrics]');
-    history.textContent='Histórico de uploads: consultando dados registrados…';
+    const historyMetrics=query('[data-historical-metrics]');
+    historyMetrics.textContent='Histórico de uploads: consultando dados registrados…';
     const activeRecordId=record.id;
     // Read-only aggregate scoped by the membership check in the RPC.
     void client().rpc('xrmovi_company_storage_history',{cid}).then(({data,error})=>{
       if(backdrop.hidden||getCompany()?.id!==cid||modalRecord?.id!==activeRecordId)return;
-      if(error){history.textContent='Histórico indisponível (os documentos continuam acessíveis).';return;}
+      if(error){historyMetrics.textContent='Histórico indisponível (os documentos continuam acessíveis).';return;}
       const f=n=>formatStorageBytes(Number(n)||0);
-      history.textContent='Histórico registrado: '+Number(data?.completed||0)+
+      historyMetrics.textContent='Histórico registrado: '+Number(data?.completed||0)+
        ' upload(s) · '+f(data?.verified_stored_bytes)+' armazenados verificados · '+
        f(data?.savings_client_reported_bytes)+' de economia informada pelo navegador (não verificada independentemente).';
     }).catch(()=>{
-      if(!backdrop.hidden&&getCompany()?.id===cid)history.textContent='Histórico indisponível.';
+      if(!backdrop.hidden&&getCompany()?.id===cid)historyMetrics.textContent='Histórico indisponível.';
     });
     const uploadButton=query('[data-upload-button]');
     uploadButton.onclick=async()=>{
