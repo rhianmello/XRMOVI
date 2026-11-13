@@ -205,6 +205,14 @@ export function createCompanyBranding({ client, getCompany, onSave }) {
         if (error) throw error;
         onSave(companyId, data);
         saved = true;
+        // Optional metrics: only a server-verified saved logo is counted.
+        // The true stored size comes from storage.objects; original is declared
+        // by this browser. Metrics must never prevent a successful logo save.
+        try {
+          await client.rpc('xrmovi_storage_logo_metric_record', {
+            cid: companyId, p_path: path, p_original_bytes: stats.originalBytes
+          });
+        } catch { /* Non-blocking telemetry; logo remains saved. */ }
         if (getCompany()?.id === companyId) {
           const displayed = await render();
           if (displayed && getCompany()?.id === companyId) feedback('Logo / Foto atualizada. ' + uploadSummary(stats));
