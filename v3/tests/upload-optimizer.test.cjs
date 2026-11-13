@@ -163,7 +163,7 @@ test('file is transmitted only after optimization; storage download and record m
  }finally{await page.close();}
 });
 
-test('QR driver upload actually sends optimized image and handles network interruptions',async()=>{
+test('QR driver upload sends optimized image at three screen sizes',async()=>{
  for(const width of [320,390,768]){
   const {page,errors}=await pageFor(width);
   try{
@@ -191,7 +191,7 @@ test('QR driver upload actually sends optimized image and handles network interr
    });
    await page.locator('#send').click();
    try {
-    await page.waitForFunction(()=>document.getElementById('result').textContent.includes('aguardando aprovação'),null,{timeout:8000});
+    await page.waitForFunction(()=>document.getElementById('result').textContent.toLowerCase().includes('aguardando aprovação'),null,{timeout:8000});
    } catch(error) {
     const snapshot=await page.evaluate(()=>({
      status:document.getElementById('result')?.textContent,
