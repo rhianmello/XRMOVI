@@ -117,8 +117,8 @@ async function verifyReceipt(test){
   assert(test.evidence.stored_bytes===test.file.size,'Tamanho registrado difere dos bytes enviados.');
   const {data:download,error}=await client.storage.from(BUCKET).download(test.path);
   if(error)throw error;
-  test.evidence.downloaded_bytes=data.size;
-  test.evidence.sha256_download=await hashBlob(data);
+  test.evidence.downloaded_bytes=download.size;
+  test.evidence.sha256_download=await hashBlob(download);
   test.evidence.hash_match=test.evidence.sha256_download===test.evidence.sha256_original;
   assert(test.evidence.hash_match,'SHA-256 não corresponde ao arquivo original.');
   // A separate anonymous client must never be able to read the test bucket.
