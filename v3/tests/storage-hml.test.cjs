@@ -143,7 +143,7 @@ test('small synthetic PDF exercises Storage register, SHA, anon deny and duplica
   });
   assert.equal(result.objects,1);
   assert.equal(result.uploads.length,2,'first upload + 409 duplicate check');
-  assert.ok(result.uploads.every(u=>u.bucket==='xrmovi-hml-storage'&&u.upsert===false));
+  assert.ok(result.uploads.every(u=>u.bucket==='hml-xrmovi-storage'&&u.upsert===false));
   assert.equal(result.paths.length,1);
   assert.ok(result.downloads.some(c=>c.anonymous===true));
   assert.ok(result.rpcs.includes('xrmovi_hml_storage_inspect'));
@@ -190,7 +190,7 @@ test('manual cleanup touches only generated HML bucket object and requires confi
   }));
   assert.equal(result.files,0);
   assert.equal(result.removes.length,1);
-  assert.equal(result.removes[0].bucket,'xrmovi-hml-storage');
+  assert.equal(result.removes[0].bucket,'hml-xrmovi-storage');
   assert.deepEqual(errors,[]);
  }finally{await page.close();}
 });
