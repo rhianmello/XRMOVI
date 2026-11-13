@@ -525,10 +525,10 @@
     }).catch(error=>toast('Não foi possível abrir a nota: '+errorMessage(error),'red'));
   }
   async function optimizeFuelReceipt(file){
-    if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw new Error('Use JPG, PNG ou WebP.');
-    if(file.size>12*1024*1024)throw new Error('A imagem deve ter no máximo 12 MB.');
-    const url=URL.createObjectURL(file);
-    try{const img=new Image();img.src=url;await img.decode();const k=Math.min(1,1400/Math.max(img.width,img.height));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.width*k));canvas.height=Math.max(1,Math.round(img.height*k));const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);let data=canvas.toDataURL('image/jpeg',.75);if(data.length>650000)data=canvas.toDataURL('image/jpeg',.48);if(data.length>650000)throw new Error('Imagem muito grande após compactação.');return data;}finally{URL.revokeObjectURL(url);}
+    // Preserve the existing RPC payload: JPEG data URL, <= 650,000 characters.
+    // Unify orientation and quality logic with the XRMOVI image optimizer.
+    const {optimizeLegacyFuelDataUri}=await import('/v3/upload-optimizer.js?v=20261113-4b-1');
+    return optimizeLegacyFuelDataUri(file);
   }
   async function saveRecordForm(event,kind,existing) {
     event.preventDefault();const form=event.currentTarget,button=$('[type="submit"]',form),record=formData(form);if(existing?.id)record.supersedes_id=existing.id;
