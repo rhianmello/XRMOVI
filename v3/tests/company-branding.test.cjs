@@ -144,7 +144,7 @@ test('existing logo loads through authenticated storage and PDF uses captured co
 test('valid upload persists URL and immediately renders; files use unique non-overwriting paths', async () => {
   const { page, errors } = await open();
   await selectFile(page);
-  await page.waitForFunction(() => document.getElementById('company-logo-status').textContent === 'Logo / Foto atualizada.');
+  await page.waitForFunction(() => document.getElementById('company-logo-status').textContent.startsWith('Logo / Foto atualizada.'));
   await waitIdle(page);
   assert.equal(await page.locator('#company-logo').isVisible(), true);
   const first = await page.evaluate(() => ({ upload: brandingTest.uploads[0], save: brandingTest.saves[0], company: brandingTest.companies[0] }));

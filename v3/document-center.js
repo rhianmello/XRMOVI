@@ -1,3 +1,4 @@
+import { uploadSummary } from './upload-optimizer.js?v=20261113-storage-v1';
 // XRMOVI — gestão privada de documentos por veículo e motorista.
 // O bucket continua privado; links assinados expiram em 60 segundos.
 export function createDocumentCenter({
@@ -94,7 +95,7 @@ export function createDocumentCenter({
    '<p class="xrm-doc-summary" data-summary></p><div data-record-list></div>'+
    '<div data-upload class="xrm-doc-upload" hidden><input data-file type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" aria-label="Selecionar documento (PDF ou imagem)">'+
    '<button data-upload-button type="button" class="fleet-button primary">Adicionar documento</button></div>'+
-   '<p class="xrm-doc-feedback" role="status" data-feedback></p></section>';
+   '<p class="xrm-doc-feedback" role="status" data-feedback></p><progress data-upload-progress max="100" hidden aria-label="Progresso do envio de documento" style="width:100%;height:7px;margin:8px 0 0"></progress></section>';
   document.body.append(backdrop);
   const query=(selector)=>backdrop.querySelector(selector);
   const dialog=backdrop.querySelector('[role="dialog"]');
@@ -358,16 +359,29 @@ export function createDocumentCenter({
     uploadButton.onclick=async()=>{
       if(busy||!canWrite())return;
       const file=query('[data-file]').files?.[0];
-      if(!file)return notice('Selecione um PDF ou imagem de até 10 MB.');
-      busy=true;uploadButton.disabled=true;notice('Enviando arquivo...');
+      if(!file)return notice('Selecione um PDF ou imagem para anexar.');
+      busy=true;uploadButton.disabled=true;
+      query('[data-file]').disabled=true;
+      const progress=query('[data-upload-progress]');progress.hidden=false;progress.removeAttribute('value');
+      const report=(phase,stats)=>{
+       const message={
+        validating:'Validando integridade do arquivo…',
+        optimizing:'Otimizando imagem…',
+        uploading:'Enviando ao armazenamento privado… '+uploadSummary(stats),
+        registering:'Registrando o anexo… '+uploadSummary(stats)
+       }[phase];
+       if(message)notice(message);
+      };
       try{
-        await upload(cid,kind,record.id,file);
+        const stats=await upload(cid,kind,record.id,file,report);
+        progress.value=100;
         query('[data-file]').value='';
         await refresh();
         renderCentral();renderModal();
-        notify('Documento anexado ao cadastro.');
-      }catch(error){notice('Falha ao anexar: '+error.message);}
-      finally{busy=false;uploadButton.disabled=false;query('[data-close]').disabled=false;}
+        notice('Documento anexado. '+uploadSummary(stats));
+        notify('Documento anexado ao cadastro. '+uploadSummary(stats));
+      }catch(error){progress.hidden=true;notice('Falha ao anexar: '+error.message+' Você pode tentar novamente.');}
+      finally{busy=false;uploadButton.disabled=false;query('[data-file]').disabled=false;query('[data-close]').disabled=false;}
     };
     let history=query('[data-record-history]');
     if(!history){
