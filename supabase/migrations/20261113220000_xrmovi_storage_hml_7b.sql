@@ -17,7 +17,7 @@ as $function$
     and length(coalesce(p_path,'')) between 100 and 160
     and p_path ~ ('^' || (select auth.uid())::text ||
       '/hml/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}' ||
-      '/hml-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\\.pdf$');
+      '/hml-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}[.]pdf$');
 $function$;
 
 revoke all on function public.xrmovi_hml_storage_path_allowed(text) from public,anon;
