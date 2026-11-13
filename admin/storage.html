@@ -93,7 +93,7 @@ async function load(){
   if(!periods.length)empty(per,6,'Ainda não há uploads instrumentados; os arquivos anteriores não foram reprocessados.');
   for(const p of periods){
    const tr=document.createElement('tr');
-   [p.day,p.category,count(p.completed),size(p.verified_stored_bytes),
+   [p.upload_day,p.category,count(p.completed),size(p.verified_stored_bytes),
     size(p.client_original_bytes),size(p.client_reported_savings_bytes)].forEach(v=>cell(tr,String(v||'—')));
    per.append(tr);
   }
@@ -101,7 +101,7 @@ async function load(){
   if(!attempts.length)empty(attemptBody,4,'Nenhuma ocorrência informada desde a habilitação das métricas.');
   for(const a of attempts){
    const tr=document.createElement('tr');
-   [a.day,a.category,count(a.failures_client_reported),count(a.interruptions_client_reported)]
+   [a.upload_day,a.category,count(a.failures_client_reported),count(a.interruptions_client_reported)]
     .forEach(v=>cell(tr,String(v||'—')));
    attemptBody.append(tr);
   }
@@ -109,7 +109,7 @@ async function load(){
   if(!growth.length)empty(growthBody,4,'Nenhum objeto encontrado nos buckets do XRMOVI.');
   for(const g of growth){
    const tr=document.createElement('tr');
-   [g.month,g.bucket_id,count(g.existing_objects),size(Number(g.current_bytes||0))]
+   [g.storage_month,g.bucket_id,count(g.existing_objects),size(Number(g.current_bytes||0))]
     .forEach(v=>cell(tr,String(v||'—')));
    growthBody.append(tr);
   }
