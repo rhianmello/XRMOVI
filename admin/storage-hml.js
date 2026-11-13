@@ -187,6 +187,7 @@ async function start(label,file){
   assert((await file.slice(0,5).text())==='%PDF-','O arquivo não possui cabeçalho PDF.');
   const run=crypto.randomUUID();
   const path=user.id+'/hml/'+run+'/hml-'+crypto.randomUUID()+'.pdf';
+  el('hml-test-path').value=path;
   const test={path,file,state:'created',running:false,controller:null,progress:[],
     evidence:{run_id:run,label,outcome:'Preparando',time:stamp(),
       input_bytes:file.size,sha256_original:await hashBlob(file),
@@ -214,7 +215,7 @@ el('hml-resume').addEventListener('click',()=>void(async()=>{
 el('hml-clean').addEventListener('click',()=>void(async()=>{
   if(!initialized||current?.running||!objects.size)return;
   if(!confirm('Remover SOMENTE os objetos de homologação criados nesta aba? Não serão afetados documentos de clientes.'))return;
-  await verifyLogin().catch(e=>{tell(safeError(e));});
+  try{await verifyLogin();}catch(error){tell('Limpeza não autorizada: '+safeError(error));return;}
   let removed=0,failed=0;
   for(const [path,record] of objects){
     if(!path.startsWith(user.id+'/hml/')||
