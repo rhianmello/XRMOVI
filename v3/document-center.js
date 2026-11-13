@@ -1,4 +1,4 @@
-import { uploadSummary } from './upload-optimizer.js?v=20261113-4b-1';
+import { uploadSummary, formatBytes as formatStorageBytes } from './upload-optimizer.js?v=20261113-4b-1';
 import { recordStorageMetric, storageSessionSummary } from './storage-metrics.js?v=20261113-4b-1';
 // XRMOVI — gestão privada de documentos por veículo e motorista.
 // O bucket continua privado; links assinados expiram em 60 segundos.
@@ -96,7 +96,7 @@ export function createDocumentCenter({
    '<p class="xrm-doc-summary" data-summary></p><div data-record-list></div>'+
    '<div data-upload class="xrm-doc-upload" hidden><input data-file type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" aria-label="Selecionar documento (PDF ou imagem)">'+
    '<button data-upload-button type="button" class="fleet-button primary">Adicionar documento</button></div>'+
-   '<p class="xrm-doc-feedback" role="status" data-feedback></p><p data-session-metrics class="xrm-doc-summary" aria-live="polite"></p><progress data-upload-progress max="100" hidden aria-label="Progresso do envio de documento" style="width:100%;height:7px;margin:8px 0 0"></progress><button type="button" data-cancel-upload hidden class="fleet-button" style="margin-top:8px">Interromper envio</button></section>';
+   '<p class="xrm-doc-feedback" role="status" data-feedback></p><p data-session-metrics class="xrm-doc-summary" aria-live="polite"></p><p data-historical-metrics class="xrm-doc-summary" aria-live="polite"></p><progress data-upload-progress max="100" hidden aria-label="Progresso do envio de documento" style="width:100%;height:7px;margin:8px 0 0"></progress><button type="button" data-cancel-upload hidden class="fleet-button" style="margin-top:8px">Interromper envio</button></section>';
   document.body.append(backdrop);
   const query=(selector)=>backdrop.querySelector(selector);
   const dialog=backdrop.querySelector('[role="dialog"]');
@@ -357,6 +357,20 @@ export function createDocumentCenter({
     const form=query('[data-upload]');form.hidden=!canWrite();
     notice('');
     query('[data-session-metrics]').textContent=storageSessionSummary(cid);
+    const history=query('[data-historical-metrics]');
+    history.textContent='Histórico de uploads: consultando dados registrados…';
+    const activeRecordId=record.id;
+    // Read-only aggregate scoped by the membership check in the RPC.
+    void client().rpc('xrmovi_company_storage_history',{cid}).then(({data,error})=>{
+      if(backdrop.hidden||getCompany()?.id!==cid||modalRecord?.id!==activeRecordId)return;
+      if(error){history.textContent='Histórico indisponível (os documentos continuam acessíveis).';return;}
+      const f=n=>formatStorageBytes(Number(n)||0);
+      history.textContent='Histórico registrado: '+Number(data?.completed||0)+
+       ' upload(s) · '+f(data?.verified_stored_bytes)+' armazenados verificados · '+
+       f(data?.savings_client_reported_bytes)+' de economia informada pelo navegador (não verificada independentemente).';
+    }).catch(()=>{
+      if(!backdrop.hidden&&getCompany()?.id===cid)history.textContent='Histórico indisponível.';
+    });
     const uploadButton=query('[data-upload-button]');
     uploadButton.onclick=async()=>{
       if(busy||!canWrite())return;
