@@ -48,8 +48,16 @@ button.onclick=async()=>{
  button.disabled=true;output.textContent='Consultando somente o bucket privado de homologação…';
  try{
   const {error,data}=await client.storage.from(BUCKET).download(path);
-  if(error)output.textContent='ACESSO NEGADO, conforme esperado. A conta secundária não baixou os bytes.';
-  else {output.textContent='FALHA DE ISOLAMENTO: a segunda conta conseguiu baixar um objeto de homologação. Não prossiga.';data?.stream?.()?.cancel?.().catch(()=>{});}
+  const code=Number(error?.statusCode??error?.status??0);
+  if(error&&[401,403].includes(code)){
+    output.textContent='ACESSO NEGADO ('+code+'), conforme esperado: a conta secundária não recebeu os bytes.';
+  }else if(error&&code===404){
+    output.textContent='NEGATIVA OU OBJETO AUSENTE (404). Confirme no primeiro navegador que o arquivo ainda existe antes de aprovar o isolamento.';
+  }else if(error){
+    output.textContent='INCONCLUSIVO ('+(code||'sem código HTTP')+'): pode ser falha de rede. Não classifique como isolamento comprovado.';
+  }else {
+    output.textContent='FALHA DE ISOLAMENTO: a segunda conta conseguiu baixar o objeto. Não prossiga.';
+  }
  }catch(_){output.textContent='Requisição recusada ou falhou. Confira o código HTTP antes de classificar como isolamento aprovado.';}
  finally{button.disabled=false;}
 };
