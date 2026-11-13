@@ -4,7 +4,7 @@ const style=document.createElement('style');style.textContent=`
 @media(max-width:600px){#xrm-install-trigger{right:max(9px,env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top));padding:9px 12px;font-size:12px}}
 #xrm-install-overlay{position:fixed;inset:0;z-index:2147483001;background:#000a;display:none;align-items:center;justify-content:center;padding:16px}
 #xrm-install-overlay.open{display:flex}
-#xrm-install-dialog{max-width:420px;width:100%;max-height:calc(100dvh - 32px);overflow-y:auto;background:#0d2839;color:#f0fbff;border:1px solid #3d6875;border-radius:18px;padding:24px;font:14px/1.55 system-ui;box-shadow:0 20px 70px #0009}
+#xrm-install-dialog{box-sizing:border-box;max-width:420px;width:100%;max-height:calc(100dvh - 32px);overflow-y:auto;background:#0d2839;color:#f0fbff;border:1px solid #3d6875;border-radius:18px;padding:24px;font:14px/1.55 system-ui;box-shadow:0 20px 70px #0009}
 #xrm-install-dialog h2{font-size:22px;margin:0 0 12px}
 #xrm-install-dialog p{margin:9px 0;color:#c1d9e3}
 #xrm-install-dialog button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:pointer}
