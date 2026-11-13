@@ -21,3 +21,5 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Public authentication and fleet interface (offline mocks)
         run: npm run test:browser
+      - name: Audited commercial classification and revenue regression
+        run: node --test tests/admin-payment-filters.test.mjs tests/admin-commercial-classification-sql.test.mjs
