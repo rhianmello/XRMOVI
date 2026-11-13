@@ -1,3 +1,4 @@
+import { optimizeUploadFile, uploadSummary } from './upload-optimizer.js?v=20261113-storage-v1';
 const LOGO_BUCKET = 'xrmovi-company-logos';
 const MAX_BYTES = 2 * 1024 * 1024;
 const IMAGE_TYPES = new Map([['image/png', 'png'], ['image/jpeg', 'jpg'], ['image/webp', 'webp']]);
@@ -188,12 +189,16 @@ export function createCompanyBranding({ client, getCompany, onSave }) {
         if (!IMAGE_TYPES.has(file.type)) throw new Error('Selecione uma imagem PNG, JPG ou WebP.');
         if (!file.size || file.size > MAX_BYTES) throw new Error('A imagem deve ter até 2 MB.');
         await decodeImage(file);
+        const { file: prepared, stats } = await optimizeUploadFile(file, {
+          purpose: 'logo', maxBytes: MAX_BYTES,
+          onPhase: phase => { if (getCompany()?.id === companyId && phase === 'optimizing') feedback('Otimizando logo…'); }
+        });
         // A different company may be selected while the file is being decoded.
         if (getCompany()?.id !== companyId) return;
-        feedback('Salvando imagem…');
-        const path = companyId + '/' + crypto.randomUUID() + '.' + IMAGE_TYPES.get(file.type);
-        const { error: uploadError } = await client.storage.from(LOGO_BUCKET).upload(path, file, {
-          contentType: file.type, cacheControl: '3600', upsert: false
+        feedback('Salvando imagem… ' + uploadSummary(stats));
+        const path = companyId + '/' + crypto.randomUUID() + '.' + IMAGE_TYPES.get(prepared.type);
+        const { error: uploadError } = await client.storage.from(LOGO_BUCKET).upload(path, prepared, {
+          contentType: prepared.type, cacheControl: '3600', upsert: false
         });
         if (uploadError) throw uploadError;
         const { data, error } = await client.rpc('xrmovi_company_logo_save', { cid: companyId, p_path: path });
@@ -202,7 +207,7 @@ export function createCompanyBranding({ client, getCompany, onSave }) {
         saved = true;
         if (getCompany()?.id === companyId) {
           const displayed = await render();
-          if (displayed && getCompany()?.id === companyId) feedback('Logo / Foto atualizada.');
+          if (displayed && getCompany()?.id === companyId) feedback('Logo / Foto atualizada. ' + uploadSummary(stats));
         }
       } catch (error) {
         if (getCompany()?.id === companyId) feedback('Não foi possível salvar a logo: ' + (error.message || 'Tente novamente.'));
