@@ -7,7 +7,7 @@ const sitemap=read('sitemap.xml');
 const robots=read('robots.txt');
 
 test('SEO pages have indexable canonical metadata and a single H1',()=>{
- for(const path of ['','gestao-de-frotas/','controle-de-manutencao/','controle-de-abastecimento/','calculadora-consumo-combustivel/','planilha-controle-frotas/','preco-sistema-gestao-frotas/','controle-quilometragem-qr-code/']){
+ for(const path of ['','gestao-de-frotas/','controle-de-manutencao/','controle-de-abastecimento/','calculadora-consumo-combustivel/','planilha-controle-frotas/','preco-sistema-gestao-frotas/','controle-quilometragem-qr-code/','sobre/','seguranca/','exemplos-de-uso/']){
   const file=read((path||'')+'index.html');
   const url=site+'/'+path;
   assert.ok(file.includes('<link rel="canonical" href="'+url+'">'),url+' canonical');
@@ -56,4 +56,24 @@ test('public sales pages have internal links, factual prices and structured cont
   assert.ok(schemas.some(v=>v['@type']==='BreadcrumbList'));
   assert.ok(schemas.some(v=>v['@type']==='WebPage'));
  }
+});
+
+test('transparency pages disclose a real contact and label illustrations accurately',()=>{
+ const home=read('index.html');
+ const about=read('sobre/index.html');
+ const security=read('seguranca/index.html');
+ const cases=read('exemplos-de-uso/index.html');
+ const llms=read('llms.txt');
+ for(const path of ['sobre/','seguranca/','exemplos-de-uso/']){
+  assert.ok(home.includes('href="/'+path+'"'),path+' linked from homepage');
+  assert.ok(sitemap.includes('<loc>'+site+'/'+path+'</loc>'),path+' in sitemap');
+ }
+ assert.ok(about.includes('Rhian Mello'));
+ assert.ok(about.includes('mailto:rhian.udm@gmail.com'));
+ assert.ok(security.includes('não representam auditoria externa')||security.includes('não representam auditoria externa'.replace('não','Não')));
+ assert.match(cases,/não relatos de clientes reais/i);
+ assert.match(cases,/simulações ilustrativas/i);
+ assert.ok(!/application\/ld\+json[^]*?"aggregateRating"/i.test(cases),'no fake aggregate rating');
+ assert.ok(llms.includes('https://xrmovi.com.br/seguranca/'));
+ assert.ok(llms.includes('não depoimentos'));
 });
