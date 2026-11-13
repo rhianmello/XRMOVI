@@ -69,7 +69,7 @@ test('transparency pages disclose a real contact and label illustrations accurat
   assert.ok(sitemap.includes('<loc>'+site+'/'+path+'</loc>'),path+' in sitemap');
  }
  assert.ok(about.includes('Rhian Mello'));
- assert.ok(about.includes('mailto:rhian.udm@gmail.com'));
+ assert.ok(about.includes('mailto:suporte@xrmovi.com.br'));
  assert.ok(security.includes('não representam auditoria externa')||security.includes('não representam auditoria externa'.replace('não','Não')));
  assert.match(cases,/não relatos de clientes reais/i);
  assert.match(cases,/simulações ilustrativas/i);
