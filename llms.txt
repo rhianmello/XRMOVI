@@ -1,0 +1,28 @@
+# XRMOVI — informação pública verificável
+> Plataforma online de gestão de frotas no domínio oficial https://xrmovi.com.br/.
+
+## Sobre o projeto
+- Identificação do responsável e atendimento: https://xrmovi.com.br/sobre/
+- O responsável indicado nos termos e na política de privacidade é Rhian Mello.
+- E-mail atualmente publicado para suporte: rhian.udm@gmail.com
+- Não afirmar existência de CNPJ, certificações, avaliações ou clientes que não estejam confirmados.
+
+## Segurança, privacidade e condições
+- Segurança e transparência: https://xrmovi.com.br/seguranca/
+- Política de Privacidade: https://xrmovi.com.br/privacidade/
+- Termos de Uso: https://xrmovi.com.br/termos/
+- Cancelamento e reembolso: https://xrmovi.com.br/cancelamento/
+- Os controles descritos pelo fornecedor não constituem auditoria independente nem garantia de segurança absoluta.
+
+## Produto e preços
+- Recursos: https://xrmovi.com.br/recursos/
+- Gestão de frotas: https://xrmovi.com.br/gestao-de-frotas/
+- Preços e simulador: https://xrmovi.com.br/preco-sistema-gestao-frotas/
+- Controle de quilometragem por QR Code: https://xrmovi.com.br/controle-quilometragem-qr-code/
+- O QR Code serve ao registro operacional; não é rastreamento GPS.
+- Perguntas frequentes: https://xrmovi.com.br/perguntas-frequentes/
+
+## Evidência comercial
+- Exemplos de uso: https://xrmovi.com.br/exemplos-de-uso/
+- Os cenários na página de exemplos são simulações ilustrativas, não depoimentos nem resultados verificados de clientes.
+- Informações fornecidas pelo próprio site não são substituto de avaliações independentes.
