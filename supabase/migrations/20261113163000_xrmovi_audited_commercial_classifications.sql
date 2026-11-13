@@ -67,9 +67,15 @@ begin
   from (
     select account_id,amount_brl,provider,confirmed_at from xrmovi.billing_ledger
     union all
-    select account_id,amount_brl,'mercadopago_pix'::text,paid_at
-    from xrmovi.pix_payment_intents where status='paid'
-    order by confirmed_at desc limit 100
+    select p.account_id,p.amount_brl,'mercadopago_pix'::text,p.paid_at
+    from xrmovi.pix_payment_intents p
+    where p.status='paid' and p.paid_at is not null
+      and not exists (
+        select 1 from xrmovi.billing_ledger l
+        where l.provider_payment_id=p.provider_payment_id
+          and p.provider_payment_id is not null
+      )
+    order by confirmed_at desc
   ) p
   join xrmovi.billing_accounts a on a.id=p.account_id
   join auth.users u on u.id=a.owner_id;
