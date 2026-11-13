@@ -52,8 +52,8 @@ table{width:100%;border-collapse:collapse;min-width:700px}th,td{text-align:left;
 </section>
 <section class="panel">
 <h2>Candidatos a conferência humana</h2>
-<p class="muted">Um arquivo sem referência direta não é necessariamente órfão. A identificação exibida é apenas o ID técnico interno, sem nome nem caminho do arquivo. O registro de revisão <strong>não exclui nem altera</strong> o objeto.</p>
-<div class="table-wrap"><table><thead><tr><th>Objeto (ID técnico)</th><th>Bucket</th><th>Tamanho</th><th>Criado</th><th>Revisão</th><th>Observação</th><th>Ação</th></tr></thead><tbody id="candidates"></tbody></table></div>
+<p class="muted">Um arquivo sem referência direta não é necessariamente órfão. A identificação exibida é apenas o ID técnico interno, sem nome nem caminho do arquivo. A coincidência de ETag é somente um indício e <strong>não prova conteúdo duplicado</strong>. O registro de revisão <strong>não exclui nem altera</strong> o objeto.</p>
+<div class="table-wrap"><table><thead><tr><th>Objeto (ID técnico)</th><th>Bucket</th><th>Tamanho</th><th>Criado</th><th>Auditoria de exclusão</th><th>ETag semelhante</th><th>Revisão</th><th>Observação</th><th>Ação</th></tr></thead><tbody id="candidates"></tbody></table></div>
 </section>
 </main>
 <script type="module">
@@ -119,12 +119,14 @@ async function load(){
    growthBody.append(tr);
   }
   const tbody=el('candidates');tbody.replaceChildren();
-  if(!candidates.length)empty(tbody,7,'Nenhum candidato identificado nesta consulta.');
+  if(!candidates.length)empty(tbody,9,'Nenhum candidato identificado nesta consulta.');
   for(const item of candidates){
    const tr=document.createElement('tr');
    cell(tr,String(item.object_id||'').slice(0,8)+'…');
    cell(tr,item.bucket_id||'—');cell(tr,size(item.stored_bytes));
    cell(tr,item.created_at?new Date(item.created_at).toLocaleDateString('pt-BR'):'—');
+   cell(tr,item.has_deletion_audit?'Encontrado':'Nenhum registro encontrado');
+   cell(tr,item.same_etag_as_referenced?'Possível semelhança — revisar':'Sem coincidência detectada');
    const col=document.createElement('td');const select=document.createElement('select');
    for(const [value,label] of [['requires_evidence','Precisa comprovação'],['investigate','Investigar'],['retain','Manter arquivo']]){
     const option=document.createElement('option');option.value=value;option.textContent=label;select.append(option);
