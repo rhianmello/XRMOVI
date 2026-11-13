@@ -139,3 +139,45 @@ export async function fingerprintUpload(file) {
  const hash = await crypto.subtle.digest('SHA-256', bytes);
  return Array.from(new Uint8Array(hash), b => b.toString(16).padStart(2,'0')).join('');
 }
+
+
+/**
+ * Legacy fleet fuel receipts still use a Postgres text field with a hard
+ * maximum of 650,000 base64/data-url characters, not Supabase Storage.
+ * Preserve this wire protocol (data:image/jpeg;base64,...), and never rewrite
+ * old receipts. New files are EXIF-oriented and stripped of camera metadata.
+ */
+export async function optimizeLegacyFuelDataUri(file,{maxChars=650000}={}) {
+ if (!(file instanceof Blob) || !file.size || file.size>12*1024*1024 ||
+     !Object.hasOwn(SUPPORTED_IMAGES,file.type)) {
+  throw new Error('Use JPG, PNG ou WebP com até 12 MB.');
+ }
+ let decoded;
+ try { decoded=await decodeForCanvas(file); }
+ catch { throw new Error('A imagem está corrompida ou ilegível.'); }
+ try {
+  if (!decoded.width||!decoded.height||decoded.width*decoded.height>MAX_PIXELS) {
+   throw new Error('Resolução da imagem inválida ou excessiva.');
+  }
+  for (const maxEdge of [1400,1200,1000]) {
+   const scale=Math.min(1,maxEdge/Math.max(decoded.width,decoded.height));
+   const canvas=document.createElement('canvas');
+   canvas.width=Math.max(1,Math.round(decoded.width*scale));
+   canvas.height=Math.max(1,Math.round(decoded.height*scale));
+   const context=canvas.getContext('2d');
+   if (!context) throw new Error('Não foi possível preparar o comprovante.');
+   context.fillStyle='#fff';
+   context.fillRect(0,0,canvas.width,canvas.height);
+   context.imageSmoothingEnabled=true;
+   context.imageSmoothingQuality='high';
+   context.drawImage(decoded.image,0,0,canvas.width,canvas.height);
+   for (const quality of [0.86,0.78,0.7,0.6,0.5]) {
+    const data=canvas.toDataURL('image/jpeg',quality);
+    if (data.startsWith('data:image/jpeg;base64,') && data.length<=maxChars) {
+     return data;
+    }
+   }
+  }
+  throw new Error('Comprovante ilegível ou muito grande após otimização. Tente tirar uma foto mais próxima.');
+ } finally {decoded?.close();}
+}

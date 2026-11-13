@@ -6,8 +6,9 @@ import { showXrmoviOnboarding } from './onboarding.js?v=20261112-trial-event-1';
 import { createCompanyBranding } from './company-branding.js?v=20261113-storage-v1';
 import { setupMileage } from './mileage.js?v=20261112-service-approval-1';
 import { setupVehicleExport } from './vehicle-export.js?v=20261106-vehicle-xlsx-1';
-import { createDocumentCenter } from './document-center.js?v=20261113-storage-v1';
-import { optimizeUploadFile, fingerprintUpload } from './upload-optimizer.js?v=20261113-storage-v1';
+import { createDocumentCenter } from './document-center.js?v=20261113-4b-1';
+import { optimizeUploadFile, fingerprintUpload } from './upload-optimizer.js?v=20261113-4b-1';
+import { transferPrivateObject } from './storage-transfer.js?v=20261113-4b-1';
 import { printFuelEvidenceReport } from './finance-receipts-report.js?v=20261105-liter-audit-2';
 import { analyzeFuelQuality, litersMissing } from './fuel-quality.js?v=20261105-liter-audit-1';
 import { setupTrafficFines } from './fines-module.js?v=20261106-fines-1';
@@ -963,11 +964,12 @@ all('[data-maintenance-mode]').forEach(button=>button.onclick=()=>setMaintenance
 
 
 const confirmedAttachmentHashes=new Set(), pendingAttachmentHashes=new Set();
-async function uploadXrmRecordAttachment(cid,kind,recordId,file,onStatus=()=>{}){
+const recoverableUploads=new Map(); // In-memory only; never persists signed links or credentials.
+async function uploadXrmRecordAttachment(cid,kind,recordId,file,onStatus=()=>{},signal){
  const formats={'application/pdf':'pdf','image/jpeg':'jpg','image/png':'png','image/webp':'webp'};
  if(!file?.name||file.name.length>200)throw Error('Nome de arquivo inválido (máximo de 200 caracteres).');
  const {file:prepared,stats}=await optimizeUploadFile(file,{
-  purpose: 'document',maxBytes:10485760,
+  purpose:'document',maxBytes:10485760,
   onPhase:phase=>onStatus(phase)
  });
  const ext=formats[prepared.type];
@@ -979,22 +981,51 @@ async function uploadXrmRecordAttachment(cid,kind,recordId,file,onStatus=()=>{})
  }
  pendingAttachmentHashes.add(key);
  try{
-  const path=[cid,kind,recordId,crypto.randomUUID()+'.'+ext].join('/');
-  onStatus('uploading',stats);
-  const {error}=await sb.storage.from('xrmovi-record-attachments').upload(path,prepared,{
-   contentType:prepared.type,upsert:false
-  });
-  if(error)throw error;
+  let retry=recoverableUploads.get(key);
+  if(!retry) {
+   retry={path:[cid,kind,recordId,crypto.randomUUID()+'.'+ext].join('/'),uploaded:false};
+   recoverableUploads.set(key,retry);
+  }
+  // If a previous response was lost after database registration, prefer reading
+  // the existing row instead of inserting another record.
+  if(retry.uploaded) {
+   const rows=await rpc('attachment_list',{cid,kind,rid:recordId});
+   if((rows||[]).some(row=>row.path===retry.path||row.object_path===retry.path)){
+    confirmedAttachmentHashes.add(key);
+    recoverableUploads.delete(key);
+    onStatus('complete',stats);
+    return stats;
+   }
+  }
+  if(!retry.uploaded) {
+   onStatus('uploading',stats);
+   try {
+    await transferPrivateObject({
+     client:sb,bucket:'xrmovi-record-attachments',path:retry.path,file:prepared,signal,
+     onProgress:event=>onStatus(event.phase,stats,event)
+    });
+    retry.uploaded=true;
+   } catch(error) {
+    if(error?.name==='AbortError')throw error;
+    // A failed network response can still mean the file reached Storage. Do not
+    // generate a new object path. Check only this same random, tenant-scoped path.
+    const {data:object}=await sb.storage.from('xrmovi-record-attachments').info(retry.path);
+    if(object && Number(object.metadata?.size??object.size)===prepared.size) retry.uploaded=true;
+    else throw error;
+   }
+  }
+  if(signal?.aborted)throw new Error('Arquivo enviado, mas registro pendente. Selecione-o novamente para concluir.');
   onStatus('registering',stats);
   await rpc('attachment_register',{
-   cid,kind,rid:recordId,p_path:path,p_name:file.name,
+   cid,kind,rid:recordId,p_path:retry.path,p_name:file.name,
    p_type:prepared.type,p_size:prepared.size
   });
+  recoverableUploads.delete(key);
   confirmedAttachmentHashes.add(key);
   if(confirmedAttachmentHashes.size>100)confirmedAttachmentHashes.delete(confirmedAttachmentHashes.values().next().value);
   onStatus('complete',stats);
   return stats;
- }finally{pendingAttachmentHashes.delete(key);}
+ } finally{pendingAttachmentHashes.delete(key);}
 }
 async function showXrmRecordAttachments(cid,kind,id,container){
  if(!cid||!id||!container)return;
