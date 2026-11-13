@@ -5,6 +5,7 @@ import test from 'node:test';
 
 const root=path.resolve(import.meta.dirname,'..');
 const sql=fs.readFileSync(path.join(root,'supabase/migrations/20261113220000_xrmovi_storage_hml_7b.sql'),'utf8');
+const hardening=fs.readFileSync(path.join(root,'supabase/migrations/20261113220500_xrmovi_hml_inspect_invoker_7b.sql'),'utf8');
 const app=fs.readFileSync(path.join(root,'admin/storage-hml.js'),'utf8');
 const html=fs.readFileSync(path.join(root,'admin/storage-hml.html'),'utf8');
 const probe=fs.readFileSync(path.join(root,'admin/storage-hml-probe.html'),'utf8');
@@ -71,4 +72,9 @@ test('privacy review keeps ETag similarity and deletion-audit distinct from prov
  assert.match(admin,/item\.has_deletion_audit/);
  assert.match(admin,/item\.same_etag_as_referenced/);
  assert.doesNotMatch(admin,/storage\.from\([^\n]+\)\.remove\(/);
+});
+
+test('HML metadata inspection uses invoker privileges and Storage RLS',()=>{
+ assert.match(hardening,/alter function public\.xrmovi_hml_storage_inspect\(text\) security invoker/i);
+ assert.doesNotMatch(hardening,/security definer/i);
 });
