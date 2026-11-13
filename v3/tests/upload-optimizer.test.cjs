@@ -210,3 +210,35 @@ test('QR driver upload sends optimized image at three screen sizes',async()=>{
   }finally{await page.close();}
  }
 });
+
+test('interrupted QR upload reports an error, unlocks button, and does not silently retry',async()=>{
+ const {page,errors}=await pageFor(360);
+ try{
+  let attempted=0;
+  await page.route('https://ztqtcbzjesrkuaijmylm.supabase.co/**',async route=>{
+   const body=route.request().postData()||'';
+   if(body.includes('photo')){attempted++;return route.abort('internetdisconnected');}
+   return route.fulfill({status:200,contentType:'application/json',body:'{"vehicle":{"plate":"AAA1234"}}'});
+  });
+  await page.goto(site+'/km/index.html?token=11111111-1111-4111-8111-111111111111');
+  await page.locator('[data-kind="km"]').click();
+  await page.locator('#reading input[name="driver"]').fill('Motorista de teste');
+  await page.locator('#reading input[name="meter"]').fill('27000');
+  await page.evaluate(async()=>{
+   const canvas=document.createElement('canvas');canvas.width=1000;canvas.height=800;
+   const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,1000,800);
+   ctx.fillStyle='#000';ctx.font='72px sans-serif';ctx.fillText('27000 KM',90,150);
+   const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.9));
+   const input=document.querySelector('#reading input[name="photo"]');
+   const data=new DataTransfer();data.items.add(new File([blob],'odometro.jpg',{type:'image/jpeg'}));
+   input.files=data.files;input.dispatchEvent(new Event('change',{bubbles:true}));
+  });
+  await page.locator('#send').click();
+  await page.waitForFunction(()=>document.getElementById('result')?.classList.contains('error'),null,{timeout:7000});
+  assert.equal(attempted,1);
+  assert.equal(await page.locator('#send').isEnabled(),true);
+  assert.equal(await page.locator('#upload-progress').isVisible(),false);
+  assert.match(await page.locator('#result').innerText(),/Falha ao enviar|Failed to fetch|internet/i);
+  assert.deepEqual(errors,[]);
+ } finally{await page.close();}
+});
