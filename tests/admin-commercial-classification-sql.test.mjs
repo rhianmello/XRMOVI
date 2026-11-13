@@ -27,4 +27,6 @@ test('admin RPCs verify auth.uid and platform_admins rather than trusting metada
 test('payment RPC returns real account_id, never guesses attribution by email',()=>{
  assert.match(sql,/'account_id',p\.account_id/);
  assert.match(sql,/status='paid'/);
+ assert.match(sql,/l\.provider_payment_id=p\.provider_payment_id/);
+ assert.doesNotMatch(sql,/order by confirmed_at desc limit 100/);
 });
