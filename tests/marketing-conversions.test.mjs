@@ -9,7 +9,7 @@ const migration=load('supabase/migrations/20261105160000_xrmovi_marketing_attrib
 const conversions=load('admin/conversions-panel.js');
 
 test('campaign attribution only starts after analytical consent, not on an ad click alone',()=>{
- assert.match(analytics,/function captureCampaign\(\)\s*\{\s*if\(status!=='accepted'\)return;/);
+ assert.match(analytics,/function captureCampaign\(\)\s*\{\s*if\(status!=='accepted'\|\|isInternal\(\)\)return;/);
  assert.match(analytics,/function syncAttribution\(client\)/);
  assert.match(analytics,/utm_source/);
  assert.match(analytics,/utm_medium/);
