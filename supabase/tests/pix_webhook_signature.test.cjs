@@ -41,9 +41,27 @@ for(const [name,options,reason] of [
  assert.equal(h.calls.logs.length,1);assert.equal(h.calls.logs[0][1].reason,reason);
  const log=JSON.stringify(h.calls.logs);assert.equal(log.includes(secret),false);assert.equal(log.includes(id),false);assert.equal(log.includes('test-request-id'),false);assert.equal(log.includes('v1='),false);
 });
-test('legacy unsigned IPN is diagnosed without granting access',async()=>{
- const h=harness();const response=await h.invoke({query:`id=${id}&topic=payment`});assert.equal(response.status,400);assert.equal(h.calls.provider,0);assert.equal(h.calls.database,0);assert.equal(h.calls.logs[0][1].reason,'missing_data_id');assert.equal(h.calls.logs[0][1].legacy_ipn,true);
+test('legacy unsigned IPN is acknowledged but never grants access or calls provider',async()=>{
+ const h=harness();
+ const response=await h.invoke({query:`id=${id}&topic=payment`});
+ assert.equal(response.status,200);
+ assert.equal((await response.json()).ignored,'legacy_unsigned_ipn');
+ assert.equal(h.calls.provider,0);assert.equal(h.calls.database,0);
+ assert.equal(h.calls.logs.length,1);
+ assert.equal(h.calls.logs[0][1].reason,'legacy_unsigned_ipn_ignored');
+ assert.equal(JSON.stringify(h.calls.logs).includes(id),false);
 });
+test('legacy IPN with a missing or invalid id is rejected without side effects',async()=>{
+ for(const query of ['topic=payment','topic=payment&id=not-a-payment','topic=merchant_order&id=123456789']){
+  const h=harness();const response=await h.invoke({query});
+  assert.equal(response.status,400);assert.equal(h.calls.provider,0);assert.equal(h.calls.database,0);
+ }
+});
+test('legacy query with x-signature but no signed data.id cannot bypass verification',async()=>{
+ const h=harness();const response=await h.invoke({query:`id=${id}&topic=payment`,sig:await signature()});
+ assert.equal(response.status,400);assert.equal(h.calls.provider,0);assert.equal(h.calls.database,0);
+});
+
 test('signature in milliseconds is supported; signed body mismatch never reaches provider',async()=>{
  const h=harness();const response=await h.invoke({sig:await signature({ts:String(Date.now())}),body:{type:'payment',data:{id:'987654321'}}});assert.equal(response.status,400);assert.equal(h.calls.provider,0);assert.equal(h.calls.database,0);
 });
