@@ -191,3 +191,34 @@ test('invalid paths and missing authenticated sessions reject before upload',asy
   assert.deepEqual(errors,[]);
  }finally{await page.close();}
 });
+
+
+test('CDN import outage falls back only before any TUS POST, keeping object path and upsert false',async()=>{
+ const {page,errors}=await open();
+ try{
+  const result=await page.evaluate(async path=>{
+   const {transferPrivateObject,TUS_THRESHOLD_BYTES}=await import('/v3/storage-transfer.js');
+   let requests=0,seenPath=null,upsert=null,events=[];
+   const client={
+    supabaseKey:'publishable',
+    auth:{getSession:async()=>({data:{session:{access_token:'test-token',user:{id:'user-a'}}}})},
+    storage:{from:bucket=>({upload:async(p,file,options)=>{
+     requests++;seenPath=p;upsert=options.upsert;return {error:null};
+    }})}
+   };
+   const file=new File([new Uint8Array(TUS_THRESHOLD_BYTES+1)],'large.pdf',{type:'application/pdf'});
+   const answer=await transferPrivateObject({
+    client,file,path,loadTus:async()=>{throw Error('CDN unavailable');},
+    onProgress:p=>events.push(p)
+   });
+   return {requests,seenPath,upsert,transport:answer.transport,events};
+  },objectPath);
+  assert.equal(result.requests,1);
+  assert.equal(result.seenPath,objectPath);
+  assert.equal(result.upsert,false);
+  assert.equal(result.transport,'standard');
+  assert.equal(result.events[0].percentage,null);
+  assert.equal(result.events.at(-1).percentage,100);
+  assert.deepEqual(errors,[]);
+ }finally{await page.close();}
+});
