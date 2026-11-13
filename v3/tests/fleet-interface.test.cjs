@@ -404,3 +404,29 @@ test('mobile V4 does not alter desktop navigation and dashboard filter placement
  assert.deepEqual(errors,[]);
  await page.close();
 });
+
+test('responsive fleet dashboard and documents fit seven target viewport widths',async()=>{
+ for(const width of [320,360,390,430,768,1366,1920]){
+  const {page,errors}=await open({viewport:{width,height:844}});
+  try{
+   await page.waitForSelector('#fleet-kpis .fleet-kpi:nth-child(5)');
+   const check=async(label)=>{
+    const dims=await page.evaluate(()=>({
+     viewport:innerWidth,
+     scroll:document.documentElement.scrollWidth
+    }));
+    assert.ok(dims.scroll-dims.viewport<=3,
+      width+'px '+label+' overflows horizontally by '+(dims.scroll-dims.viewport)+'px');
+   };
+   await check('dashboard');
+   if(width<=760){
+    await page.locator('#xrm-mobile-more').click();
+    await page.locator('.xrm-mobile-more-sheet [data-mobile-view="documents"]').click();
+   }else{
+    await page.locator('.fleet-main-nav [data-view="documents"]').click();
+   }
+   await check('documents');
+   assert.deepEqual(errors,[],'no JavaScript errors at '+width+'px');
+  }finally{await page.close()}
+ }
+});
