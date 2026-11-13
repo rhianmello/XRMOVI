@@ -85,7 +85,13 @@ footer{padding:20px;text-align:center;color:#849eae;font-size:11px}
    <section class="panel" style="margin-top:17px"><div class="panel-head"><h2>Últimos cadastros</h2><button class="btn ghost" data-goto="customers">Ver clientes</button></div><div class="table-wrap"><table><thead><tr><th>Cliente / empresa</th><th>Plano</th><th>Situação</th><th>Entrada</th><th>Autorização</th></tr></thead><tbody id="recent-customers"></tbody></table></div></section>
    <div class="notice">Os indicadores mostram somente contas classificadas explicitamente como <strong>Cliente externo</strong> e pagamentos confirmados dessas contas. Contas pendentes de classificação não entram como vendas; todo pagamento permanece preservado no histórico do banco.</div>
   </div>
-  <section id="view-customers" class="panel tab-view" hidden><div class="panel-head"><h2>Contas cadastradas e classificação</h2><input class="search" id="customer-search" placeholder="Buscar cliente ou empresa…" type="search"></div><div class="notice" style="margin:0 18px 12px">A autorização manual libera a operação por prazo definido, mas <strong>não confirma pagamento</strong>. A classificação externa/interna/homologação exige confirmação e justificativa auditada; <strong>não altera acesso, pagamento ou assinatura</strong>. Contas sem classificação não entram nos KPIs comerciais.</div><div class="table-wrap"><table><thead><tr><th>Cliente / empresas</th><th>Plano</th><th>Assinatura</th><th>Veículos</th><th>Acesso</th><th>Entrada</th><th>Ações</th></tr></thead><tbody id="customers-body"></tbody></table></div></section>
+  <section id="view-customers" class="panel tab-view" hidden><div class="panel-head"><h2>Contas cadastradas e classificação</h2><input class="search" id="customer-search" placeholder="Buscar cliente ou empresa…" type="search"></div><div class="notice" style="margin:0 18px 12px">A autorização manual libera a operação por prazo definido, mas <strong>não confirma pagamento</strong>. A classificação externa/interna/homologação exige confirmação e justificativa auditada; <strong>não altera acesso, pagamento ou assinatura</strong>. Contas sem classificação não entram nos KPIs comerciais.</div><div class="table-wrap"><table><thead><tr><th>Cliente / empresas</th><th>Plano</th><th>Assinatura</th><th>Veículos</th><th>Acesso</th><th>Entrada</th><th>Ações</th></tr></thead><tbody id="customers-body"></tbody></table></div>
+    <div style="padding:16px 18px;border-top:1px solid rgba(142,185,201,.18)">
+     <div class="panel-head" style="padding:0 0 12px"><h3>Histórico de classificações</h3><small>Até 100 alterações recentes; somente administradores</small></div>
+     <p class="notice" style="margin:0 0 10px">Cada mudança registra quem classificou, quando, o valor anterior, o novo e a justificativa. A classificação não modifica pagamentos nem acesso à frota.</p>
+     <input class="search" id="commercial-history-search" type="search" placeholder="Pesquisar conta, responsável ou justificativa…" aria-label="Pesquisar histórico de classificação" style="margin:0 0 12px;width:min(100%,480px)">
+     <div class="table-wrap"><table><thead><tr><th>Data e hora</th><th>Conta</th><th>Anterior</th><th>Novo</th><th>Responsável</th><th>Justificativa</th></tr></thead><tbody id="commercial-history-body"></tbody></table></div>
+    </div></section>
   <section id="view-signups" class="panel tab-view" hidden><div class="panel-head"><h2>Todos os cadastros</h2><input class="search" id="signup-search" placeholder="Buscar e-mail…" type="search"></div><div class="notice" style="margin:0 18px 12px">Inclui usuários que ainda não escolheram plano ou não possuem empresa. Dados disponíveis somente ao administrador. Não são enviados e-mails automaticamente; campanhas futuras deverão respeitar consentimento e opção de descadastro.</div><div class="table-wrap"><table><thead><tr><th>E-mail</th><th>Cadastro</th><th>E-mail confirmado</th><th>Já entrou</th><th>Situação</th></tr></thead><tbody id="signups-body"></tbody></table></div></section><section id="view-messages" class="panel tab-view" hidden><div class="panel-head"><h2>Caixa de mensagens</h2><small>Conversa privada com o titular de cada conta</small></div><div class="inbox"><div class="contacts" id="contacts"></div><div class="conversation"><div class="conversation-top" id="thread-title">Selecione um cliente</div><div class="messages" id="thread-messages"><p class="empty">Escolha uma conta para conversar.</p></div><form class="compose" id="message-form"><textarea id="message-body" placeholder="Digite sua mensagem ao cliente…" maxlength="3000" required></textarea><button class="btn primary" type="submit">Enviar</button></form></div></div></section>
   <section id="view-payments" class="panel tab-view" hidden><div class="panel-head"><h2>Recebimentos confirmados</h2><small>Mostra externos; opção acima permite auditar internos e pendentes</small></div><div class="table-wrap"><table><thead><tr><th>Data</th><th>Conta</th><th>Classificação</th><th>Valor</th><th>Provedor</th></tr></thead><tbody id="payments-body"></tbody></table></div></section>
   <section id="view-requests" class="panel tab-view" hidden><div class="panel-head"><h2>Solicitações de plano</h2><small>Acompanhe os interessados</small></div><div class="table-wrap"><table><thead><tr><th>Data</th><th>Empresa</th><th>Plano solicitado</th><th>Estado</th></tr></thead><tbody id="requests-body"></tbody></table></div></section>
@@ -210,12 +216,30 @@ function render(){
   const line=node('div');line.style.cssText='display:flex;justify-content:space-between;align-items:center;gap:12px';line.append(node('span',label),node('span',value,'pill '+tone));portfolio.append(line)
  }
  const recent=el('recent-customers');recent.replaceChildren();commercialAccounts().slice(0,7).forEach(c=>recent.append(rowCustomer(c)));if(!recent.children.length)emptyRows(recent,5,'Ainda não há clientes.');
- renderCustomers();renderSignups();renderPayments();renderRequests();renderContacts();
+ renderCustomers();renderCommercialHistory();renderSignups();renderPayments();renderRequests();renderContacts();
 }
 function renderCustomers(){
  const root=el('customers-body');root.replaceChildren();const q=el('customer-search').value.toLocaleLowerCase('pt-BR');
  const list=commercialAccounts().filter(c=>(c.email+' '+(c.companies||[]).map(x=>x.name).join(' ')).toLocaleLowerCase('pt-BR').includes(q));
  for(const c of list)root.append(rowCustomer(c,true));if(!list.length)emptyRows(root,7,'Nenhum cliente encontrado.')
+}
+function renderCommercialHistory(){
+ const root=el('commercial-history-body');root.replaceChildren();
+ const q=el('commercial-history-search').value.trim().toLocaleLowerCase('pt-BR');
+ const history=Array.isArray(info.commercialHistory)?info.commercialHistory:[];
+ const matching=history.filter(entry=>[entry.account_email,entry.actor_email,entry.reason,classes[entry.classification],classes[entry.previous_classification]].some(v=>String(v||'').toLocaleLowerCase('pt-BR').includes(q)));
+ for(const entry of matching){
+  const tr=node('tr');
+  const time=entry.changed_at?new Date(entry.changed_at):null;
+  cell(tr,time&&Number.isFinite(time.getTime())?time.toLocaleString('pt-BR'):'—');
+  cell(tr,entry.account_email||'—');
+  cell(tr,classes[entry.previous_classification]||entry.previous_classification||'—');
+  cell(tr,classes[entry.classification]||entry.classification||'—');
+  cell(tr,entry.actor_email||'—');
+  cell(tr,entry.reason||'—');
+  root.append(tr);
+ }
+ if(!root.children.length)emptyRows(root,6,history.length?'Nenhuma alteração corresponde à pesquisa.':'Nenhuma alteração de classificação registrada até agora.');
 }
 function renderSignups(){
  const root=el('signups-body');root.replaceChildren();
@@ -314,7 +338,7 @@ async function loadThread(){
 }
 async function refresh(){
  const button=el('refresh');button.disabled=true;
- try{const [overview,grants,subscriptions,allSignups,labels,receipts]=await Promise.all([rpc('commercial_admin_overview'),rpc('admin_manual_access_list'),rpc('admin_recurring_cancellations'),rpc('admin_auth_signups'),rpc('admin_commercial_labels'),rpc('admin_commercial_receipts')]);info=overview;info.payments=Array.isArray(receipts)?receipts:[];signups=Array.isArray(allSignups)?allSignups:[];const grantsByAccount=new Map((grants||[]).map(g=>[g.account_id,g]));const subByAccount=new Map((subscriptions||[]).map(x=>[x.account_id,x]));const classesByAccount=new Map((labels||[]).map(x=>[x.account_id,x]));for(const account of info.accounts||[]){account.manual_access=grantsByAccount.get(account.id)||null;account.recurring=subByAccount.get(account.id)||null;account.commercial_classification=classesByAccount.get(account.id)?.classification||'unclassified';}render();show('content');if(tab==='messages'&&threadId)await loadThread()}
+ try{const [overview,grants,subscriptions,allSignups,labels,receipts,history]=await Promise.all([rpc('commercial_admin_overview'),rpc('admin_manual_access_list'),rpc('admin_recurring_cancellations'),rpc('admin_auth_signups'),rpc('admin_commercial_labels'),rpc('admin_commercial_receipts'),rpc('admin_commercial_label_history',{p_account:null,p_limit:100})]);info=overview;info.payments=Array.isArray(receipts)?receipts:[];info.commercialHistory=Array.isArray(history)?history:[];signups=Array.isArray(allSignups)?allSignups:[];const grantsByAccount=new Map((grants||[]).map(g=>[g.account_id,g]));const subByAccount=new Map((subscriptions||[]).map(x=>[x.account_id,x]));const classesByAccount=new Map((labels||[]).map(x=>[x.account_id,x]));for(const account of info.accounts||[]){account.manual_access=grantsByAccount.get(account.id)||null;account.recurring=subByAccount.get(account.id)||null;account.commercial_classification=classesByAccount.get(account.id)?.classification||'unclassified';}render();show('content');if(tab==='messages'&&threadId)await loadThread()}
  catch(e){status('Erro ao consultar o BI: '+e.message,'error');if(el('content').hidden){show('unauthorized');el('denied-text').textContent=e.message}}
  finally{button.disabled=false}
 }
@@ -360,6 +384,7 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>openTab(b.datas
 document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>openTab(b.dataset.goto));
 el('commercial-filter-toggle').onclick=()=>{showTestAccounts=!showTestAccounts;render()};
 el('customer-search').oninput=renderCustomers;
+el('commercial-history-search').oninput=renderCommercialHistory;
 el('signup-search').oninput=renderSignups;
 el('message-form').onsubmit=async event=>{
  event.preventDefault();const a=(info.accounts||[]).find(x=>x.id===threadId);
