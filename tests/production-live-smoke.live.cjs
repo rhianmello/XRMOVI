@@ -29,10 +29,13 @@ async function checkDevice(browserType,options,device){
   const response=await page.goto(BASE+'/',{waitUntil:'domcontentloaded',timeout:35000});
   assert.ok(response&&response.ok(),`${device}: homepage request failed`);
   assert.match(await page.title(),/XRMOVI/i);
-  await page.locator('[data-xrm-install]').first().waitFor({state:'visible',timeout:15000});
   const horizontal=await page.evaluate(()=>({w:document.documentElement.scrollWidth,v:window.innerWidth}));
   assert.ok(horizontal.w<=horizontal.v+3,`${device}: horizontal overflow ${horizontal.w} > ${horizontal.v}`);
-  await page.locator('[data-xrm-install]').first().click({timeout:12000});
+  const mobileMenu=page.locator('details.xrm-mobile-nav');
+  if(await mobileMenu.isVisible())await mobileMenu.locator('summary').click();
+  const install=page.locator('[data-xrm-install]:visible').first();
+  await install.waitFor({state:'visible',timeout:15000});
+  await install.click({timeout:12000});
   const instructions=page.locator('#xrm-install-instructions');
   await instructions.waitFor({state:'visible',timeout:7000});
   assert.match(await instructions.innerText(),device==='iOS'?/iPhone|iPad/:/Android/i);
