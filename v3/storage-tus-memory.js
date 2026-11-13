@@ -51,3 +51,24 @@ export const memoryTusUrlStorage = Object.freeze({
   }
 });
 export function clearMemoryTusUploads() { entries.clear(); }
+
+
+// One-time cleanup of ONLY the old XRMOVI tus-js-client v4 fingerprint keys.
+// Earlier versions wrote private resume URLs to localStorage as
+// tus::xrmovi-v1:<user>:<bucket>:<path>:...::<id>.
+// Does not touch auth data, other apps' uploads or remote Storage objects.
+export function purgeLegacyTusBrowserKeys(storage = null) {
+  let removed = 0;
+  try {
+    const target = storage || (typeof window !== 'undefined' ? window.localStorage : null);
+    if (!target) return 0;
+    const matches = [];
+    for (let i = 0; i < target.length; i++) {
+      const key = target.key(i);
+      if (typeof key === 'string' && key.startsWith('tus::xrmovi-v1:')) matches.push(key);
+    }
+    for (const key of matches) { target.removeItem(key); removed++; }
+  } catch { /* Browser storage may be disabled; uploads remain memory-only. */ }
+  return removed;
+}
+purgeLegacyTusBrowserKeys();
