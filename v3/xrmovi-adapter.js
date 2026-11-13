@@ -1020,6 +1020,16 @@ async function uploadXrmRecordAttachment(cid,kind,recordId,file,onStatus=()=>{},
    cid,kind,rid:recordId,p_path:retry.path,p_name:file.name,
    p_type:prepared.type,p_size:prepared.size
   });
+  // Metrics are best-effort and must never roll back a successfully registered
+  // customer document. Server independently verifies stored size, ownership
+  // and company membership; the original size is explicitly client-reported.
+  try {
+   await rpc('storage_metric_record',{
+    cid,p_path:retry.path,p_original_bytes:stats.originalBytes
+   });
+  } catch(error) {
+   onStatus('metric-unavailable',stats);
+  }
   recoverableUploads.delete(key);
   confirmedAttachmentHashes.add(key);
   if(confirmedAttachmentHashes.size>100)confirmedAttachmentHashes.delete(confirmedAttachmentHashes.values().next().value);
