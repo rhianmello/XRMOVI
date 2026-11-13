@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>XRMOVI — Homologação real de armazenamento</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color-scheme:dark;background:#0c1928;color:#edf5fc}
+*{box-sizing:border-box}
+body{margin:0 auto;max-width:1000px;padding:22px 18px 60px}
+a{color:#87d3ff}
+h1{font-size:1.65rem;margin:.45rem 0}
+h2{font-size:1.15rem;margin:0 0 10px}
+p,li{line-height:1.5}
+header{margin-bottom:22px}
+main{display:grid;gap:15px}
+.panel{background:#14283c;border:1px solid #2b4c69;border-radius:14px;padding:18px}
+.muted{color:#bad0de;font-size:.92rem}
+.note{padding:9px 11px;background:#102034;border-left:3px solid #7fbded}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+button,input[type=file]{font:inherit}
+button{border:1px solid #3a87b1;color:white;background:#176084;padding:11px 14px;border-radius:9px;cursor:pointer}
+button:disabled{opacity:.52;cursor:default}
+button.secondary{background:#223a50}
+button.warn{border-color:#8f7164;background:#513b38}
+label{display:block;margin:9px 0}
+input[type=file]{display:block;max-width:100%;margin-top:8px}
+progress{width:100%;height:15px;margin-top:12px}
+#hml-status{min-height:24px;font-weight:600}
+#hml-results{display:grid;gap:12px}
+.hml-result{border:1px solid #466078;border-radius:11px;padding:12px;background:#0e2032}
+.hml-result-row{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid #304455;padding:7px 0;font-size:.89rem}
+.hml-result-row:last-child{border:0}
+.hml-result-row span{overflow-wrap:anywhere;text-align:right;color:#d4e2ef;max-width:62%}
+@media(max-width:560px){body{padding:12px 9px}h1{font-size:1.3rem}.panel{padding:12px}.hml-result-row{display:block}.hml-result-row span{display:block;text-align:left;max-width:100%;padding-top:3px}.controls>*{width:100%}}
+</style>
+</head>
+<body>
+<header>
+<a href="./storage.html">← Armazenamento ADM</a>
+<h1>Homologação controlada de Storage</h1>
+<p class="muted">Área exclusiva do administrador da plataforma. Todos os testes usam o bucket privado <code>xrmovi-hml-storage</code>, isolado dos arquivos dos clientes.</p>
+</header>
+<main>
+<section class="panel">
+<h2>Condições de segurança</h2>
+<p>Ao abrir esta página, <strong>nenhum arquivo é enviado</strong>. Os testes exigem login administrativo e um clique específico. São realizados com documentos fictícios ou arquivos de homologação autorizados.</p>
+<p class="note">O teste confirma resultados do Storage real somente depois de você executá-lo. Nenhuma compra, assinatura, cadastro de empresa ou veículo é alterado. Não selecione PDFs de clientes.</p>
+<p id="hml-status" role="status" aria-live="polite">Validando sessão…</p>
+</section>
+<section class="panel" id="hml-controls" hidden>
+<h2>Testes de transferência</h2>
+<div class="controls">
+<button id="hml-small" type="button" disabled>1. Testar PDF pequeno</button>
+<button id="hml-large" type="button" disabled>2. Testar PDF de 7 MiB (TUS)</button>
+<button id="hml-stop" type="button" class="warn" disabled>Interromper transferência</button>
+<button id="hml-resume" type="button" class="secondary" disabled>Retomar na mesma aba</button>
+</div>
+<progress id="hml-progress" max="100" hidden aria-label="Progresso verdadeiro do upload de homologação"></progress>
+<p class="muted">O PDF pequeno utiliza upload padrão. O maior tenta TUS, exibe bytes enviados e permite interrupção e retomada. Se o TUS não carregar, o resultado será classificado como inconclusivo, mesmo que o envio padrão funcione.</p>
+<hr>
+<h2>Arquivo opcional de homologação</h2>
+<p class="muted">Use exclusivamente documento fictício, PDF protegido de teste ou PDF assinado com certificado de teste. A integridade SHA-256 será comparada antes/depois; isso <strong>não valida criptograficamente a assinatura PAdES</strong>.</p>
+<label>Selecionar PDF (até 10 MiB)<input type="file" id="hml-file" accept="application/pdf,.pdf"></label>
+<label><input type="checkbox" id="hml-confirm"> Confirmo que este PDF é autorizado para homologação e não contém dados de clientes.</label>
+<div class="controls"><button type="button" id="hml-own" class="secondary" disabled>Validar PDF selecionado</button></div>
+</section>
+<section class="panel">
+<h2>Evidências e limpeza controlada</h2>
+<p class="muted">Após cada upload, o sistema consulta o registro PostgreSQL, baixa o objeto, compara SHA-256 e verifica se um cliente anônimo tem acesso negado. Para documentos pequenos, testa também o bloqueio de duplicidade com <code>upsert:false</code>.</p>
+<div id="hml-results" aria-live="polite"></div>
+<div class="controls" style="margin-top:14px">
+<button type="button" id="hml-export" disabled>Baixar evidência JSON</button>
+<button type="button" id="hml-clean" class="warn" disabled>Limpar somente arquivos deste teste</button>
+</div>
+<p class="muted">A limpeza exige confirmação e alcança apenas arquivos de teste gerados nesta aba e pertencentes ao usuário autenticado. Se a aba for fechada, as URLs de retomada desaparecem da memória. Não há limpeza automática de arquivos antigos nem acesso aos documentos dos clientes.</p>
+</section>
+<section class="panel">
+<h2>Isolamento entre duas contas</h2>
+<p class="muted">O teste automático cobre uma conta administrativa e uma requisição anônima. Para verificar uma segunda conta autenticada, use <a href="./storage-hml-probe.html">o verificador separado</a> em outro navegador, com uma segunda conta de teste sob seu controle. Somente esse teste poderá confirmar a negativa para outro usuário autenticado.</p>
+<p class="muted">PDF assinado PAdES, Safari em iPhone e Chrome em Android físicos exigem ferramentas/dispositivos de homologação. Os resultados desses ensaios não serão marcados como aprovados automaticamente.</p>
+</section>
+</main>
+<script type="module" src="./storage-hml.js?v=20261113-7b-1"></script>
+</body>
+</html>
