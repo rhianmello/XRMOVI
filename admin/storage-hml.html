@@ -68,6 +68,9 @@ progress{width:100%;height:15px;margin-top:12px}
 <section class="panel">
 <h2>Evidências e limpeza controlada</h2>
 <p class="muted">Após cada upload, o sistema consulta o registro PostgreSQL, baixa o objeto, compara SHA-256 e verifica se um cliente anônimo tem acesso negado. Para documentos pequenos, testa também o bloqueio de duplicidade com <code>upsert:false</code>.</p>
+<label>Último caminho de teste (para o ensaio com a segunda conta)
+<input id="hml-test-path" type="text" readonly autocomplete="off" spellcheck="false" style="width:100%;padding:10px;background:#0b1e2d;border:1px solid #45617a;color:#eef;font:inherit" placeholder="Aparecerá após executar um teste">
+</label>
 <div id="hml-results" aria-live="polite"></div>
 <div class="controls" style="margin-top:14px">
 <button type="button" id="hml-export" disabled>Baixar evidência JSON</button>
