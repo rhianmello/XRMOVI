@@ -22,8 +22,8 @@ export function renderConversionsPanel(root, data, ga4 = null) {
   const kpis=[
     ['Contas criadas',n(data.accounts_created),'Não equivale a assinantes'],
     ['Tentativas de checkout',n(data.checkout_attempts),'Inclui cartão e Pix ainda pendentes'],
-    ['Clientes que pagaram',n(data.paying_customers),'Contas distintas com pagamento aprovado'],
-    ['Valor recebido',money(data.confirmed_revenue),'Somente pagamentos confirmados']
+    ['Contas com pagamento aprovado',n(data.paying_customers),'Inclui operações de homologação; não equivale a vendas externas'],
+    ['Recebimentos registrados',money(data.confirmed_revenue),'Inclui operações de teste, mesmo quando o pagamento foi real']
   ];
   for(const [label,value,note] of kpis){
     const metric=el('div','','conversion-metric');
