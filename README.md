@@ -5,13 +5,13 @@ Migração de código realizada em 11/11/2026 a partir de [rhianmello/nospassa-f
 ## Situação da transferência
 - 198 arquivos de código, configuração pública, testes e recursos textuais copiados.
 - Arquivo `README.md` substituído por este guia.
-- Arquivo `CNAME` antigo **não** copiado para preservar a publicação em `frota.nospassa.com.br`.
-- Vídeo binário `assets/videos/XRMOVI_comercial_web.mp4` (4,3 MB) **não** copiado devido à limitação do conector e deve ser enviado antes da substituição definitiva do site.
+- Arquivo `CNAME` presente aponta para `xrmovi.com.br`.
+- Vídeo comercial `assets/videos/XRMOVI_comercial_web.mp4` está no repositório. A reprodução em produção depende de teste no navegador.
 - Supabase permanece no mesmo projeto: `ztqtcbzjesrkuaijmylm`. Não migrar dados nem excluir usuários.
 - Projeto `bi-epc15` não faz parte deste repositório ou migração e não deve ser alterado.
 
 ## Publicação em xrmovi.com.br
-1. Adicionar o arquivo de vídeo comercial no caminho original e verificar visualização, áudio e poster.
+1. Verificar visualização, áudio e poster do vídeo comercial já versionado.
 2. Conferir URL Configuration / Redirect URLs de Authentication no Supabase, pagamentos e funções Supabase.
 3. Conferir URLs absolutas antigas em SEO, analytics, autenticação e URLs de retorno do Mercado Pago; atualizar **somente no novo repositório**.
 4. Configurar GitHub Pages deste repositório com a branch `main`, pasta `/ (root)` e domínio personalizado `xrmovi.com.br`, somente após revisão.
