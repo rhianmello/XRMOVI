@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>XRMOVI — Sonda de isolamento de Storage</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#0c1928;color:#e7f2fc;color-scheme:dark}
+body{max-width:740px;margin:0 auto;padding:24px 14px}a{color:#80d6ff}
+section{background:#14273a;border:1px solid #34516c;border-radius:13px;padding:17px;margin:18px 0}
+h1{font-size:1.5rem}label{display:block;margin:12px 0}
+input{width:100%;font:inherit;padding:10px;border:1px solid #5b839e;border-radius:7px;background:#0d1e2c;color:#fff}
+button{font:inherit;padding:11px 15px;border-radius:8px;background:#156c97;border:1px solid #4a9bcb;color:white;cursor:pointer}
+button:disabled{opacity:.55;cursor:default}
+p{line-height:1.5}
+</style></head><body>
+<a href="./storage-hml.html">← Homologação administrativa</a>
+<h1>Verificar isolamento entre contas</h1>
+<section>
+<p>Use uma <strong>segunda conta de homologação</strong> em uma janela separada. Esta página verifica exclusivamente se ela consegue <strong>ler</strong> um arquivo fictício no bucket privado de testes. Não faz upload, não apaga, não visualiza e não grava arquivos.</p>
+<label>Caminho do PDF fictício fornecido pela primeira conta<input id="probe-path" type="text" autocomplete="off" spellcheck="false" placeholder="UUID/hml/UUID/hml-UUID.pdf"></label>
+<button id="probe-check" disabled>Verificar acesso</button>
+<p id="probe-status" role="status" aria-live="polite">Verificando autenticação…</p>
+<p>O resultado esperado para a segunda conta é <strong>acesso negado</strong>. Se ocorrer sucesso, interrompa a homologação e revise as políticas de Storage.</p>
+</section>
+<script type="module">
+import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.58.0';
+const output=document.getElementById('probe-status'),button=document.getElementById('probe-check');
+const PROJECT='ztqtcbzjesrkuaijmylm', BUCKET='hml-xrmovi-storage';
+let client,user;
+(async()=>{
+ try{
+  const response=await fetch('../v3/config.json',{cache:'no-store'});
+  if(!response.ok)throw Error('Configuração indisponível.');
+  const cfg=await response.json();
+  if(new URL(cfg.supabaseUrl).hostname!==PROJECT+'.supabase.co')throw Error('Projeto incorreto.');
+  client=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
+  const {data,error}=await client.auth.getUser();
+  if(error||!data?.user?.id)throw Error('Entre na sua conta de homologação antes de testar.');
+  user=data.user;button.disabled=false;
+  output.textContent='Conta autenticada. Insira o caminho do objeto de teste.';
+ }catch(error){output.textContent='Teste bloqueado: '+(error.message||'Não autorizado.');}
+})();
+button.onclick=async()=>{
+ const path=document.getElementById('probe-path').value.trim();
+ if(!/^[0-9a-f-]{36}\/hml\/[0-9a-f-]{36}\/hml-[0-9a-f-]{36}\.pdf$/.test(path)){
+  output.textContent='Caminho de homologação inválido.';return;
+ }
+ if(path.startsWith(user.id+'/')){output.textContent='Esta é a conta proprietária do teste; use outra conta autenticada.';return;}
+ button.disabled=true;output.textContent='Consultando somente o bucket privado de homologação…';
+ try{
+  const {error,data}=await client.storage.from(BUCKET).download(path);
+  const code=Number(error?.statusCode??error?.status??0);
+  if(error&&[401,403].includes(code)){
+    output.textContent='ACESSO NEGADO ('+code+'), conforme esperado: a conta secundária não recebeu os bytes.';
+  }else if(error&&code===404){
+    output.textContent='NEGATIVA OU OBJETO AUSENTE (404). Confirme no primeiro navegador que o arquivo ainda existe antes de aprovar o isolamento.';
+  }else if(error){
+    output.textContent='INCONCLUSIVO ('+(code||'sem código HTTP')+'): pode ser falha de rede. Não classifique como isolamento comprovado.';
+  }else {
+    output.textContent='FALHA DE ISOLAMENTO: a segunda conta conseguiu baixar o objeto. Não prossiga.';
+  }
+ }catch(_){output.textContent='Requisição recusada ou falhou. Confira o código HTTP antes de classificar como isolamento aprovado.';}
+ finally{button.disabled=false;}
+};
+</script></body></html>
