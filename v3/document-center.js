@@ -1,4 +1,5 @@
-import { uploadSummary } from './upload-optimizer.js?v=20261113-storage-v1';
+import { uploadSummary } from './upload-optimizer.js?v=20261113-4b-1';
+import { recordStorageMetric, storageSessionSummary } from './storage-metrics.js?v=20261113-4b-1';
 // XRMOVI — gestão privada de documentos por veículo e motorista.
 // O bucket continua privado; links assinados expiram em 60 segundos.
 export function createDocumentCenter({
@@ -95,7 +96,7 @@ export function createDocumentCenter({
    '<p class="xrm-doc-summary" data-summary></p><div data-record-list></div>'+
    '<div data-upload class="xrm-doc-upload" hidden><input data-file type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" aria-label="Selecionar documento (PDF ou imagem)">'+
    '<button data-upload-button type="button" class="fleet-button primary">Adicionar documento</button></div>'+
-   '<p class="xrm-doc-feedback" role="status" data-feedback></p><progress data-upload-progress max="100" hidden aria-label="Progresso do envio de documento" style="width:100%;height:7px;margin:8px 0 0"></progress><button type="button" data-cancel-upload hidden class="fleet-button" style="margin-top:8px">Interromper envio</button></section>';
+   '<p class="xrm-doc-feedback" role="status" data-feedback></p><p data-session-metrics class="xrm-doc-summary" aria-live="polite"></p><progress data-upload-progress max="100" hidden aria-label="Progresso do envio de documento" style="width:100%;height:7px;margin:8px 0 0"></progress><button type="button" data-cancel-upload hidden class="fleet-button" style="margin-top:8px">Interromper envio</button></section>';
   document.body.append(backdrop);
   const query=(selector)=>backdrop.querySelector(selector);
   const dialog=backdrop.querySelector('[role="dialog"]');
@@ -355,6 +356,7 @@ export function createDocumentCenter({
     makeTable(docs,query('[data-record-list]'));
     const form=query('[data-upload]');form.hidden=!canWrite();
     notice('');
+    query('[data-session-metrics]').textContent=storageSessionSummary(cid);
     const uploadButton=query('[data-upload-button]');
     uploadButton.onclick=async()=>{
       if(busy||!canWrite())return;
@@ -393,13 +395,17 @@ export function createDocumentCenter({
       };
       try{
         const stats=await upload(cid,kind,record.id,file,report,controller.signal);
+        recordStorageMetric(cid,'complete',stats);
         stop.hidden=true;progress.value=100;
         query('[data-file]').value='';
         await refresh();
         renderCentral();renderModal();
         notice('Documento anexado. '+uploadSummary(stats));
+        query('[data-session-metrics]').textContent=storageSessionSummary(cid);
         notify('Documento anexado ao cadastro. '+uploadSummary(stats));
       }catch(error){
+        recordStorageMetric(cid,error?.name==='AbortError'?'interrupted':'failed');
+        query('[data-session-metrics]').textContent=storageSessionSummary(cid);
         progress.hidden=true;stop.hidden=true;
         notice((error?.name==='AbortError'?'Envio interrompido. ':'Falha ao anexar: ')+
           (error?.message||'Tente novamente.')+' Você pode selecionar o mesmo arquivo e tentar retomar.');
