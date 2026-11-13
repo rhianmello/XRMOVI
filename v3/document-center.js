@@ -393,8 +393,10 @@ export function createDocumentCenter({
        }[phase];
        if(message)notice(message);
       };
+      let storedAndRegistered=false;
       try{
         const stats=await upload(cid,kind,record.id,file,report,controller.signal);
+        storedAndRegistered=true;
         recordStorageMetric(cid,'complete',stats);
         stop.hidden=true;progress.value=100;
         query('[data-file]').value='';
@@ -404,11 +406,15 @@ export function createDocumentCenter({
         query('[data-session-metrics]').textContent=storageSessionSummary(cid);
         notify('Documento anexado ao cadastro. '+uploadSummary(stats));
       }catch(error){
-        recordStorageMetric(cid,error?.name==='AbortError'?'interrupted':'failed');
+        if(!storedAndRegistered) recordStorageMetric(cid,error?.name==='AbortError'?'interrupted':'failed');
         query('[data-session-metrics]').textContent=storageSessionSummary(cid);
         progress.hidden=true;stop.hidden=true;
-        notice((error?.name==='AbortError'?'Envio interrompido. ':'Falha ao anexar: ')+
-          (error?.message||'Tente novamente.')+' Você pode selecionar o mesmo arquivo e tentar retomar.');
+        if(storedAndRegistered){
+          notice('Documento salvo, mas não foi possível atualizar a listagem. Atualize a página antes de tentar outro envio.');
+        }else{
+          notice((error?.name==='AbortError'?'Envio interrompido. ':'Falha ao anexar: ')+
+            (error?.message||'Tente novamente.')+' Você pode selecionar o mesmo arquivo e tentar retomar.');
+        }
       }finally{
         busy=false;stop.hidden=true;stop.disabled=false;
         uploadButton.disabled=false;query('[data-file]').disabled=false;query('[data-close]').disabled=false;
