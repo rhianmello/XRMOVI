@@ -361,9 +361,8 @@ export function createDocumentCenter({
     historyMetrics.textContent='Histórico de uploads: consultando dados registrados…';
     const activeRecordId=record.id;
     // Read-only aggregate scoped by the membership check in the RPC.
-    void client().rpc('xrmovi_company_storage_history',{cid}).then(({data,error})=>{
+    void Promise.resolve().then(()=>rpc('company_storage_history',{cid})).then(data=>{
       if(backdrop.hidden||getCompany()?.id!==cid||modalRecord?.id!==activeRecordId)return;
-      if(error){historyMetrics.textContent='Histórico indisponível (os documentos continuam acessíveis).';return;}
       const f=n=>formatStorageBytes(Number(n)||0);
       historyMetrics.textContent='Histórico registrado: '+Number(data?.completed||0)+
        ' upload(s) · '+f(data?.verified_stored_bytes)+' armazenados verificados · '+
