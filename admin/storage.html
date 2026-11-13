@@ -36,6 +36,16 @@ table{width:100%;border-collapse:collapse;min-width:700px}th,td{text-align:left;
 <div class="table-wrap"><table><thead><tr><th>Dia</th><th>Categoria</th><th>Uploads</th><th>Armazenado confirmado</th><th>Original informado</th><th>Economia informada</th></tr></thead><tbody id="periods"></tbody></table></div>
 </section>
 <section class="panel">
+<h2>Ocorrências informadas pelo navegador</h2>
+<p class="muted">Falhas e interrupções são sinais enviados pelo navegador, sujeitos a limite por usuário. Não comprovam falha do Storage nem representam todas as tentativas reais.</p>
+<div class="table-wrap"><table><thead><tr><th>Dia</th><th>Categoria</th><th>Falhas informadas</th><th>Interrupções informadas</th></tr></thead><tbody id="attempts"></tbody></table></div>
+</section>
+<section class="panel">
+<h2>Arquivos existentes por mês de criação</h2>
+<p class="muted">É um retrato dos arquivos ainda armazenados, agrupados por mês de criação. Não equivale ao crescimento líquido histórico, pois arquivos excluídos não aparecem aqui.</p>
+<div class="table-wrap"><table><thead><tr><th>Mês de criação</th><th>Categoria de armazenamento</th><th>Arquivos existentes</th><th>Tamanho atual</th></tr></thead><tbody id="growth"></tbody></table></div>
+</section>
+<section class="panel">
 <h2>Candidatos a conferência humana</h2>
 <p class="muted">Um arquivo sem referência direta não é necessariamente órfão. A identificação exibida é apenas o ID técnico interno, sem nome nem caminho do arquivo. O registro de revisão <strong>não exclui nem altera</strong> o objeto.</p>
 <div class="table-wrap"><table><thead><tr><th>Objeto (ID técnico)</th><th>Bucket</th><th>Tamanho</th><th>Criado</th><th>Revisão</th><th>Observação</th><th>Ação</th></tr></thead><tbody id="candidates"></tbody></table></div>
@@ -62,12 +72,15 @@ async function load(){
  try {
   const data=await rpc('admin_storage_overview');
   const summary=data.summary||{}, periods=Array.isArray(data.daily)?data.daily:[],
+        attempts=Array.isArray(data.attempts)?data.attempts:[],
+        growth=Array.isArray(data.growth_existing_objects)?data.growth_existing_objects:[],
         candidates=Array.isArray(data.candidates)?data.candidates:[];
   const cards=[
    ['Objetos no Storage',count(summary.object_count)],
    ['Armazenamento atual',size(Number(summary.stored_bytes||0))],
    ['Arquivos sem referência direta',count(candidates.length)],
-   ['Novos uploads registrados',count(periods.reduce((a,r)=>a+Number(r.completed||0),0))]
+   ['Novos uploads registrados',count(periods.reduce((a,r)=>a+Number(r.completed||0),0))],
+   ['Falhas/interrupções informadas',count(attempts.reduce((a,r)=>a+Number(r.failures_client_reported||0)+Number(r.interruptions_client_reported||0),0))]
   ];
   el('cards').replaceChildren();
   for(const [name,value] of cards){
@@ -83,6 +96,22 @@ async function load(){
    [p.day,p.category,count(p.completed),size(p.verified_stored_bytes),
     size(p.client_original_bytes),size(p.client_reported_savings_bytes)].forEach(v=>cell(tr,String(v||'—')));
    per.append(tr);
+  }
+  const attemptBody=el('attempts');attemptBody.replaceChildren();
+  if(!attempts.length)empty(attemptBody,4,'Nenhuma ocorrência informada desde a habilitação das métricas.');
+  for(const a of attempts){
+   const tr=document.createElement('tr');
+   [a.day,a.category,count(a.failures_client_reported),count(a.interruptions_client_reported)]
+    .forEach(v=>cell(tr,String(v||'—')));
+   attemptBody.append(tr);
+  }
+  const growthBody=el('growth');growthBody.replaceChildren();
+  if(!growth.length)empty(growthBody,4,'Nenhum objeto encontrado nos buckets do XRMOVI.');
+  for(const g of growth){
+   const tr=document.createElement('tr');
+   [g.month,g.bucket_id,count(g.existing_objects),size(Number(g.current_bytes||0))]
+    .forEach(v=>cell(tr,String(v||'—')));
+   growthBody.append(tr);
   }
   const tbody=el('candidates');tbody.replaceChildren();
   if(!candidates.length)empty(tbody,7,'Nenhum candidato identificado nesta consulta.');
