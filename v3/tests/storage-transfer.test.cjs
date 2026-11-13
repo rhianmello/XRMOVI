@@ -222,3 +222,29 @@ test('CDN import outage falls back only before any TUS POST, keeping object path
   assert.deepEqual(errors,[]);
  }finally{await page.close();}
 });
+
+
+test('session metrics never combine two companies and reflect measured byte savings only',async()=>{
+ const {page,errors}=await open();
+ try{
+  const result=await page.evaluate(async()=>{
+   const {recordStorageMetric,getStorageMetrics,storageSessionSummary}=await import('/v3/storage-metrics.js');
+   recordStorageMetric('company-A','complete',{originalBytes:1000,finalBytes:600});
+   recordStorageMetric('company-A','failed');
+   recordStorageMetric('company-A','interrupted');
+   recordStorageMetric('company-B','complete',{originalBytes:300,finalBytes:300});
+   // Invalid savings must not inflate a customer's totals.
+   recordStorageMetric('company-A','complete',{originalBytes:100,finalBytes:900});
+   return {a:getStorageMetrics('company-A'),b:getStorageMetrics('company-B'),
+    summary:storageSessionSummary('company-A')};
+  });
+  assert.equal(result.a.completed,1);
+  assert.equal(result.a.savedBytes,400);
+  assert.equal(result.a.failed,1);
+  assert.equal(result.a.interrupted,1);
+  assert.equal(result.b.completed,1);
+  assert.equal(result.b.savedBytes,0);
+  assert.match(result.summary,/Nesta sessão/);
+  assert.deepEqual(errors,[]);
+ }finally{await page.close();}
+});
