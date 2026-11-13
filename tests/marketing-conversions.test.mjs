@@ -41,8 +41,12 @@ test('confirmed sale counts originate from verified server records, not checkout
 
 test('only admin dashboard presents distinct paying customers and receipt revenue',()=>{
  assert.match(admin,/data-tab="conversions"/);
- assert.match(admin,/rpc\('marketing_admin_dashboard'\)/);
+ assert.match(admin,/rpc\('marketing_admin_dashboard_verified'\)/);
  assert.match(conversions,/data\.paying_customers/);
  assert.match(conversions,/data\.confirmed_revenue/);
+ assert.match(conversions,/data\?\.scope!=='classified_external_only'/);
+ assert.match(conversions,/data\.excluded_payments/);
+ assert.match(conversions,/data\.unclassified_accounts/);
+ assert.match(conversions,/data\.historical_revenue/);
  assert.match(conversions,/Liberações manuais, testes grátis e checkouts abertos não são vendas/);
 });
