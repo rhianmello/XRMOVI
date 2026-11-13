@@ -7,6 +7,7 @@ import { createCompanyBranding } from './company-branding.js?v=20261110-company-
 import { setupMileage } from './mileage.js?v=20261112-service-approval-1';
 import { setupVehicleExport } from './vehicle-export.js?v=20261106-vehicle-xlsx-1';
 import { createDocumentCenter } from './document-center.js?v=20261106-fine-attachments-1';
+import { optimizeUploadFile, fingerprintUpload } from './upload-optimizer.js?v=20261113-storage-v1';
 import { printFuelEvidenceReport } from './finance-receipts-report.js?v=20261105-liter-audit-2';
 import { analyzeFuelQuality, litersMissing } from './fuel-quality.js?v=20261105-liter-audit-1';
 import { setupTrafficFines } from './fines-module.js?v=20261106-fines-1';
@@ -961,14 +962,39 @@ function setMaintenanceMode(mode){maintenanceMode=mode==='expenses'?'expenses':'
 all('[data-maintenance-mode]').forEach(button=>button.onclick=()=>setMaintenanceMode(button.dataset.maintenanceMode));
 
 
-async function uploadXrmRecordAttachment(cid,kind,recordId,file){
+const confirmedAttachmentHashes=new Set(), pendingAttachmentHashes=new Set();
+async function uploadXrmRecordAttachment(cid,kind,recordId,file,onStatus=()=>{}){
  const formats={'application/pdf':'pdf','image/jpeg':'jpg','image/png':'png','image/webp':'webp'};
- const ext=formats[file.type];
- if(!ext||file.size>10485760||file.size<1||file.name.length>200)throw Error('Arquivo inválido. Use PDF ou imagem com até 10 MB.');
- const path=[cid,kind,recordId,crypto.randomUUID()+'.'+ext].join('/');
- const {error}=await sb.storage.from('xrmovi-record-attachments').upload(path,file,{contentType:file.type,upsert:false});
- if(error)throw error;
- await rpc('attachment_register',{cid,kind,rid:recordId,p_path:path,p_name:file.name,p_type:file.type,p_size:file.size});
+ if(!file?.name||file.name.length>200)throw Error('Nome de arquivo inválido (máximo de 200 caracteres).');
+ const {file:prepared,stats}=await optimizeUploadFile(file,{
+  purpose: 'document',maxBytes:10485760,
+  onPhase:phase=>onStatus(phase)
+ });
+ const ext=formats[prepared.type];
+ if(!ext)throw Error('Formato do arquivo incompatível.');
+ const fingerprint=await fingerprintUpload(prepared);
+ const key=[cid,kind,recordId,fingerprint].join(':');
+ if(confirmedAttachmentHashes.has(key)||pendingAttachmentHashes.has(key)){
+  throw Error('Este mesmo arquivo já foi anexado ao registro nesta sessão.');
+ }
+ pendingAttachmentHashes.add(key);
+ try{
+  const path=[cid,kind,recordId,crypto.randomUUID()+'.'+ext].join('/');
+  onStatus('uploading',stats);
+  const {error}=await sb.storage.from('xrmovi-record-attachments').upload(path,prepared,{
+   contentType:prepared.type,upsert:false
+  });
+  if(error)throw error;
+  onStatus('registering',stats);
+  await rpc('attachment_register',{
+   cid,kind,rid:recordId,p_path:path,p_name:file.name,
+   p_type:prepared.type,p_size:prepared.size
+  });
+  confirmedAttachmentHashes.add(key);
+  if(confirmedAttachmentHashes.size>100)confirmedAttachmentHashes.delete(confirmedAttachmentHashes.values().next().value);
+  onStatus('complete',stats);
+  return stats;
+ }finally{pendingAttachmentHashes.delete(key);}
 }
 async function showXrmRecordAttachments(cid,kind,id,container){
  if(!cid||!id||!container)return;
