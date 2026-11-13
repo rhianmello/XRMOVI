@@ -106,7 +106,7 @@ let showTestAccounts=false;
 const isTestAccount=a=>(a.companies||[]).some(company=>/^empresa\s+teste(?:\b|\s|\d)/i.test(String(company.name||'').trim()));
 const isOwnerAccount=a=>String(a.email||'').trim().toLowerCase()==='rhian.udm@gmail.com';
 function excludedTestEmails(){return new Set((info.accounts||[]).filter(isTestAccount).map(a=>String(a.email||'').trim().toLowerCase()))}
-function visiblePayments(){const excluded=excludedTestEmails();return (info.payments||[]).filter(p=>showTestAccounts||!excluded.has(String(p.email||'').trim().toLowerCase()))}
+function visiblePayments(){const excluded=excludedTestEmails();return (info.payments||[]).filter(p=>!isOwnerAccount(p)&&(showTestAccounts||!excluded.has(String(p.email||'').trim().toLowerCase())))}
 function refreshFilterLabel(){const hidden=(info.accounts||[]).filter(a=>!isOwnerAccount(a)&&isTestAccount(a)).length;
  el('commercial-filter-label').textContent=showTestAccounts?'Visão completa: empresas e pagamentos de teste visíveis.':'Visão de produção: '+hidden+' conta(s) de teste ocultas. Nenhum dado foi excluído.';
  el('commercial-filter-toggle').textContent=showTestAccounts?'Ocultar testes':'Mostrar testes';
