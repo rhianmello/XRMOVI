@@ -51,7 +51,19 @@ export async function transferPrivateObject({
  const session = data?.session;
  if (!session?.access_token || !session?.user?.id) throw new Error('Faça login novamente para enviar este documento.');
  const importer = loadTus || (() => import('https://esm.sh/tus-js-client@4.3.1'));
- const tus = await importer();
+ let tus;
+ try { tus = await importer(); } catch {
+  // CDN unavailable before *any* resumable request. One standard upload to
+  // the same random path is safe; NEVER fallback after an uncertain TUS POST.
+  if (signal?.aborted) throw abortError();
+  onProgress({phase:'sending',transport:'standard',percentage:null,sent:null,total:file.size});
+  const {error:storageError}=await client.storage.from(bucket).upload(path,file,{
+   contentType:file.type,upsert:false,cacheControl:'3600'
+  });
+  if (storageError) throw storageError;
+  onProgress({phase:'uploaded',transport:'standard',percentage:100,sent:file.size,total:file.size});
+  return {transport:'standard',bytes:file.size};
+ }
  if (!tus?.Upload) throw new Error('Biblioteca de envio retomável indisponível.');
  if (signal?.aborted) throw abortError();
  onProgress({ phase:'preparing', transport:'tus', percentage:0, sent:0, total:file.size });
