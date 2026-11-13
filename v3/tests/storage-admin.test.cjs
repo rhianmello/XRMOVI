@@ -14,8 +14,10 @@ async function boot({isAdmin=true,viewport={width:390,height:780}}={}){
  await page.addInitScript(admin=>{
   const metrics={
    summary:{object_count:28,stored_bytes:22259816},
-   daily:[{day:'2026-11-13',category:'vehicle',completed:2,
+   daily:[{upload_day:'2026-11-13',category:'vehicle',completed:2,
     verified_stored_bytes:500000,client_original_bytes:650000,client_reported_savings_bytes:150000}],
+   attempts:[{upload_day:'2026-11-13',category:'vehicle',failures_client_reported:1,interruptions_client_reported:1}],
+   growth_existing_objects:[{storage_month:'2026-11-01',bucket_id:'xrmovi-record-attachments',existing_objects:8,current_bytes:4810099}],
    candidates:[{object_id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',bucket_id:'xrmovi-odometer-proof',
      stored_bytes:1048576,created_at:'2026-10-29T12:00:00Z',review_status:'requires_evidence',reviewer_note:''}]
   };
@@ -63,6 +65,8 @@ test('admin storage dashboard shows verified bytes versus browser-declared savin
   assert.match(body,/Armazenamento atual/i);
   assert.equal(await page.locator('#candidates tr').count(),1);
   assert.equal(await page.locator('#periods tr').count(),1);
+  assert.equal(await page.locator('#attempts tr').count(),1);
+  assert.equal(await page.locator('#growth tr').count(),1);
   const calls=await page.evaluate(()=>window.storageAdminTest.calls.map(c=>c.name));
   assert.deepEqual(calls,['xrmovi_platform_is_admin','xrmovi_admin_storage_overview']);
   assert.deepEqual(errors,[]);
