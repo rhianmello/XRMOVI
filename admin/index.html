@@ -366,7 +366,7 @@ async function loadConversions(){
  const root=el('view-conversions');
  root.replaceChildren(node('p','Consultando pagamentos confirmados…','empty'));
  try{
-  const [data,module,ga4]=await Promise.all([rpc('marketing_admin_dashboard'),import('./conversions-panel.js?v=20261105-ga4-1'),rpc('ga4_admin_status')]);
+  const [data,module,ga4]=await Promise.all([rpc('marketing_admin_dashboard_verified'),import('./conversions-panel.js?v=20261113-external-v1'),rpc('ga4_admin_status')]);
   module.renderConversionsPanel(root,data,ga4);
  }catch(e){
   root.replaceChildren(node('p','Não foi possível carregar conversões: '+e.message,'empty'));
