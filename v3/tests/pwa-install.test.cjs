@@ -21,12 +21,12 @@ async function openInstall({ width = 390, height = 700, userAgent } = {}) {
  await page.route(origin+'/**', async route => {
   const pathname = new URL(route.request().url()).pathname;
   if(pathname === '/install-test.html') return route.fulfill({
-   contentType:'text/html',
+   contentType:'text/html; charset=utf-8',
    body:'<!doctype html><html lang="pt-BR"><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><button type="button" data-xrm-install>Instalar XRMOVI</button><script src="/pwa/install.js"></script></body></html>'
   });
   const full=path.resolve(root,pathname.slice(1));
   if(!full.startsWith(root+path.sep))return route.fulfill({status:403,body:''});
-  try { return route.fulfill({contentType:'text/javascript',body:fs.readFileSync(full)}); }
+  try { return route.fulfill({contentType:'text/javascript; charset=utf-8',body:fs.readFileSync(full)}); }
   catch { return route.fulfill({status:404,body:''}); }
  });
  await page.goto(origin+'/install-test.html');
