@@ -19,7 +19,7 @@ test('policies publish named contact and remain readable at desktop and mobile w
   for(const [slug,title] of [['termos','Termos de Uso'],['privacidade','Política de Privacidade'],['cancelamento','Política de Cancelamento']]){
    const response=await page.goto('https://xrmovi.test/'+slug+'/');assert.equal(response.status(),200);
    assert.equal(await page.locator('h1').innerText(),title);assert.match(await page.locator('main').innerText(),/Rhian Mello/);
-   assert.equal(await page.locator('a[href="mailto:rhian.udm@gmail.com"]').count()>0,true);
+   assert.equal(await page.locator('a[href="mailto:suporte@xrmovi.com.br"]').count()>0,true);
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
    assert.equal(await page.locator('footer a').count(),3);
    assert.doesNotMatch(await page.locator('body').innerText(),/\[definir|\[preencher|Lorem ipsum|RASCUNHO/);

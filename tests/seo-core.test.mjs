@@ -69,11 +69,23 @@ test('transparency pages disclose a real contact and label illustrations accurat
   assert.ok(sitemap.includes('<loc>'+site+'/'+path+'</loc>'),path+' in sitemap');
  }
  assert.ok(about.includes('Rhian Mello'));
- assert.ok(about.includes('mailto:rhian.udm@gmail.com'));
+ assert.ok(about.includes('mailto:suporte@xrmovi.com.br'));
  assert.ok(security.includes('não representam auditoria externa')||security.includes('não representam auditoria externa'.replace('não','Não')));
  assert.match(cases,/não relatos de clientes reais/i);
  assert.match(cases,/simulações ilustrativas/i);
  assert.ok(!/application\/ld\+json[^]*?"aggregateRating"/i.test(cases),'no fake aggregate rating');
  assert.ok(llms.includes('https://xrmovi.com.br/seguranca/'));
  assert.ok(llms.includes('não depoimentos'));
+});
+
+
+test('public policies and institutional pages use the verified support mailbox',()=>{
+ for(const path of ['sobre/index.html','seguranca/index.html','exemplos-de-uso/index.html','termos/index.html','privacidade/index.html','cancelamento/index.html']){
+  const html=read(path);
+  assert.match(html,/mailto:suporte@xrmovi\.com\.br/i,path+' contact mailto');
+  assert.ok(!html.includes('rhian.udm@gmail.com'),path+' must not disclose private mailbox');
+ }
+ const llms=read('llms.txt');
+ assert.ok(llms.includes('suporte@xrmovi.com.br'));
+ assert.ok(!llms.includes('rhian.udm@gmail.com'));
 });
