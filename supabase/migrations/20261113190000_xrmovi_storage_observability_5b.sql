@@ -42,6 +42,44 @@ create table if not exists xrmovi.storage_review_history (
 alter table xrmovi.storage_review_history enable row level security;
 revoke all on xrmovi.storage_review_history from public, anon, authenticated;
 
+-- Events are user-reported diagnostics, not proof of a server-side failure.
+create table if not exists xrmovi.storage_upload_attempt_events (
+  id bigint generated always as identity primary key,
+  company_id uuid not null references xrmovi.companies(id),
+  actor_id uuid not null,
+  entity_kind text not null check (entity_kind in ('driver','vehicle','maintenance','fuel','fine','expense')),
+  event_type text not null check (event_type in ('failed','interrupted')),
+  recorded_at timestamptz not null default now()
+);
+alter table xrmovi.storage_upload_attempt_events enable row level security;
+revoke all on xrmovi.storage_upload_attempt_events from public, anon, authenticated;
+create index if not exists xrmovi_storage_attempts_period_idx
+  on xrmovi.storage_upload_attempt_events(company_id,recorded_at desc);
+
+create or replace function public.xrmovi_storage_attempt_event(
+ cid uuid,p_entity_kind text,p_event text
+) returns boolean language plpgsql security definer set search_path=''
+as $
+declare caller uuid := (select auth.uid());
+begin
+ perform public.xrmovi_assert_company_access(cid);
+ if caller is null or p_entity_kind not in ('driver','vehicle','maintenance','fuel','fine','expense')
+    or p_event not in ('failed','interrupted') then
+  raise exception 'Evento inválido' using errcode='42501';
+ end if;
+ -- Guard against accidental telemetry storms (at most 12 per minute per user).
+ if (select count(*) from xrmovi.storage_upload_attempt_events e
+     where e.actor_id=caller and e.recorded_at>now()-interval '1 minute') >= 12 then
+  return false;
+ end if;
+ insert into xrmovi.storage_upload_attempt_events(company_id,actor_id,entity_kind,event_type)
+  values(cid,caller,p_entity_kind,p_event);
+ return true;
+end;
+$;
+revoke all on function public.xrmovi_storage_attempt_event(uuid,text,text) from public,anon;
+grant execute on function public.xrmovi_storage_attempt_event(uuid,text,text) to authenticated;
+
 create or replace function public.xrmovi_storage_metric_record(
   cid uuid, p_path text, p_original_bytes bigint
 ) returns boolean
@@ -94,7 +132,11 @@ begin
     'client_original_bytes',coalesce(sum(m.client_original_bytes),0),
     'savings_client_reported_bytes',coalesce(sum(m.client_original_bytes-m.stored_bytes),0),
     'completed',count(*),
-    'source_original_verified',false
+    'source_original_verified',false,
+    'failures_client_reported',(select count(*) from xrmovi.storage_upload_attempt_events e
+      where e.company_id=cid and e.event_type='failed'),
+    'interruptions_client_reported',(select count(*) from xrmovi.storage_upload_attempt_events e
+      where e.company_id=cid and e.event_type='interrupted')
   ) into result
   from xrmovi.storage_upload_metrics m where m.company_id=cid;
   return result;
@@ -110,6 +152,8 @@ declare
   caller uuid := (select auth.uid());
   summary jsonb;
   daily jsonb;
+  attempts jsonb;
+  growth jsonb;
   candidates jsonb;
 begin
   if caller is null or not exists(
@@ -132,6 +176,24 @@ begin
       sum(m.client_original_bytes-m.stored_bytes) client_reported_savings_bytes
     from xrmovi.storage_upload_metrics m
     group by date_trunc('day',m.recorded_at)::date,m.entity_kind
+  ) q;
+
+  select coalesce(jsonb_agg(to_jsonb(q) order by q.day desc,q.category),'[]'::jsonb)
+  into attempts from (
+    select date_trunc('day',e.recorded_at)::date day,e.entity_kind category,
+      count(*) filter(where e.event_type='failed') failures_client_reported,
+      count(*) filter(where e.event_type='interrupted') interruptions_client_reported
+    from xrmovi.storage_upload_attempt_events e
+    group by date_trunc('day',e.recorded_at)::date,e.entity_kind
+  ) q;
+
+  select coalesce(jsonb_agg(to_jsonb(q) order by q.month desc,q.bucket_id),'[]'::jsonb)
+  into growth from (
+    select date_trunc('month',o.created_at)::date month,o.bucket_id,
+      count(*) existing_objects,
+      coalesce(sum((o.metadata->>'size')::bigint),0) current_bytes
+    from storage.objects o where o.bucket_id like 'xrmovi-%'
+    group by date_trunc('month',o.created_at)::date,o.bucket_id
   ) q;
 
   with refs as (
@@ -164,7 +226,8 @@ begin
   select coalesce(jsonb_agg(to_jsonb(r) order by r.stored_bytes desc),'[]'::jsonb)
     into candidates from rows r;
 
-  return jsonb_build_object('summary',summary,'daily',daily,'candidates',candidates,
+  return jsonb_build_object('summary',summary,'daily',daily,'attempts',attempts,
+    'growth_existing_objects',growth,'candidates',candidates,
     'savings_original_verified',false,
     'scope','xrmovi-only');
 end;
