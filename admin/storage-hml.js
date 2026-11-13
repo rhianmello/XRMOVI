@@ -123,14 +123,27 @@ async function verifyReceipt(test){
   assert(test.evidence.hash_match,'SHA-256 não corresponde ao arquivo original.');
   // A separate anonymous client must never be able to read the test bucket.
   const anonymous=await anonClient.storage.from(BUCKET).download(test.path);
-  test.evidence.anonymous_denied=!!anonymous.error;
-  assert(test.evidence.anonymous_denied,'URGENTE: download anônimo não foi bloqueado.');
+  const anonymousStatus=Number(anonymous.error?.statusCode??anonymous.error?.status??0);
+  test.evidence.anonymous_http_status=anonymousStatus||null;
+  // A 404 on a private object is often deliberately masked by the provider.
+  // The admin download above proved the object exists.
+  test.evidence.anonymous_denied=!!anonymous.error&&[401,403,404].includes(anonymousStatus);
+  assert(test.evidence.anonymous_denied,
+    anonymous.error?'A negativa anônima não apresentou status HTTP confiável.':
+                    'URGENTE: download anônimo não foi bloqueado.');
   // Reattempt only a tiny synthetic file; never resend a 7 MiB payload solely to test conflicts.
   if(test.file.size<100000){
     const duplicate=await client.storage.from(BUCKET).upload(test.path,test.file,
       {upsert:false,contentType:'application/pdf'});
-    test.evidence.duplicate_denied=!!duplicate.error;
-    assert(test.evidence.duplicate_denied,'O Storage permitiu a segunda gravação sem upsert.');
+    const duplicateStatus=Number(duplicate.error?.statusCode??duplicate.error?.status??0);
+    test.evidence.duplicate_http_status=duplicateStatus||null;
+    test.evidence.duplicate_denied=!!duplicate.error&&
+      (duplicateStatus===409||(
+        duplicateStatus===400&&/already exists|duplicate|asset already exists/i.test(duplicate.error.message||'')
+      ));
+    assert(test.evidence.duplicate_denied,
+      duplicate.error?'O servidor recusou o arquivo, mas o motivo de duplicidade ficou inconclusivo.':
+                      'O Storage permitiu a segunda gravação sem upsert.');
     const after=await inspect(test.path);
     assert(Number(after.object_count)===1,'Foi identificada duplicação no PostgreSQL.');
   }
