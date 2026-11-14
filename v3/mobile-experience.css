@@ -15,20 +15,24 @@
   }
   .fleet-page .fleet-breadcrumb,.fleet-page .fleet-mobile-navigation{display:none!important}
   .fleet-page .xrm-mobile-brand{
-    display:flex;gap:9px;align-items:center;min-width:0;
-    font:700 15px/1.2 system-ui;letter-spacing:.015em;color:#effaff;
+    display:flex;align-items:center;flex:0 0 clamp(94px,30vw,146px);
+    min-width:0;max-width:146px;overflow:hidden;text-decoration:none;
   }
-  .xrm-mobile-brand-mark{
-    width:37px;height:37px;display:grid;place-items:center;flex-shrink:0;
-    color:#6ae2d1;background:#113244;border:1px solid #305d68;border-radius:11px;
+  .fleet-page .xrm-mobile-brand img{
+    display:block;width:100%;height:auto;max-height:40px;
+    object-fit:contain;object-position:left center;
   }
-  .xrm-mobile-brand-mark svg{width:21px;height:21px}
-  .xrm-mobile-brand-title{display:grid;gap:2px}
-  .xrm-mobile-brand-title small{font-size:10px;letter-spacing:0;font-weight:500;color:#a4c7d4}
   .fleet-page .fleet-top-actions{
     display:flex!important;flex:1 1 auto!important;min-width:0!important;width:auto!important;
     justify-content:flex-end!important;align-items:center!important;
-    flex-wrap:nowrap!important;gap:7px!important;
+    flex-wrap:wrap!important;gap:7px!important;
+  }
+  .fleet-page .fleet-top-actions #fleet-session-email:not([hidden]){
+    order:99!important;flex:0 0 100%!important;width:100%!important;
+    max-width:100%!important;min-width:0!important;box-sizing:border-box;
+    padding:0 2px!important;border:0!important;background:transparent!important;
+    font-size:10px!important;text-align:right!important;white-space:nowrap!important;
+    overflow:hidden!important;text-overflow:ellipsis!important;
   }
   .fleet-page .xrm-mobile-company-switch{
     display:grid!important;flex:1 1 110px!important;min-width:0!important;max-width:190px;
@@ -245,8 +249,7 @@
   .fleet-page .fleet-table-wrap{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
 }
 @media(max-width:380px){
-  .fleet-page .xrm-mobile-brand-title small{display:none}
-  .fleet-page .xrm-mobile-brand{font-size:13px}
+  .fleet-page .xrm-mobile-brand{flex-basis:96px;max-width:96px}
   .fleet-page .xrm-mobile-company-switch{max-width:148px}
   .fleet-page #fleet-kpis .fleet-kpi{min-height:106px!important}
 }
