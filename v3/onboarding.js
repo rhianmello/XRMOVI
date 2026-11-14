@@ -173,6 +173,15 @@ export async function showXrmoviOnboarding({login,client,onCreated,onLogout,exis
    }
    if(choice==='trial'){
     if(frozenPlan||pendingCheckout)throw Error('Você já iniciou uma contratação; conclua ou verifique esse pagamento.');
+    // Atribuição de origem é opcional e depende do consentimento já concedido.
+    // Tente vincular o primeiro toque à conta antes de iniciar o teste.
+    // Falhas da análise nunca impedem o acesso gratuito.
+    try{
+     await Promise.race([
+      Promise.resolve(window.XrmoviAnalytics?.syncAttribution?.(client)),
+      new Promise(resolve=>setTimeout(resolve,1800))
+     ]);
+    }catch(_error){}
     const {data:trial,error}=await client.rpc('xrmovi_start_trial',{cid:companyId});
     if(error||trial?.status!=='trial')throw Error(error?.message||'Não foi possível iniciar o teste.');
     window.XrmoviAnalytics?.track('xrmovi_trial_started',{location:'registration'});

@@ -4,6 +4,7 @@
 <meta name="theme-color" content="#071725"><title>XRMOVI | Gestão comercial e clientes</title>
 <link rel="stylesheet" href="./seo-panel.css?v=20261103-1">
 <link rel="stylesheet" href="./conversions-panel.css?v=20261105-1">
+<link rel="stylesheet" href="./trial-panel.css?v=20261114-1">
 <style>
 :root{color-scheme:dark;--bg:#061523;--panel:#0d2839;--panel2:#102f43;--line:#2d4f61;--mint:#4fe2b8;--muted:#9abacb;--white:#edfaff;--danger:#f58a9c;--gold:#eac47b}*{box-sizing:border-box}
 body{margin:0;background:radial-gradient(ellipse at 95% 0,#104351 0,transparent 42%),var(--bg);color:var(--white);font:14px/1.55 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
@@ -74,7 +75,7 @@ footer{padding:20px;text-align:center;color:#849eae;font-size:11px}
   </details>
   <div id="feedback" class="status" role="status" aria-live="polite"></div>
   <nav class="tabs" aria-label="Áreas da administração">
-   <button data-tab="overview" aria-selected="true">Visão executiva</button><button data-tab="customers" aria-selected="false">Clientes</button><button data-tab="signups" aria-selected="false">Todos os cadastros</button><button data-tab="messages" aria-selected="false">Mensagens <span id="nav-unread"></span></button><button data-tab="payments" aria-selected="false">Pagamentos</button><button data-tab="requests" aria-selected="false">Solicitações</button><button data-tab="seo" aria-selected="false">SEO no Google</button><button data-tab="conversions" aria-selected="false">Vendas e conversões</button><a href="./storage.html" style="display:inline-flex;align-items:center;padding:10px 13px;border-radius:9px;background:#153752;color:#d6efff;text-decoration:none;border:1px solid #40617d">Armazenamento</a>
+   <button data-tab="overview" aria-selected="true">Visão executiva</button><button data-tab="customers" aria-selected="false">Clientes</button><button data-tab="signups" aria-selected="false">Todos os cadastros</button><button data-tab="messages" aria-selected="false">Mensagens <span id="nav-unread"></span></button><button data-tab="payments" aria-selected="false">Pagamentos</button><button data-tab="requests" aria-selected="false">Solicitações</button><button data-tab="seo" aria-selected="false">SEO no Google</button><button data-tab="conversions" aria-selected="false">Vendas e conversões</button><button data-tab="trials" aria-selected="false">Testes 24h</button><a href="./storage.html" style="display:inline-flex;align-items:center;padding:10px 13px;border-radius:9px;background:#153752;color:#d6efff;text-decoration:none;border:1px solid #40617d">Armazenamento</a>
   </nav>
   <div class="notice" id="commercial-filter-notice" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:10px 0 14px"><span id="commercial-filter-label">Contas pendentes de classificação aparecem para revisão, mas não entram nos indicadores comerciais.</span><button class="btn ghost" id="commercial-filter-toggle" type="button">Mostrar internos e testes</button></div>
   <div id="view-overview" class="tab-view">
@@ -97,6 +98,7 @@ footer{padding:20px;text-align:center;color:#849eae;font-size:11px}
   <section id="view-requests" class="panel tab-view" hidden><div class="panel-head"><h2>Solicitações de plano</h2><small>Acompanhe os interessados</small></div><div class="table-wrap"><table><thead><tr><th>Data</th><th>Empresa</th><th>Plano solicitado</th><th>Estado</th></tr></thead><tbody id="requests-body"></tbody></table></div></section>
   <section id="view-seo" class="tab-view" hidden aria-label="SEO e desempenho no Google"><p class="empty">Abra esta aba para consultar as métricas e a situação de indexação.</p></section>
   <section id="view-conversions" class="tab-view" hidden aria-label="Aquisição de clientes e vendas verificadas"><p class="empty">Abra esta aba para consultar os pagamentos confirmados e a origem das campanhas.</p></section>
+  <section id="view-trials" class="tab-view" hidden aria-label="Quem iniciou o teste gratuito de 24 horas"><p class="empty">Abra esta aba para consultar os testes iniciados e a origem atribuída.</p></section>
  </div>
 </main><footer>XRMOVI · Administração comercial protegida · Bloqueios auditados no Supabase</footer>
 <script type="module">
@@ -373,12 +375,30 @@ async function loadConversions(){
   status('Falha na consulta das conversões: '+e.message,'error');
  }finally{conversionsIsLoading=false}
 }
+let trialsIsLoading=false;
+async function loadTrials(){
+ if(trialsIsLoading||!db)return;
+ trialsIsLoading=true;
+ const root=el('view-trials');
+ root.replaceChildren(node('p','Consultando testes iniciados no servidor…','empty'));
+ try{
+  const [data,module]=await Promise.all([
+   rpc('admin_trial_acquisition'),
+   import('./trial-panel.js?v=20261114-1')
+  ]);
+  module.renderTrialPanel(root,data,{refresh:()=>void loadTrials()});
+ }catch(error){
+  root.replaceChildren(node('p','Não foi possível consultar os testes: '+error.message,'empty'));
+  status('Falha na consulta de testes: '+error.message,'error');
+ }finally{trialsIsLoading=false}
+}
 function openTab(name){
  tab=name;document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===name)));
  document.querySelectorAll('.tab-view').forEach(view=>view.hidden=view.id!=='view-'+name);
  if(name==='messages'&&threadId)void loadThread();
  if(name==='seo')void loadSeo();
  if(name==='conversions')void loadConversions();
+ if(name==='trials')void loadTrials();
 }
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>openTab(b.dataset.tab));
 document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>openTab(b.dataset.goto));
@@ -456,6 +476,8 @@ async function start(){
   // Only a server-verified platform administrator can mark this browser as internal.
   try{localStorage.setItem('xrmovi_ga4_internal_admin_v1',JSON.stringify({role:'platform_admin',until:Date.now()+14*24*60*60*1000}))}catch(_error){}
   await refresh();startOnlineCounter();void checkBillingStatus();
+  // Recarrega os testes sem comprometer outros painéis ou criar eventos de marketing.
+  window.setInterval(()=>{if(tab==='trials'&&document.visibilityState==='visible')void loadTrials()},60000);
  }catch(e){show('unauthorized');el('denied-text').textContent=e.message}
 }
 void start();
