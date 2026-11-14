@@ -51,11 +51,8 @@
     }
     positionContract();
 
-    const brand = document.createElement('div');
-    brand.className = 'xrm-mobile-brand';
-    brand.setAttribute('aria-label','XRMOVI Gestão de Frotas');
-    brand.innerHTML = '<span class="xrm-mobile-brand-mark">'+icon('truck')+'</span><span class="xrm-mobile-brand-title">XRMOVI<small>Minha frota</small></span>';
-    topbar.prepend(brand);
+    // The official XRMOVI logo lives in the HTML header so it is visible
+    // immediately and remains unchanged across views and session reloads.
 
     const support = $('.xrm-mobile-support-link');
     if (support) {
