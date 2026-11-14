@@ -50,7 +50,7 @@ test('landings, frota, admin, SEO e portal do motorista carregam a paleta clara'
 });
 test('card de dados e superfícies do painel permanecem brancos',async()=>{
   const page=await load('/v3/');
-  const c=await colors(page,'.fleet-kpi');
+  const c=await colors(page,'.fleet-panel');
   assert.equal(c.bg,'rgb(255, 255, 255)');
   assert.equal(c.fg,'rgb(20, 43, 66)');
   await page.close();
