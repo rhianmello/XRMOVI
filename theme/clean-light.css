@@ -469,3 +469,22 @@ body.xrm-admin-page{
  .xrm-admin-page .trial-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
  .xrm-admin-page #view-seo .seo-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+
+/* Tipografia mínima legível em tabelas, indicadores e filtros densos. */
+.fleet-page .fleet-kpi-label{font-size:11px!important;line-height:1.4!important}
+.fleet-page .fleet-kpi-sub{font-size:10px!important;line-height:1.5!important}
+.fleet-page .fleet-table th{font-size:10px!important;letter-spacing:.025em!important}
+.fleet-page .fleet-table td{font-size:11px!important;line-height:1.5!important}
+.fleet-page .fleet-table td small{font-size:10px!important}
+.fleet-page .fleet-panel header .eyebrow{font-size:10px!important}
+.fleet-page .fleet-panel>footer{font-size:10px!important;line-height:1.5!important}
+.xrm-admin-page .kpi span{font-size:11px!important;min-height:28px}
+.xrm-admin-page .kpi small,.xrm-admin-page .sub{font-size:11px!important}
+.xrm-sales-page .xrm-qr-hero-trust,.xrm-sales-page .xrm-qr-hero-details{
+ font-size:12px!important;line-height:1.6!important;
+}
+@media(max-width:760px){
+ .fleet-page #fleet-kpis .fleet-kpi-label{font-size:11px!important}
+ .fleet-page #fleet-kpis .fleet-kpi-sub{font-size:10px!important}
+}
