@@ -1,0 +1,93 @@
+/* XRMOVI | páginas secundárias, mesma identidade clara */
+:root:has(body.xrm-utility-page){
+ color-scheme:light!important;background:#f7fafc!important;color:#142b42!important;
+ --bg:#f7fafc;--panel:#fff;--line:#dbe5ee;--fg:#142b42;--text:#142b42;
+ --muted:#475569;--accent:#0759a5;--mint:#087986;
+}
+body.xrm-utility-page{
+ color-scheme:light;background:#f7fafc!important;color:#142b42!important;
+ -webkit-font-smoothing:antialiased;
+}
+.xrm-utility-page h1,.xrm-utility-page h2,.xrm-utility-page h3{color:#142b42!important}
+.xrm-utility-page :is(p,small,.muted,.hint,.note,.sub,.empty,footer,.footer,.lead){
+ color:#475569!important;
+}
+.xrm-utility-page :is(.eyebrow,.brand b){color:#087986!important}
+.xrm-utility-page a:not(.btn):not(.button){color:#0759a5}
+.xrm-utility-page header{
+ background:rgba(255,255,255,.97)!important;
+ border-color:#dbe5ee!important;color:#142b42!important;
+}
+.xrm-utility-page :is(.shell,.panel,.card,.stat,.stats>div,.feature,.qr-demo,.banner,
+ .vehicle,.visual,.metric,.money,.messages,.bubble,.bubble.mine,.note,
+ .result,.choice-menu button,.related,.step,.pill,.contact,.message,.content,section){
+ border-color:#dbe5ee!important;
+}
+.xrm-utility-page :is(.panel,.card,.stat,.stats>div,.feature,.qr-demo,.banner,
+ .vehicle,.visual,.metric,.money,.messages,.bubble,.bubble.mine,.result,
+ .choice-menu button,.contact,.message){
+ background:#fff!important;background-image:none!important;
+ color:#142b42!important;box-shadow:0 10px 28px rgba(20,43,66,.05)!important;
+}
+.xrm-utility-page .shell:not(.xrm-resources-page .shell){
+ background:#fff;border-color:#dbe5ee!important;
+ box-shadow:0 17px 48px rgba(20,43,66,.085)!important;
+}
+.xrm-utility-page :is(.qr-demo,.result,.warning,.note){border-color:#cadde8!important}
+.xrm-utility-page :is(input,select,textarea){
+ color:#142b42!important;background:#fff!important;
+ border-color:#b8cbd9!important;
+}
+.xrm-utility-page :is(input,textarea)::placeholder{color:#64748b!important}
+.xrm-utility-page label{color:#344c63!important}
+.xrm-utility-page :is(button,.button,.btn):not(.secondary):not(.outline):not(.back):not(.ghost){
+ background:#0759a5!important;color:#fff!important;border-color:#0759a5!important;
+}
+.xrm-utility-page :is(button,.button,.btn).secondary,
+.xrm-utility-page :is(button,.button,.btn).outline,
+.xrm-utility-page :is(button,.button,.btn).back,
+.xrm-utility-page :is(button,.button,.btn).ghost{
+ background:#fff!important;color:#07518b!important;border:1px solid #b6d1e0!important;
+}
+.xrm-utility-page button:disabled{opacity:.55}
+.xrm-utility-page :is(th,td){border-color:#dbe5ee!important;color:#344c63!important}
+.xrm-utility-page th{background:#eef5fa!important}
+.xrm-utility-page tbody tr:hover{background:#f0f7fb!important}
+.xrm-utility-page .brand img,.xrm-resources-page nav img{
+ background:#0d2b40!important;padding:6px 9px!important;border-radius:10px!important;
+}
+.xrm-utility-page .logo{background:#e5f4f8!important;color:#0759a5!important}
+.xrm-utility-page :is(.tag,.pill.active){color:#086b55!important;background:#e6f7f0!important}
+.xrm-utility-page .warning,.xrm-utility-page .result.warn{
+ background:#fff6e6!important;color:#744a00!important;border-color:#e9ce93!important;
+}
+.xrm-utility-page .result.error{background:#fff0f2!important;color:#a51e35!important;border-color:#efbac1!important}
+.xrm-utility-page .result:not(.error):not(.warn){background:#eaf8f2!important;color:#086b55!important}
+.xrm-utility-page .choice-menu small,.xrm-utility-page .vehicle small,
+.xrm-utility-page .metric span,.xrm-utility-page .money span,
+.xrm-utility-page .stat small,.xrm-utility-page .bubble small{
+ color:#475569!important;
+}
+.xrm-utility-page .money b{color:#086b55!important}
+.xrm-utility-page .hero{
+ background:radial-gradient(ellipse at 85% 0,rgba(7,108,155,.065),transparent 43%),#fff!important;
+}
+.xrm-resources-page .shell{background:transparent!important;border:0!important;box-shadow:none!important}
+.xrm-resources-page .feature{background:#fff!important}
+.xrm-resources-page .linkcards a{
+ background:#fff!important;border:1px solid #dbe5ee!important;color:#07518b!important;
+}
+.xrm-resources-page .qr-demo .steps button{
+ background:#edf6fb!important;color:#07518b!important;border:1px solid #c7dfe9!important;
+}
+.xrm-resources-page .qr-demo output{color:#0759a5!important}
+.xrm-utility-page .panel-head,.xrm-utility-page .compose{border-color:#dbe5ee!important}
+.xrm-utility-page .bubble.mine{background:#e8f7f2!important}
+.xrm-utility-page .contact.active{background:#eaf5fa!important}
+.xrm-utility-page .feedback{color:#087e61!important}
+.xrm-utility-page :is(.table,.table-wrap){max-width:100%;overflow-x:auto}
+.xrm-utility-page :focus-visible{outline:3px solid #087986!important;outline-offset:3px}
+@media(max-width:640px){
+ .xrm-utility-page{overflow-x:hidden}
+ .xrm-utility-page :is(.panel,.shell,.banner,.qr-demo){max-width:100%;min-width:0}
+}
