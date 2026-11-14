@@ -21,6 +21,8 @@ jobs:
       - name: Validate light-theme contrast and coverage
         run: node --test tests/clean-light-theme.test.mjs
       - run: npx playwright install --with-deps chromium
+      - name: Browser check light backgrounds and mobile layout (offline)
+        run: node --test tests/clean-light-browser.test.cjs
       - name: Public authentication and fleet interface (offline mocks)
         run: npm run test:browser
       - name: Audited commercial classification and revenue regression
