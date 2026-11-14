@@ -1,3 +1,4 @@
+@import url("/theme/clean-light.css?v=20261114-1");
 /* XRMOVI | páginas comerciais públicas. Escopo isolado para preservar o painel operacional. */
 body.seo-page{color-scheme:dark;--sea:#061723;--panel:#0c2938;--panel2:#103545;--line:#2b5361;--mint:#69e4bd;--light:#effcff;--muted:#b3cad3;--gold:#ffdca2}
 *{box-sizing:border-box}
