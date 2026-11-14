@@ -1,7 +1,7 @@
 name: XRMOVI interface and public access
 on:
   push:
-    paths: ['index.html', 'manifest.webmanifest', 'sw.js', 'pwa/**', 'km/**', 'auth/**', 'admin/**', 'analytics/**', 'v3/**', 'termos/**', 'privacidade/**', 'cancelamento/**', 'legal/**', 'tests/**', 'package*.json', '.github/workflows/interface-regression.yml']
+    paths: ['index.html', 'manifest.webmanifest', 'sw.js', 'pwa/**', 'theme/**', 'seo/**', 'recursos/**', 'cliente/**', 'widget/**', 'redefinir-senha.html', 'km/**', 'auth/**', 'admin/**', 'analytics/**', 'v3/**', 'termos/**', 'privacidade/**', 'cancelamento/**', 'legal/**', 'tests/**', 'package*.json', '.github/workflows/interface-regression.yml']
   pull_request:
     paths: ['index.html', 'manifest.webmanifest', 'sw.js', 'pwa/**', 'km/**', 'auth/**', 'admin/**', 'analytics/**', 'v3/**', 'termos/**', 'privacidade/**', 'cancelamento/**', 'legal/**', 'tests/**', 'package*.json', '.github/workflows/interface-regression.yml']
   workflow_dispatch:
@@ -18,6 +18,8 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci --ignore-scripts
+      - name: Validate light-theme contrast and coverage
+        run: node --test tests/clean-light-theme.test.mjs
       - run: npx playwright install --with-deps chromium
       - name: Public authentication and fleet interface (offline mocks)
         run: npm run test:browser
