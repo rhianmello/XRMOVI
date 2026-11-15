@@ -368,7 +368,7 @@ export function setupSubscriptionPanel({client,getCompany,onCompanyCreated,onDat
    }
   }
 
-  text('xrm-bill-details',info.status==='canceled'?'Renovação cancelada; acesso até '+formatDate(info.paid_through)+'.':info.status==='trial'&&!expired?'Teste de 24 horas ativo, até 5 veículos.':info.status==='trial'&&expired?'Teste encerrado. Contrate com Pix ou cartão.':info.status==='pending'?'Escolha Pix ou cartão para liberar sua frota.':'Veículos compartilhados entre suas empresas.');
+  text('xrm-bill-details',info.status==='canceled'?'Renovação cancelada; acesso até '+formatDate(info.paid_through)+'.':info.status==='trial'&&!expired?'Teste de 7 dias ativo, até 5 veículos.':info.status==='trial'&&expired?'Teste encerrado. Contrate com Pix ou cartão.':info.status==='pending'?'Escolha Pix ou cartão para liberar sua frota.':'Veículos compartilhados entre suas empresas.');
    const recurring=info.provider==='mercadopago'&&Boolean(info.paid_through)&&['active','canceled'].includes(info.status);
    cancelSection.hidden=!recurring;
    cancelButton.hidden=info.status==='canceled';
