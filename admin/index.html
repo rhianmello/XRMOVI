@@ -79,6 +79,13 @@ footer{padding:20px;text-align:center;color:#849eae;font-size:11px}
 @media(max-width:620px){.xrm-admin-page .owner-workspace .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.xrm-admin-page main{padding:13px 11px}}
 @media(prefers-reduced-motion:reduce){.xrm-admin-page .owner-layout,.xrm-admin-page .owner-sidebar.tabs,.xrm-admin-page .owner-sidebar.tabs .owner-nav-link{transition:none}}
 </style>
+<style id="customer-presence-style">
+.xrm-admin-page .customer-presence{display:inline-flex;align-items:center;gap:5px;vertical-align:middle;margin-left:9px;padding:2px 7px;border-radius:999px;border:1px solid #d3dfe7;background:#f3f6f9;color:#536877;font-size:11px;font-weight:750;white-space:nowrap}
+.xrm-admin-page .customer-presence .presence-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor}
+.xrm-admin-page .customer-presence.online{border-color:#b4e8d2;background:#e8f9f0;color:#087a4b}
+.xrm-admin-page .customer-presence.offline{border-color:#d8e1e9;background:#f1f4f7;color:#6b7c88}
+.xrm-admin-page .customer-presence.unknown{border-color:#e7dcb8;background:#fff9e8;color:#806b2f}
+</style>
 </head><body class="xrm-admin-page">
 <header><a href="../" class="brand"><img class="xrmovi-official-mark" src="/assets/xrmovi-logo-oficial.svg?v=20261110-v2" alt="XRMOVI" width="164" height="40"><span><small>PROPRIETÁRIO</small></span></a><div class="actions"><a class="btn ghost" href="../v3/">Frota</a><button class="btn" id="refresh">Atualizar</button><button class="btn" id="signout">Sair</button></div></header>
 <main>
@@ -169,6 +176,7 @@ const cell=(tr,value)=>{tr.append(node('td',value??'—'))};
 const pill=(tr,text,tone='')=>{const td=node('td'),span=node('span',text,'pill '+tone);td.append(span);tr.append(td)};
 const show=id=>{for(const x of ['loading','unauthorized','content'])el(x).hidden=x!==id};
 let db,info={accounts:[],summary:{},revenue:[],payments:[],requests:[]},signups=[],threadId=null,tab='overview';
+let presenceByUser=new Map(),presenceLoaded=false,presenceIsLoading=false;
 let showTestAccounts=false;
 const isOwnerAccount=a=>String(a.email||'').trim().toLowerCase()==='rhian.udm@gmail.com';
 const classes={external:'Cliente externo',internal:'Interno',homologation:'Homologação',unclassified:'A classificar'};
@@ -187,12 +195,43 @@ function refreshFilterLabel(){
  el('commercial-filter-toggle').textContent=showTestAccounts?'Ocultar internos e testes':'Mostrar internos e testes';
 }
 function status(text,type=''){el('feedback').textContent=text;el('feedback').className='status '+type}
+// Presence is approximate: a visible authenticated page reports every 45 s.
+function makePresenceBadge(userId){
+ const badge=node('span','','customer-presence unknown');
+ badge.dataset.presenceUser=String(userId||'');
+ updatePresenceBadge(badge);
+ return badge;
+}
+function updatePresenceBadge(badge){
+ const userId=badge.dataset.presenceUser;
+ const last=presenceByUser.get(userId),when=last?Date.parse(last):NaN;
+ const alive=presenceLoaded&&Number.isFinite(when)&&Date.now()-when<150000&&Date.now()-when>=-30000;
+ const unknown=!presenceLoaded;
+ const label=unknown?'Verificando…':alive?'Online':'Offline';
+ badge.className='customer-presence '+(unknown?'unknown':alive?'online':'offline');
+ badge.title=unknown?'Verificando conexão de atividade':Number.isFinite(when)?'Última atividade registrada: '+new Date(when).toLocaleString('pt-BR'):'Sem atividade autenticada registrada recentemente';
+ badge.replaceChildren(node('span','','presence-dot'),node('span',label));
+}
+function updatePresenceBadges(){document.querySelectorAll('.customer-presence[data-presence-user]').forEach(updatePresenceBadge)}
+async function loadAccountPresence(){
+ if(presenceIsLoading||document.visibilityState!=='visible')return;
+ presenceIsLoading=true;
+ try{
+  const rows=await rpc('admin_presence_list');
+  if(!Array.isArray(rows))throw new Error('Resposta de presença inválida');
+  presenceByUser=new Map(rows.filter(item=>item?.user_id).map(item=>[String(item.user_id),item.last_seen_at]));
+  presenceLoaded=true;
+ }catch(error){
+  presenceLoaded=false;
+  console.warn('Presença autenticada indisponível:',error.message);
+ }finally{presenceIsLoading=false;updatePresenceBadges()}
+}
 async function rpc(fn,args){const {data,error}=await db.rpc('xrmovi_'+fn,args);if(error)throw Error(error.message);return data}
 function rowCustomer(c,full=false){
  const manual=Boolean(c.manual_access?.active&&Date.parse(c.manual_access.valid_until)>Date.now());
   const recurring=Boolean(c.recurring?.has_recurring);
  const manualUntil=manual?date(c.manual_access.valid_until):'';
- const tr=node('tr');const first=node('td');const bold=node('b',c.email),companies=node('span',(c.companies||[]).map(x=>x.name).join(' · ')||'Sem empresa','sub'),classification=node('span',classificationLabel(c),'sub');first.append(bold,companies,classification);tr.append(first);
+ const tr=node('tr');const first=node('td');const bold=node('b',c.email),companies=node('span',(c.companies||[]).map(x=>x.name).join(' · ')||'Sem empresa','sub'),classification=node('span',classificationLabel(c),'sub');first.append(bold,makePresenceBadge(c.owner_id),companies,classification);tr.append(first);
  cell(tr,(c.plan||'—').toUpperCase()+(c.price?' · '+money(c.price):''));
  const expired=c.status==='trial'&&c.trial_end&&Date.parse(c.trial_end)<Date.now();
  // Show manual operating access in the recent list; preserve financial status in full customer details.
@@ -307,7 +346,7 @@ function renderSignups(){
  const q=el('signup-search').value.trim().toLocaleLowerCase('pt-BR');
  const rows=signups.filter(u=>u.email?.toLocaleLowerCase('pt-BR').includes(q)&&u.email?.toLowerCase()!=='rhian.udm@gmail.com');
  for(const u of rows){
-  const tr=node('tr');cell(tr,u.email);cell(tr,date(u.created_at));
+  const tr=node('tr'),userCell=node('td');userCell.append(node('span',u.email),makePresenceBadge(u.id));tr.append(userCell);cell(tr,date(u.created_at));
   pill(tr,u.email_confirmed?'Sim':'Não',u.email_confirmed?'active':'pending');
   pill(tr,u.has_signed_in?'Sim':'Não',u.has_signed_in?'active':'pending');
   pill(tr,u.has_billing_account?'Conta comercial criada':u.has_company?'Empresa vinculada':u.has_plan_request?'Plano solicitado':'Cadastro sem plano',u.has_billing_account?'active':'pending');
@@ -560,7 +599,9 @@ async function start(){
   const check=await rpc('platform_is_admin');if(check!==true)throw Error('Usuário não autorizado como administrador da plataforma.');
   // Only a server-verified platform administrator can mark this browser as internal.
   try{localStorage.setItem('xrmovi_ga4_internal_admin_v1',JSON.stringify({role:'platform_admin',until:Date.now()+14*24*60*60*1000}))}catch(_error){}
-  await refresh();startOnlineCounter();void checkBillingStatus();
+  await refresh();startOnlineCounter();void loadAccountPresence();void checkBillingStatus();
+   window.setInterval(()=>void loadAccountPresence(),30000);
+   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')void loadAccountPresence()});
   // Recarrega os testes sem comprometer outros painéis ou criar eventos de marketing.
   window.setInterval(()=>{if(tab==='trials'&&document.visibilityState==='visible')void loadTrials()},60000);
  }catch(e){show('unauthorized');el('denied-text').textContent=e.message}
