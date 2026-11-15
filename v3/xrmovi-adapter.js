@@ -1,8 +1,8 @@
 import{createClient}from 'https://esm.sh/@supabase/supabase-js@2.58.0';
-import {setupTrialCountdown} from './trial-countdown.js?v=20261112';
-import { setupSubscriptionPanel } from './subscription-panel.js?v=20261112-graduated-pricing-2';
+import {setupTrialCountdown} from './trial-countdown.js?v=20261115-trial7d-1';
+import { setupSubscriptionPanel } from './subscription-panel.js?v=20261115-trial7d-1';
 import { renewalNotice } from './renewal-reminder.js?v=20261103-reminders-2';
-import { showXrmoviOnboarding } from './onboarding.js?v=20261112-trial-event-1';
+import { showXrmoviOnboarding } from './onboarding.js?v=20261115-trial7d-1';
 import { createCompanyBranding } from './company-branding.js?v=20261113-6b-1';
 import { setupMileage } from './mileage.js?v=20261112-service-approval-1';
 import { setupVehicleExport } from './vehicle-export.js?v=20261106-vehicle-xlsx-1';
@@ -104,8 +104,8 @@ function updatePaymentGateUI(){
  hint.style.display=paymentRequired?'grid':'none';
  if(paymentRequired){
   hint.replaceChildren();
-  const title=document.createElement('strong');title.textContent=lastAccessState?.status==='trial'?'Seu teste gratuito de 24 horas terminou':'Assinatura necessária para liberar sua frota';title.style.cssText='font-size:19px;color:#ffe2a0';
-  const details=document.createElement('span');details.textContent=lastAccessState?.status==='trial'?'Seus veículos e registros estão preservados. Escolha Pix ou cartão para continuar com acesso ao painel.':'Sua empresa está cadastrada. Escolha cartão, Pix ou experimente o sistema por 24 horas, sem pagamento antecipado.';
+  const title=document.createElement('strong');title.textContent=lastAccessState?.status==='trial'?'Seu teste gratuito de 7 dias terminou':'Assinatura necessária para liberar sua frota';title.style.cssText='font-size:19px;color:#ffe2a0';
+  const details=document.createElement('span');details.textContent=lastAccessState?.status==='trial'?'Seus veículos e registros estão preservados. Escolha Pix ou cartão para continuar com acesso ao painel.':'Sua empresa está cadastrada. Escolha cartão, Pix ou experimente o sistema por 7 dias, sem pagamento antecipado.';
   hint.append(title,details);
  }
  for(const id of ['xrm-bill-company-form','xrm-bill-contract-form','xrm-bill-member-form']){
