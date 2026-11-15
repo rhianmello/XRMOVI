@@ -1,4 +1,12 @@
 // Show a server-sourced trial countdown. Never use browser time to AUTHORIZE access.
+// Pure formatter: the server supplies the expiry; this only renders remaining time.
+export function formatTrialRemaining(milliseconds){
+ const seconds=Math.ceil(Math.max(0,milliseconds)/1000);
+ const days=Math.floor(seconds/86400),hours=Math.floor(seconds%86400/3600),mins=Math.floor(seconds%3600/60),secs=seconds%60;
+ const time=[hours,mins,secs].map(x=>String(x).padStart(2,'0')).join(':');
+ return (days>0?days+' dia'+(days===1?'':'s')+' e ':'')+time+' (h:min:s)';
+}
+
 export function setupTrialCountdown({onExpire}){
  const banner=document.createElement('aside');
  banner.id='xrmovi-trial-clock';
@@ -11,10 +19,7 @@ export function setupTrialCountdown({onExpire}){
  function stop(){if(timer){clearInterval(timer);timer=null;}banner.hidden=true;remainingAtSync=0;fired=false}
  function tick(){
   const left=Math.max(0,remainingAtSync-(performance.now()-monotonicStart));
-  const seconds=Math.ceil(left/1000);
-  const days=Math.floor(seconds/86400),hours=Math.floor(seconds%86400/3600),mins=Math.floor(seconds%3600/60),secs=seconds%60;
-  const time=[hours,mins,secs].map(x=>String(x).padStart(2,'0')).join(':');
-  banner.textContent='⏳ Seu teste gratuito termina em '+(days>0?days+' dia'+(days===1?'':'s')+' e ':'')+time+' (h:min:s)';
+  banner.textContent='⏳ Seu teste gratuito termina em '+formatTrialRemaining(left);
   if(left<=0&&!fired){fired=true;void onExpire?.()}
  }
  function sync(state){
