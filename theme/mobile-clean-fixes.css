@@ -1,0 +1,304 @@
+/* XRMOVI — refinamento do tema claro | 2026-11-14
+ * Regras para os componentes reais vistos no mobile, após o tema principal.
+ * Somente aparência; não altera cálculos, permissões, relatórios ou eventos.
+ */
+
+/* 1. A regra "authoritative" do dashboard-premium definia azul escuro
+   com !important e seletor #view-dashboard; preservar a estrutura mas corrigir a tinta. */
+body.fleet-page #view-dashboard .fleet-overview-grid > .fleet-panel,
+body.fleet-page #view-dashboard .fleet-insights-grid > .fleet-panel.fleet-insight-card{
+  background:#fff!important;
+  background-color:#fff!important;
+  background-image:none!important;
+  color:#142b42!important;
+  border:1px solid #d7e5ee!important;
+  border-radius:16px!important;
+  box-shadow:0 8px 26px rgba(20,43,66,.055)!important;
+}
+body.fleet-page #view-dashboard .fleet-overview-grid > .fleet-panel > header,
+body.fleet-page #view-dashboard .fleet-insights-grid > .fleet-panel > header{
+  background:#f8fbfd!important;
+  background-image:none!important;
+  color:#142b42!important;
+  border-bottom:1px solid #e2eaf1!important;
+}
+body.fleet-page #view-dashboard .fleet-overview-grid > .fleet-panel > header h2,
+body.fleet-page #view-dashboard .fleet-insights-grid > .fleet-panel > header h2{
+  color:#142b42!important;
+}
+body.fleet-page #view-dashboard .fleet-overview-grid > .fleet-panel > header small,
+body.fleet-page #view-dashboard .fleet-insights-grid > .fleet-panel > header small{
+  color:#526579!important;
+}
+body.fleet-page #view-dashboard .fleet-overview-grid > .fleet-panel > header .eyebrow,
+body.fleet-page #view-dashboard .fleet-insights-grid > .fleet-panel > header .eyebrow{
+  color:#087986!important;
+}
+body.fleet-page #view-dashboard .fleet-action-panel .fleet-alert-preview-grid,
+body.fleet-page #view-dashboard .fleet-action-panel #alert-preview{
+  background:#fff!important;
+  color:#344c63!important;
+}
+body.fleet-page #view-dashboard .fleet-action-panel .fleet-alert-card,
+body.fleet-page #view-dashboard .fleet-action-panel .fleet-ptran-entry{
+  background:#f5f9fc!important;
+  background-image:none!important;
+  border:1px solid #d8e6ef!important;
+  color:#142b42!important;
+  box-shadow:none!important;
+}
+body.fleet-page #view-dashboard .fleet-action-panel :is(.fleet-alert-card,.fleet-ptran-entry) :is(strong,b){
+  color:#142b42!important;
+}
+body.fleet-page #view-dashboard .fleet-action-panel :is(.fleet-alert-card,.fleet-ptran-entry) small{
+  color:#526579!important;
+}
+body.fleet-page #view-dashboard .fleet-action-panel #alert-preview > :is(p,span,div):not(.fleet-alert-card):not(.fleet-ptran-entry){
+  color:#475569!important;
+}
+body.fleet-page #view-dashboard .fleet-action-panel .fleet-link-button{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  min-height:38px;
+  padding:8px 12px;
+  background:#fff!important;
+  color:#0759a5!important;
+  border:1px solid #bdd7e8!important;
+  border-radius:9px;
+  font-size:12px!important;
+  font-weight:700;
+}
+
+/* 2. Vencimentos: os rótulos e as trilhas eram criados por JS com cor clara
+   e barra escura; as barras preenchidas continuam com a cor por prazo. */
+body.fleet-page #view-dashboard .fleet-expiry-panel .fleet-chart-shell,
+body.fleet-page #view-dashboard .fleet-expiry-panel .fleet-expiry-shell{
+  background:#fff!important;
+  color:#142b42!important;
+}
+body.fleet-page #view-dashboard #v3-expiry-bars{
+  background:#fff!important;
+}
+body.fleet-page #view-dashboard #v3-expiry-bars > div{
+  color:#344c63!important;
+  font-size:12px!important;
+  line-height:1.45!important;
+}
+body.fleet-page #view-dashboard #v3-expiry-bars > div > span{
+  color:#344c63!important;
+  opacity:1!important;
+}
+body.fleet-page #view-dashboard #v3-expiry-bars > div > strong{
+  color:#142b42!important;
+  font-weight:800!important;
+}
+body.fleet-page #view-dashboard #v3-expiry-bars > div > div{
+  background:#e7eff5!important;
+  border:1px solid #dbe6ee!important;
+  border-radius:999px!important;
+}
+body.fleet-page #view-dashboard #v3-expiry-bars > div > div > div{
+  border-radius:999px!important;
+}
+body.fleet-page #view-dashboard :is(#expiry-empty,#situation-empty,.fleet-chart-empty){
+  color:#475569!important;
+}
+
+/* 3. Prontidão operacional: cartões da legenda escuros ainda passavam por
+   cima dos tokens claros; manter pontos de status e valores. */
+body.fleet-page #view-dashboard .fleet-status-panel .fleet-donut-layout,
+body.fleet-page #view-dashboard .fleet-status-panel .fleet-chart-shell{
+  background:#fff!important;
+  color:#142b42!important;
+}
+body.fleet-page #view-dashboard .fleet-status-panel #situation-legend .xrm-status-legend-item{
+  background:#f4f8fb!important;
+  background-image:none!important;
+  border:1px solid #d8e6ef!important;
+  color:#344c63!important;
+  box-shadow:none!important;
+}
+body.fleet-page #view-dashboard .fleet-status-panel #situation-legend .xrm-status-legend-item > span:nth-child(2){
+  color:#344c63!important;
+}
+body.fleet-page #view-dashboard .fleet-status-panel #situation-legend .xrm-status-legend-item > strong{
+  color:#142b42!important;
+  font-weight:800!important;
+}
+body.fleet-page #view-dashboard .fleet-status-panel #v3-situation-donut > div{
+  background:#fff!important;
+  color:#142b42!important;
+}
+body.fleet-page #view-dashboard .fleet-status-panel .fleet-donut-center strong{
+  color:#142b42!important;
+}
+
+/* 4. Multas: card gerado pelo fines-module era cinza com texto branco
+   devido à combinação entre o tema novo e os estilos antigos. */
+body.fleet-page #view-dashboard #xrm-fines-quick.xrm-fines-quick{
+  background:#f0f8fc!important;
+  border:1px solid #c8e1ef!important;
+  border-left:4px solid #087986!important;
+  color:#344c63!important;
+  box-shadow:0 5px 18px rgba(20,43,66,.04)!important;
+}
+body.fleet-page #view-dashboard #xrm-fines-quick.xrm-fines-quick strong{
+  color:#142b42!important;
+}
+body.fleet-page #view-dashboard #xrm-fines-quick.xrm-fines-quick span{
+  color:#475569!important;
+}
+body.fleet-page #view-dashboard #xrm-fines-quick.xrm-fines-quick .fleet-button{
+  background:#fff!important;
+  color:#0759a5!important;
+  border:1px solid #bdd8e8!important;
+  box-shadow:none!important;
+}
+/* Estados de alerta continuam significativos, mas sem fundo agressivo. */
+body.fleet-page .xrm-fines-kpis article{
+  background:#fff!important;
+  border-color:#dbe5ee!important;
+}
+body.fleet-page .xrm-fines-kpis :is(strong,small){color:#142b42!important}
+body.fleet-page .xrm-fines-modal-panel{
+  background:#fff!important;
+  color:#142b42!important;
+  border-color:#dbe5ee!important;
+}
+body.fleet-page .xrm-fines-modal-close{
+  background:#edf5fa!important;
+  color:#0759a5!important;
+}
+
+/* 5. KM e troca de óleo: pequenos cards ainda tinham fundo azul-marinho. */
+body.fleet-page #view-dashboard .xrm-mileage-dashboard .xrm-mileage-dash-head strong{
+  color:#142b42!important;
+}
+body.fleet-page #view-dashboard .xrm-mileage-dashboard .xrm-mileage-dash-head small,
+body.fleet-page #view-dashboard .xrm-mileage-dashboard .xrm-mileage-dash-lines{
+  color:#475569!important;
+}
+body.fleet-page #view-dashboard .xrm-mileage-dashboard .xrm-mileage-dash-chip{
+  background:#f4f9fc!important;
+  border:1px solid #d1e3ee!important;
+  color:#344c63!important;
+  border-radius:10px!important;
+}
+body.fleet-page #view-dashboard .xrm-mileage-dashboard .xrm-mileage-dash-chip span{
+  color:#344c63!important;
+  font-size:11px!important;
+}
+body.fleet-page #view-dashboard .xrm-mileage-dashboard .xrm-mileage-dash-chip strong{
+  color:#087986!important;
+}
+body.fleet-page #view-dashboard .xrm-mileage-dashboard .xrm-mileage-dash-chip.oil strong{
+  color:#8d5c00!important;
+}
+body.fleet-page #view-dashboard .xrm-mileage-dashboard .xrm-mileage-dash-chip.pending strong{
+  color:#a51e35!important;
+}
+body.fleet-page #view-dashboard .xrm-mileage-dashboard .xrm-mileage-dash-lines > div{
+  background:#eaf3f8!important;
+  color:#344c63!important;
+}
+body.fleet-page .xrm-mileage-toolbar,
+body.fleet-page .xrm-mileage-bulk,
+body.fleet-page .xrm-mileage-modal{
+  background:#fff!important;
+  border-color:#dbe5ee!important;
+  color:#142b42!important;
+}
+body.fleet-page :is(.xrm-mileage-heading h2,.xrm-mileage-toolbar label,
+ .xrm-mileage-bulk>strong,.xrm-mileage-modal h2){color:#142b42!important}
+body.fleet-page .xrm-mileage-btn:not(.primary){
+  background:#fff!important;
+  color:#0759a5!important;
+  border-color:#bcd4e3!important;
+}
+
+/* 6. Visualização geral: outros subcards e linhas carregavam fundo escuro. */
+body.fleet-page #view-dashboard .fleet-insights-grid :is(.fleet-insight-stat,.fleet-insight-driver,.fleet-insight-rank){
+  background:#f5f9fc!important;
+  background-image:none!important;
+  border-color:#dbe5ee!important;
+  color:#344c63!important;
+}
+body.fleet-page #view-dashboard .fleet-insights-grid :is(.fleet-insight-stat,.fleet-insight-driver,.fleet-insight-rank) strong{
+  color:#142b42!important;
+}
+body.fleet-page #view-dashboard .fleet-insights-grid :is(.fleet-insight-stat,.fleet-insight-driver,.fleet-insight-rank) :is(span,small){
+  color:#475569!important;
+}
+body.fleet-page #view-dashboard .fleet-insight-period,
+body.fleet-page #view-dashboard .fleet-insight-subheading{
+  color:#475569!important;
+}
+
+/* 7. MENU MOBILE DA LANDING: é o elemento summary de details.xrm-mobile-nav,
+   não os seletores hipotéticos .menu-toggle/.nav-toggle. */
+@media(max-width:850px){
+ body.xrm-sales-page header .nav .xrm-mobile-nav > summary{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  min-width:44px!important;
+  min-height:44px!important;
+  padding:8px 12px!important;
+  border:1.5px solid #8db6cd!important;
+  border-radius:11px!important;
+  background:#eef6fb!important;
+  background-image:none!important;
+  color:#07518b!important;
+  font-size:20px!important;
+  font-weight:900!important;
+  line-height:1!important;
+  opacity:1!important;
+  text-shadow:none!important;
+  box-shadow:0 2px 10px rgba(20,43,66,.09)!important;
+ }
+ body.xrm-sales-page header .nav .xrm-mobile-nav[open] > summary{
+  background:#dff0f8!important;
+  border-color:#0759a5!important;
+  color:#07518b!important;
+ }
+ body.xrm-sales-page header .nav .xrm-mobile-nav > summary:focus-visible{
+  outline:3px solid #087986!important;
+  outline-offset:3px!important;
+ }
+ body.xrm-sales-page header .nav .xrm-mobile-nav nav{
+  background:#fff!important;
+  border:1px solid #cadfea!important;
+  color:#142b42!important;
+  box-shadow:0 18px 38px rgba(20,43,66,.16)!important;
+ }
+ body.xrm-sales-page header .nav .xrm-mobile-nav nav :is(a,button){
+  color:#142b42!important;
+  opacity:1!important;
+ }
+ body.xrm-sales-page header .nav .xrm-mobile-nav nav :is(a,button):hover{
+  background:#edf6fb!important;
+ }
+}
+
+/* 8. Menu inferior: inativos visíveis e ativo verde-petróleo legível. */
+@media(max-width:760px){
+ body.fleet-page .xrm-mobile-bottom-nav{
+  background:rgba(255,255,255,.98)!important;
+  border-top:1px solid #dbe5ee!important;
+ }
+ body.fleet-page .xrm-mobile-bottom-nav :is(button,a):not(.active):not([aria-current="page"]){
+  color:#526f84!important;
+ }
+ body.fleet-page .xrm-mobile-bottom-nav :is(button,a).active,
+ body.fleet-page .xrm-mobile-bottom-nav :is(button,a)[aria-current="page"]{
+  color:#087986!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ body.fleet-page #view-dashboard .fleet-overview-grid > .fleet-panel,
+ body.xrm-sales-page header .nav .xrm-mobile-nav > summary{
+  transition:none!important;
+ }
+}
