@@ -22,11 +22,15 @@ test('Clientes displays its own search, controls, table and dedicated presence c
  assert.ok(from>=0&&to>from);
  const section=ui.slice(from,to);
  for(const id of ['customer-search','commercial-filter-notice','commercial-filter-label','commercial-filter-toggle','customers-body'])assert.ok(section.includes('id="'+id+'"'),id);
- assert.match(section, /<th>Cliente \/ empresas<\/th><th>Presença<\/th>/);
+ assert.match(section, /<th>Cliente \/ empresas<\/th><th>Plano<\/th>/);
  assert.match(section,/class="table-wrap customer-table-wrap"/);
  assert.doesNotMatch(section,/id="k-online"|id="xrm-billing-health"|id="xrm-mail-health"/);
- assert.match(ui,/presenceCell\.append\(makePresenceBadge\(c\.owner_id\)\)/);
- assert.match(ui,/emptyRows\(root,8,'Nenhum cliente encontrado\.'/);
+ assert.match(ui,/identity\.append\(bold,makePresenceBadge\(c\.owner_id\)\)/);
+ assert.match(ui,/emptyRows\(root,7,message\)/);
+ assert.match(ui,/Nenhum cliente externo encontrado\. Clique em "Mostrar internos e testes" para ver os demais cadastros\./);
+ assert.match(ui,/Nenhum cliente corresponde à pesquisa\. Limpe a busca ou revise os filtros\./);
+ assert.match(ui,/identity\.append\(node\('span',u\.email\),makePresenceBadge\(u\.id\)\)/);
+ assert.doesNotMatch(section,/<th>Presença<\/th>/);
 });
 
 test('Payments keeps its own commercial toggle and presence uses existing owner-only mechanism',()=>{
@@ -41,7 +45,8 @@ test('Payments keeps its own commercial toggle and presence uses existing owner-
 
 test('mobile retains horizontal client table access and responsive filter controls',()=>{
  assert.match(ui,/\.customer-table-wrap\{[^}]*overflow-x:auto/);
- assert.match(ui,/\.customers-table\{min-width:1040px/);
+ assert.match(ui,/\.customers-table\{min-width:930px/);
+ assert.match(ui,/\.customer-identity-line\{display:flex;align-items:center;gap:7px;flex-wrap:wrap/);
  assert.match(ui,/@media\(max-width:620px\)\{\.xrm-admin-page \.customer-filter-bar/);
 });
 
