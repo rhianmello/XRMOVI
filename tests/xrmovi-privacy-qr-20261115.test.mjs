@@ -7,6 +7,16 @@ const root=path.resolve(import.meta.dirname,'..');
 const sql=fs.readFileSync(path.join(root,'supabase/migrations/20261115170000_xrmovi_qr_proof_boundary_rate_guards.sql'),'utf8');
 const service=sql.slice(sql.indexOf('CREATE OR REPLACE FUNCTION public.xrmovi_qr_service_submit'));
 const mileage=sql.slice(sql.indexOf('CREATE OR REPLACE FUNCTION public.xrmovi_qr_submit'),sql.indexOf('CREATE OR REPLACE FUNCTION public.xrmovi_qr_service_submit'));
+test('exactly two complete PL/pgSQL function bodies, with no trailing replacement fragment',()=>{
+ assert.equal((sql.match(/AS \\$function\\$/g)||[]).length,2);
+ assert.equal((sql.match(/end \\$function\\$/g)||[]).length,2);
+ assert.equal(mileage.trim().endsWith('end $function$'),true);
+ assert.equal((mileage.match(/insert into xrmovi\\.odometer_reports/g)||[]).length,1);
+ assert.equal((service.match(/insert into xrmovi\\.driver_service_submissions/g)||[]).length,1);
+ assert.ok(mileage.includes("[.](jpg|png|webp)$')"));
+ assert.ok(service.includes("[.](jpg|png|webp)$')"));
+});
+
 test('QR mileage quota is still 6/hour and checks after row lock',()=>{
  const lock=mileage.indexOf('for update;');
  const quota=mileage.indexOf('select count(*) into recent');
