@@ -27,3 +27,58 @@ jobs:
         run: npm run test:browser
       - name: Audited commercial classification and revenue regression
         run: node --test tests/admin-payment-filters.test.mjs tests/admin-commercial-classification-sql.test.mjs tests/admin-commercial-history.test.mjs tests/admin-auth-mail-guidance.test.mjs tests/marketing-conversions.test.mjs tests/marketing-external-only.test.mjs tests/password-recovery-gate.test.mjs
+
+  capture-public-pages:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx playwright install --with-deps chromium
+      - name: Capture real public XRMOVI pages for Google Ads selection
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const { chromium } = require('playwright');
+          (async()=>{
+            const browser = await chromium.launch({headless:true});
+            fs.mkdirSync('ad-screenshots',{recursive:true});
+            const routes=[
+              ['01-home','/'],
+              ['02-recursos','/recursos/'],
+              ['03-exemplos','/exemplos-de-uso/'],
+              ['04-abastecimento','/controle-de-abastecimento/'],
+              ['05-manutencao','/controle-de-manutencao/'],
+              ['06-qr-quilometragem','/controle-quilometragem-qr-code/'],
+              ['07-painel','/v3/']
+            ];
+            for(const [name,route] of routes){
+              for(const [format,width,height] of [['horizontal',1440,900],['quadrado',1200,1200]]){
+                const page=await browser.newPage({viewport:{width,height},deviceScaleFactor:1});
+                try{
+                  const url='https://xrmovi.com.br'+route;
+                  const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
+                  await page.waitForTimeout(1800);
+                  const title=await page.title();
+                  const filename='ad-screenshots/'+name+'-'+format+'.png';
+                  await page.screenshot({path:filename,animations:'disabled'});
+                  console.log(filename, response?.status(),title,page.url());
+                }catch(error){console.log('Capture failed',route,format,String(error));}
+                await page.close();
+              }
+            }
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exitCode=1});
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xrmovi-capturas-reais-publicas
+          path: ad-screenshots/*.png
+          if-no-files-found: warn
+          retention-days: 7
