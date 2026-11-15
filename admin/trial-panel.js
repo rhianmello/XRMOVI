@@ -36,7 +36,7 @@ export function renderTrialPanel(root, payload, {refresh} = {}) {
   const heading=make('section','','panel trial-panel');
   const bar=make('div','','panel-head trial-panel-header');
   const titles=make('div');
-  titles.append(make('h2','Teste gratuito de 24 horas'),make('small','Cadastros que realmente iniciaram o teste no servidor · horário de Brasília'));
+  titles.append(make('h2','Teste gratuito de 7 dias'),make('small','Cadastros que realmente iniciaram o teste no servidor · horário de Brasília'));
   const update=make('button','Atualizar agora','btn ghost');update.type='button';
   update.addEventListener('click',()=>refresh?.());
   bar.append(titles,update);heading.append(bar);
@@ -62,7 +62,7 @@ export function renderTrialPanel(root, payload, {refresh} = {}) {
   const metrics=make('div','','trial-metrics');
   const kpis=[
     ['Iniciados','started','Testes iniciados no período'],
-    ['Em andamento','running','Prazo de 24h ainda válido'],
+    ['Em andamento','running','Prazo de 7 dias ainda válido'],
     ['Via anúncios','ads','UTM ou clique pago identificado'],
     ['Acesso direto','direct','Origem direta com consentimento'],
     ['Encerrados','ended','Sem pagamento confirmado'],
