@@ -115,3 +115,11 @@ test('client rows include internal and homologation by default without changing 
  const external=getter(info,false,isOwnerAccount,classificationOf);
  assert.deepEqual(external.map(x=>x.owner_id),['3'],'button hides internal/homologation without changing classifications');
 });
+
+test('visible internal accounts also appear in recent registrations and messaging',()=>{
+ assert.match(ui,/customerAccounts\(\)\.slice\(0,7\)\.forEach\(c=>recent\.append\(rowCustomer\(c\)\)\)/);
+ assert.match(ui,/const ordered=\[\.\.\.customerAccounts\(\)\]\.sort/);
+ assert.match(ui,/const a=customerAccounts\(\)\.find\(x=>x\.id===threadId\)/);
+ assert.match(ui,/identity\.append\(bold,makePresenceBadge\(c\.owner_id\)\)/);
+ assert.match(ui,/identity\.append\(node\('span',u\.email\),makePresenceBadge\(u\.id\)\)/);
+});
