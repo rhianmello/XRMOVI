@@ -1,0 +1,32 @@
+name: XRMOVI live integrations read-only
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tests/production-integrations-readonly.live.cjs'
+      - '.github/workflows/integrations-readonly.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tests/production-integrations-readonly.live.cjs'
+      - '.github/workflows/integrations-readonly.yml'
+      - 'auth/**'
+      - 'redefinir-senha.html'
+      - 'v3/config.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xrmovi-readonly-integration-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  auth-and-billing-readonly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Real HTTPS checks — GET only, no credentials or customer changes
+        run: node --test --test-concurrency=1 tests/production-integrations-readonly.live.cjs
