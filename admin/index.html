@@ -476,6 +476,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.class
 window.addEventListener('resize',()=>{if(!ownerMobile())ownerDrawer(false)});
 function openTab(name){
  tab=name;document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===name)));
+ const navLabel=document.querySelector('.owner-sidebar [data-tab="'+name+'"] .owner-nav-label');
+ if(navLabel)el('owner-mobile-context').textContent=navLabel.textContent.trim();
+ if(ownerMobile()&&document.body.classList.contains('owner-drawer-open'))ownerDrawer(false);
  document.querySelectorAll('.tab-view').forEach(view=>view.hidden=view.id!=='view-'+name);
  if(name==='messages'&&threadId)void loadThread();
  if(name==='seo')void loadSeo();
