@@ -63,3 +63,78 @@ test('vendas e páginas de apoio seguem utilizáveis em celular estreito',async(
     await page.close();
   }
 });
+
+
+test('dashboard executivo e cabeçalhos antes escuros ficam realmente claros no mobile',async()=>{
+  const page=await load('/v3/',{width:390,height:844});
+  for(const selector of [
+    '#view-dashboard .fleet-action-panel',
+    '#view-dashboard .fleet-expiry-panel',
+    '#view-dashboard .fleet-status-panel',
+    '#view-dashboard .fleet-action-panel > header',
+    '#view-dashboard .fleet-expiry-panel > header',
+    '#view-dashboard .fleet-status-panel > header'
+  ]){
+    const actual=await colors(page,selector);
+    assert.ok(['rgb(255, 255, 255)','rgb(248, 251, 253)'].includes(actual.bg),
+      selector+' must have light surface, got '+actual.bg);
+    assert.equal(actual.fg,'rgb(20, 43, 66)',selector+' readable foreground');
+  }
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),true);
+  await page.close();
+});
+
+test('legenda, gráfico de vencimentos e aviso de multa gerados dinamicamente permanecem legíveis',async()=>{
+ const page=await load('/v3/',{width:390,height:844});
+ await page.evaluate(()=>{
+  const bars=document.createElement('div');bars.id='v3-expiry-bars';
+  const row=document.createElement('div');row.style.color='#bdd3e4';
+  const name=document.createElement('span');name.textContent='Vencidos';
+  const track=document.createElement('div');track.style.background='#173147';
+  const fill=document.createElement('div');fill.style.background='#e66a77';fill.style.width='25%';
+  const count=document.createElement('strong');count.textContent='2';
+  track.append(fill);row.append(name,track,count);bars.append(row);
+  document.querySelector('#expiry-panel').append(bars);
+  const legend=document.createElement('div');legend.className='xrm-status-legend-item';
+  legend.innerHTML='<span></span><span>Operacionais (Ativo)</span><strong>2</strong>';
+  document.querySelector('#situation-legend').append(legend);
+  const fine=document.createElement('div');fine.id='xrm-fines-quick';fine.className='xrm-fines-quick';
+  fine.innerHTML='<div><strong>0 multa(s) pendente(s)</strong><span> · R$ 0,00</span></div><button class="fleet-button">Ver multas</button>';
+  document.querySelector('#view-dashboard').append(fine);
+  const chip=document.createElement('div');chip.className='xrm-mileage-dash-chip';
+  chip.innerHTML='<span>Troca de óleo</span><strong>0</strong>';
+  document.querySelector('.xrm-mileage-dashboard').append(chip);
+ });
+ for(const [selector,bg,fg] of [
+   ['#v3-expiry-bars > div > div','rgb(231, 239, 245)',null],
+   ['#v3-expiry-bars > div > span',null,'rgb(52, 76, 99)'],
+   ['#v3-expiry-bars > div > strong',null,'rgb(20, 43, 66)'],
+   ['#situation-legend .xrm-status-legend-item','rgb(244, 248, 251)','rgb(52, 76, 99)'],
+   ['#situation-legend .xrm-status-legend-item strong',null,'rgb(20, 43, 66)'],
+   ['#xrm-fines-quick','rgb(240, 248, 252)','rgb(52, 76, 99)'],
+   ['#xrm-fines-quick strong',null,'rgb(20, 43, 66)'],
+   ['.xrm-mileage-dashboard .xrm-mileage-dash-chip','rgb(244, 249, 252)','rgb(52, 76, 99)']
+ ]){
+  const actual=await colors(page,selector);
+  if(bg)assert.equal(actual.bg,bg,selector+' background');
+  if(fg)assert.equal(actual.fg,fg,selector+' foreground');
+ }
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),true);
+ await page.close();
+});
+
+test('menu real da landing: hamburger visível, foco perceptível e abre no celular',async()=>{
+ const page=await load('/',{width:390,height:844});
+ const summary=page.locator('header .xrm-mobile-nav > summary');
+ const actual=await colors(page,'header .xrm-mobile-nav > summary');
+ assert.equal(actual.bg,'rgb(238, 246, 251)');
+ assert.equal(actual.fg,'rgb(7, 81, 139)');
+ assert.equal(await summary.evaluate(el=>getComputedStyle(el).opacity),'1');
+ const size=await summary.boundingBox();
+ assert.ok(size.width>=44 && size.height>=44,'touch target >= 44px');
+ await summary.click();
+ assert.equal(await page.locator('header .xrm-mobile-nav').evaluate(el=>el.open),true);
+ assert.equal((await colors(page,'header .xrm-mobile-nav nav')).bg,'rgb(255, 255, 255)');
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),true);
+ await page.close();
+});
