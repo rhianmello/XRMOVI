@@ -51,7 +51,7 @@ begin
  );
  -- Leituras do motorista permanecem pendentes até decisão autenticada do gestor.
  return jsonb_build_object('status',status_,'reason',reason);
-end $function$
+end $function$;
 
 
 CREATE OR REPLACE FUNCTION public.xrmovi_qr_service_submit(token uuid, p_kind text, p_driver text, p_date date, p_meter numeric, p_liters numeric, p_cost numeric, p_station text, p_oil_type text, p_notes text, p_photo text)
@@ -87,7 +87,7 @@ begin
  insert into xrmovi.driver_service_submissions(company_id,vehicle_id,kind,driver_name,event_date,meter,liters,total_cost,station,oil_type,notes,photo_path)
  values(v.company_id,v.vehicle_id,p_kind,trim(p_driver),p_date,p_meter,p_liters,p_cost,left(trim(p_station),150),left(trim(p_oil_type),150),left(trim(p_notes),1000),p_photo) returning id into new_id;
  return new_id;
-end $function$
+end $function$;
 
 
 revoke all on function public.xrmovi_qr_submit(uuid,numeric,text,text) from public,anon,authenticated;
