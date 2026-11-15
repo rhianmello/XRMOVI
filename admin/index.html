@@ -104,9 +104,11 @@ footer{padding:20px;text-align:center;color:#849eae;font-size:11px}
 .xrm-admin-page .customer-filter-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0;padding:13px 18px;border-bottom:1px solid #dfe9ef;background:#f7fafc;color:#456071;font-size:12px}
 .xrm-admin-page .customer-filter-bar .btn{flex:0 0 auto}
 .xrm-admin-page .customer-table-wrap{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
-.xrm-admin-page .customers-table{min-width:1040px}
-.xrm-admin-page .customers-table th:nth-child(2),.xrm-admin-page .customers-table td:nth-child(2){white-space:nowrap;min-width:115px}
-.xrm-admin-page .customers-table .customer-presence{margin-left:0}
+.xrm-admin-page .customers-table{min-width:930px}
+
+.xrm-admin-page .customer-identity-line{display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-width:0}
+.xrm-admin-page .customer-identity-line>span,.xrm-admin-page .customer-identity-line>b{overflow-wrap:anywhere}
+.xrm-admin-page .customer-identity-line .customer-presence{margin-left:0;flex:0 0 auto}
 @media(max-width:620px){.xrm-admin-page .customer-filter-bar{align-items:stretch;flex-direction:column}.xrm-admin-page .customer-filter-bar .btn{width:100%;white-space:normal}.xrm-admin-page #view-customers>.panel-head{align-items:stretch}.xrm-admin-page #view-customers .search{width:100%}}
 </style>
 </head><body class="xrm-admin-page">
@@ -174,7 +176,7 @@ footer{padding:20px;text-align:center;color:#849eae;font-size:11px}
    <section class="panel" style="margin-top:17px"><div class="panel-head"><h2>Últimos cadastros</h2><button class="btn ghost" data-goto="customers">Ver clientes</button></div><div class="table-wrap"><table><thead><tr><th>Cliente / empresa</th><th>Plano</th><th>Situação</th><th>Entrada</th><th>Autorização</th></tr></thead><tbody id="recent-customers"></tbody></table></div></section>
    <div class="notice">Os indicadores mostram somente contas classificadas explicitamente como <strong>Cliente externo</strong> e pagamentos confirmados dessas contas. Contas pendentes de classificação não entram como vendas; todo pagamento permanece preservado no histórico do banco.</div>
   </div>
-  <section id="view-customers" class="panel tab-view" hidden><div class="panel-head"><h2>Contas cadastradas e classificação</h2><input class="search" id="customer-search" placeholder="Buscar cliente ou empresa…" type="search"></div><div class="customer-filter-bar" id="commercial-filter-notice"><span id="commercial-filter-label">Contas pendentes de classificação aparecem para revisão, mas não entram nos indicadores comerciais.</span><button class="btn ghost" id="commercial-filter-toggle" type="button">Mostrar internos e testes</button></div><div class="notice" style="margin:0 18px 12px">A autorização manual libera a operação por prazo definido, mas <strong>não confirma pagamento</strong>. A classificação externa/interna/homologação exige confirmação e justificativa auditada; <strong>não altera acesso, pagamento ou assinatura</strong>. Contas sem classificação não entram nos KPIs comerciais.</div><div class="table-wrap customer-table-wrap" role="region" aria-label="Lista de clientes; role horizontalmente para visualizar as colunas" tabindex="0"><table class="customers-table"><thead><tr><th>Cliente / empresas</th><th>Presença</th><th>Plano</th><th>Assinatura</th><th>Veículos</th><th>Acesso</th><th>Entrada</th><th>Ações</th></tr></thead><tbody id="customers-body"></tbody></table></div>
+  <section id="view-customers" class="panel tab-view" hidden><div class="panel-head"><h2>Contas cadastradas e classificação</h2><input class="search" id="customer-search" placeholder="Buscar cliente ou empresa…" type="search"></div><div class="customer-filter-bar" id="commercial-filter-notice"><span id="commercial-filter-label">Contas pendentes de classificação aparecem para revisão, mas não entram nos indicadores comerciais.</span><button class="btn ghost" id="commercial-filter-toggle" type="button">Mostrar internos e testes</button></div><div class="notice" style="margin:0 18px 12px">A autorização manual libera a operação por prazo definido, mas <strong>não confirma pagamento</strong>. A classificação externa/interna/homologação exige confirmação e justificativa auditada; <strong>não altera acesso, pagamento ou assinatura</strong>. Contas sem classificação não entram nos KPIs comerciais.</div><div class="table-wrap customer-table-wrap" role="region" aria-label="Lista de clientes; role horizontalmente para visualizar as colunas" tabindex="0"><table class="customers-table"><thead><tr><th>Cliente / empresas</th><th>Plano</th><th>Assinatura</th><th>Veículos</th><th>Acesso</th><th>Entrada</th><th>Ações</th></tr></thead><tbody id="customers-body"></tbody></table></div>
     <div style="padding:16px 18px;border-top:1px solid rgba(142,185,201,.18)">
      <div class="panel-head" style="padding:0 0 12px"><h3>Histórico de classificações</h3><small>Até 100 alterações recentes; somente administradores</small></div>
      <p class="notice" style="margin:0 0 10px">Cada mudança registra quem classificou, quando, o valor anterior, o novo e a justificativa. A classificação não modifica pagamentos nem acesso à frota.</p>
@@ -284,8 +286,10 @@ function rowCustomer(c,full=false){
  const manual=Boolean(c.manual_access?.active&&Date.parse(c.manual_access.valid_until)>Date.now());
   const recurring=Boolean(c.recurring?.has_recurring);
  const manualUntil=manual?date(c.manual_access.valid_until):'';
- const tr=node('tr');const first=node('td');const bold=node('b',c.email),companies=node('span',(c.companies||[]).map(x=>x.name).join(' · ')||'Sem empresa','sub'),classification=node('span',classificationLabel(c),'sub');first.append(bold,companies,classification);if(!full)first.insertBefore(makePresenceBadge(c.owner_id),companies);tr.append(first);
- if(full){const presenceCell=node('td');presenceCell.append(makePresenceBadge(c.owner_id));tr.append(presenceCell)}
+ const tr=node('tr'),first=node('td'),identity=node('div','','customer-identity-line');
+ const bold=node('b',c.email),companies=node('span',(c.companies||[]).map(x=>x.name).join(' · ')||'Sem empresa','sub'),classification=node('span',classificationLabel(c),'sub');
+ identity.append(bold,makePresenceBadge(c.owner_id));
+ first.append(identity,companies,classification);tr.append(first);
  cell(tr,(c.plan||'—').toUpperCase()+(c.price?' · '+money(c.price):''));
  const expired=c.status==='trial'&&c.trial_end&&Date.parse(c.trial_end)<Date.now();
  // Show manual operating access in the recent list; preserve financial status in full customer details.
@@ -376,7 +380,19 @@ function render(){
 function renderCustomers(){
  const root=el('customers-body');root.replaceChildren();const q=el('customer-search').value.toLocaleLowerCase('pt-BR');
  const list=commercialAccounts().filter(c=>(c.email+' '+(c.companies||[]).map(x=>x.name).join(' ')).toLocaleLowerCase('pt-BR').includes(q));
- for(const c of list)root.append(rowCustomer(c,true));if(!list.length)emptyRows(root,8,'Nenhum cliente encontrado.')
+ for(const c of list)root.append(rowCustomer(c,true));
+ if(!list.length){
+  const all=commercialAccounts();
+  const hasOtherAccounts=(info.accounts||[]).some(a=>!isOwnerAccount(a)&&['internal','homologation'].includes(classificationOf(a)));
+  const message=q
+    ?'Nenhum cliente corresponde à pesquisa. Limpe a busca ou revise os filtros.'
+    :!showTestAccounts&&hasOtherAccounts
+      ?'Nenhum cliente externo encontrado. Clique em "Mostrar internos e testes" para ver os demais cadastros.'
+      :!showTestAccounts&&!all.length
+        ?'Nenhuma conta comercial visível. Confira "Todos os cadastros" ou clique em "Mostrar internos e testes" para conferir as contas internas.'
+        :'Nenhum cliente cadastrado nesta lista.';
+  emptyRows(root,7,message);
+ }
 }
 function renderCommercialHistory(){
  const root=el('commercial-history-body');root.replaceChildren();
@@ -401,7 +417,8 @@ function renderSignups(){
  const q=el('signup-search').value.trim().toLocaleLowerCase('pt-BR');
  const rows=signups.filter(u=>u.email?.toLocaleLowerCase('pt-BR').includes(q)&&u.email?.toLowerCase()!=='rhian.udm@gmail.com');
  for(const u of rows){
-  const tr=node('tr'),userCell=node('td');userCell.append(node('span',u.email),makePresenceBadge(u.id));tr.append(userCell);cell(tr,date(u.created_at));
+  const tr=node('tr'),userCell=node('td'),identity=node('div','','customer-identity-line');
+  identity.append(node('span',u.email),makePresenceBadge(u.id));userCell.append(identity);tr.append(userCell);cell(tr,date(u.created_at));
   pill(tr,u.email_confirmed?'Sim':'Não',u.email_confirmed?'active':'pending');
   pill(tr,u.has_signed_in?'Sim':'Não',u.has_signed_in?'active':'pending');
   pill(tr,u.has_billing_account?'Conta comercial criada':u.has_company?'Empresa vinculada':u.has_plan_request?'Plano solicitado':'Cadastro sem plano',u.has_billing_account?'active':'pending');
