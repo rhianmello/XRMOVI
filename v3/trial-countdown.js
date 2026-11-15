@@ -12,8 +12,9 @@ export function setupTrialCountdown({onExpire}){
  function tick(){
   const left=Math.max(0,remainingAtSync-(performance.now()-monotonicStart));
   const seconds=Math.ceil(left/1000);
-  const hours=Math.floor(seconds/3600),mins=Math.floor(seconds%3600/60),secs=seconds%60;
-  banner.textContent='⏳ Teste gratuito termina em '+[hours,mins,secs].map(x=>String(x).padStart(2,'0')).join(':');
+  const days=Math.floor(seconds/86400),hours=Math.floor(seconds%86400/3600),mins=Math.floor(seconds%3600/60),secs=seconds%60;
+  const time=[hours,mins,secs].map(x=>String(x).padStart(2,'0')).join(':');
+  banner.textContent='⏳ Seu teste gratuito termina em '+(days>0?days+' dia'+(days===1?'':'s')+' e ':'')+time+' (h:min:s)';
   if(left<=0&&!fired){fired=true;void onExpire?.()}
  }
  function sync(state){
