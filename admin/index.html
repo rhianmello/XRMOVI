@@ -111,6 +111,80 @@ footer{padding:20px;text-align:center;color:#849eae;font-size:11px}
 .xrm-admin-page .customer-identity-line .customer-presence{margin-left:0;flex:0 0 auto}
 @media(max-width:620px){.xrm-admin-page .customer-filter-bar{align-items:stretch;flex-direction:column}.xrm-admin-page .customer-filter-bar .btn{width:100%;white-space:normal}.xrm-admin-page #view-customers>.panel-head{align-items:stretch}.xrm-admin-page #view-customers .search{width:100%}}
 </style>
+<style id="admin-clients-density-responsive">
+/* One-page desktop density applies only to the Clients tab; no browser zoom required. */
+@media(min-width:761px){
+ .xrm-admin-page #view-customers .customers-table{table-layout:fixed;min-width:960px;width:100%}
+ .xrm-admin-page #view-customers .customers-table th:nth-child(1){width:21%}
+ .xrm-admin-page #view-customers .customers-table th:nth-child(2){width:10%}
+ .xrm-admin-page #view-customers .customers-table th:nth-child(3){width:16%}
+ .xrm-admin-page #view-customers .customers-table th:nth-child(4){width:6%}
+ .xrm-admin-page #view-customers .customers-table th:nth-child(5){width:12%}
+ .xrm-admin-page #view-customers .customers-table th:nth-child(6){width:9%}
+ .xrm-admin-page #view-customers .customers-table th:nth-child(7){width:26%}
+ .xrm-admin-page #view-customers .customer-identity-line>b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
+.xrm-admin-page #view-customers>.panel-head{padding:10px 13px}
+.xrm-admin-page #view-customers>.panel-head h2{font-size:14px}
+.xrm-admin-page #view-customers .customer-filter-bar{padding:7px 12px;gap:8px;font-size:10px;line-height:1.35}
+.xrm-admin-page #view-customers>.notice{margin:7px 12px!important;padding:8px 11px;font-size:10px;line-height:1.35}
+.xrm-admin-page #view-customers .customer-table-wrap{overflow-x:auto}
+.xrm-admin-page #view-customers .customers-table th,
+.xrm-admin-page #view-customers .customers-table td{padding:6px 7px;font-size:10px;line-height:1.3;vertical-align:middle;overflow-wrap:anywhere}
+.xrm-admin-page #view-customers .customers-table th{font-size:9px;letter-spacing:.45px;white-space:nowrap}
+.xrm-admin-page #view-customers .customers-table .sub{font-size:9px;line-height:1.3;margin-top:2px}
+.xrm-admin-page #view-customers .customers-table .pill{font-size:9px;padding:3px 6px;line-height:1.25;white-space:normal}
+.xrm-admin-page #view-customers .customer-identity-line{gap:4px;align-items:center;flex-wrap:wrap}
+.xrm-admin-page #view-customers .customer-identity-line>b{font-size:10.5px;max-width:100%;min-width:0}
+.xrm-admin-page #view-customers .customer-identity-line .customer-presence{font-size:9px;padding:2px 5px}
+.xrm-admin-page #view-customers .customers-table .actions{gap:4px;flex-wrap:wrap;align-items:center}
+.xrm-admin-page #view-customers .customers-table .actions .btn{padding:5px 6px;min-height:27px;border-radius:7px;font-size:9.25px;line-height:1.2;white-space:normal}
+.xrm-admin-page #view-customers .customers-table .actions select.search{width:92px;min-width:0!important;max-width:92px!important;height:27px;padding:3px 5px;font-size:9.5px!important;line-height:1.15}
+.xrm-admin-page #view-customers .customer-history{padding:10px 12px!important}
+.xrm-admin-page #view-customers .customer-history .panel-head{padding:0 0 7px!important}
+.xrm-admin-page #view-customers .customer-history h3{font-size:13px;margin:0}
+.xrm-admin-page #view-customers .customer-history .notice{margin:0 0 7px!important;padding:7px 9px;font-size:10px;line-height:1.35}
+.xrm-admin-page #view-customers .customer-history .search{font-size:10px;padding:7px 9px}
+.xrm-admin-page #view-customers .customer-history th,
+.xrm-admin-page #view-customers .customer-history td{font-size:10px;padding:6px 8px;line-height:1.3}
+.xrm-admin-page #view-customers .customer-history th{font-size:9px}
+@media(max-width:760px){
+ /* Table data become readable per-customer cards instead of a 930px scroll strip. */
+ .xrm-admin-page #view-customers .customer-table-wrap{overflow:visible}
+ .xrm-admin-page #view-customers .customers-table{display:block;width:100%;min-width:0;table-layout:auto}
+ .xrm-admin-page #view-customers .customers-table thead{display:none}
+ .xrm-admin-page #view-customers .customers-table tbody{display:grid;gap:11px;padding:10px}
+ .xrm-admin-page #view-customers .customers-table tbody tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto;gap:9px 12px;min-width:0;padding:13px;background:#fff;border:1px solid #dce7ef;border-radius:12px}
+ .xrm-admin-page #view-customers .customers-table tbody td{display:block;min-width:0;padding:0;border:0;font-size:12px;line-height:1.4}
+ .xrm-admin-page #view-customers .customers-table tbody td::before{display:block;margin-bottom:3px;color:#64798a;font-size:10px;font-weight:800;letter-spacing:.35px;text-transform:uppercase}
+ .xrm-admin-page #view-customers .customers-table tbody td:nth-child(1){grid-column:1/-1;grid-row:1;padding-bottom:8px;border-bottom:1px solid #e4edf3}
+ .xrm-admin-page #view-customers .customers-table tbody td:nth-child(1)::before{display:none}
+ .xrm-admin-page #view-customers .customers-table tbody td:nth-child(2){grid-column:1;grid-row:2}
+ .xrm-admin-page #view-customers .customers-table tbody td:nth-child(2)::before{content:"Plano"}
+ .xrm-admin-page #view-customers .customers-table tbody td:nth-child(3){grid-column:1/-1;grid-row:3}
+ .xrm-admin-page #view-customers .customers-table tbody td:nth-child(3)::before{content:"Assinatura"}
+ .xrm-admin-page #view-customers .customers-table tbody td:nth-child(4){grid-column:2;grid-row:2}
+ .xrm-admin-page #view-customers .customers-table tbody td:nth-child(4)::before{content:"Veículos"}
+ .xrm-admin-page #view-customers .customers-table tbody td:nth-child(5){grid-column:1;grid-row:4}
+ .xrm-admin-page #view-customers .customers-table tbody td:nth-child(5)::before{content:"Acesso"}
+ .xrm-admin-page #view-customers .customers-table tbody td:nth-child(6){grid-column:2;grid-row:4}
+ .xrm-admin-page #view-customers .customers-table tbody td:nth-child(6)::before{content:"Entrada"}
+ .xrm-admin-page #view-customers .customers-table tbody td:nth-child(7){grid-column:1/-1;grid-row:5}
+ .xrm-admin-page #view-customers .customers-table tbody td:nth-child(7)::before{content:"Ações"}
+ .xrm-admin-page #view-customers .customers-table tbody td[colspan]{grid-column:1/-1;grid-row:auto}
+ .xrm-admin-page #view-customers .customers-table tbody td[colspan]::before{display:none}
+ .xrm-admin-page #view-customers .customer-identity-line>b{font-size:13px;overflow-wrap:anywhere}
+ .xrm-admin-page #view-customers .customers-table .sub{font-size:11px;margin-top:3px}
+ .xrm-admin-page #view-customers .customers-table .pill{font-size:10px;padding:4px 8px}
+ .xrm-admin-page #view-customers .customers-table .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .xrm-admin-page #view-customers .customers-table .actions select.search{grid-column:1/-1;width:100%!important;min-width:0!important;max-width:none!important;height:40px;font-size:12px!important}
+ .xrm-admin-page #view-customers .customers-table .actions .btn{min-width:0;min-height:40px;font-size:11px;padding:8px 6px;white-space:normal}
+ .xrm-admin-page #view-customers .customer-filter-bar{padding:10px 12px;font-size:11px}
+ .xrm-admin-page #view-customers>.notice{font-size:11px}
+ .xrm-admin-page #view-customers .customer-history{padding:12px!important}
+ .xrm-admin-page #view-customers .customer-history .table-wrap{overflow-x:auto}
+}
+</style>
 </head><body class="xrm-admin-page">
 <header><a href="../" class="brand"><img class="xrmovi-official-mark" src="/assets/xrmovi-logo-oficial.svg?v=20261110-v2" alt="XRMOVI" width="164" height="40"><span><small>PROPRIETÁRIO</small></span></a><div class="actions"><a class="btn ghost" href="../v3/">Frota</a><button class="btn" id="refresh">Atualizar</button><button class="btn" id="signout">Sair</button></div></header>
 <main>
@@ -177,7 +251,7 @@ footer{padding:20px;text-align:center;color:#849eae;font-size:11px}
    <div class="notice">Os indicadores mostram somente contas classificadas explicitamente como <strong>Cliente externo</strong> e pagamentos confirmados dessas contas. Contas pendentes de classificação não entram como vendas; todo pagamento permanece preservado no histórico do banco.</div>
   </div>
   <section id="view-customers" class="panel tab-view" hidden><div class="panel-head"><h2>Contas cadastradas e classificação</h2><input class="search" id="customer-search" placeholder="Buscar cliente ou empresa…" type="search"></div><div class="customer-filter-bar" id="commercial-filter-notice"><span id="commercial-filter-label">Contas pendentes de classificação aparecem para revisão, mas não entram nos indicadores comerciais.</span><button class="btn ghost" id="commercial-filter-toggle" type="button">Mostrar internos e testes</button></div><div class="notice" style="margin:0 18px 12px">A autorização manual libera a operação por prazo definido, mas <strong>não confirma pagamento</strong>. A classificação externa/interna/homologação exige confirmação e justificativa auditada; <strong>não altera acesso, pagamento ou assinatura</strong>. Contas sem classificação não entram nos KPIs comerciais.</div><div class="table-wrap customer-table-wrap" role="region" aria-label="Lista de clientes; role horizontalmente para visualizar as colunas" tabindex="0"><table class="customers-table"><thead><tr><th>Cliente / empresas</th><th>Plano</th><th>Assinatura</th><th>Veículos</th><th>Acesso</th><th>Entrada</th><th>Ações</th></tr></thead><tbody id="customers-body"></tbody></table></div>
-    <div style="padding:16px 18px;border-top:1px solid rgba(142,185,201,.18)">
+    <div class="customer-history" style="padding:16px 18px;border-top:1px solid rgba(142,185,201,.18)">
      <div class="panel-head" style="padding:0 0 12px"><h3>Histórico de classificações</h3><small>Até 100 alterações recentes; somente administradores</small></div>
      <p class="notice" style="margin:0 0 10px">Cada mudança registra quem classificou, quando, o valor anterior, o novo e a justificativa. A classificação não modifica pagamentos nem acesso à frota.</p>
      <input class="search" id="commercial-history-search" type="search" placeholder="Pesquisar conta, responsável ou justificativa…" aria-label="Pesquisar histórico de classificação" style="margin:0 0 12px;width:min(100%,480px)">
@@ -292,7 +366,7 @@ function rowCustomer(c,full=false){
  const manualUntil=manual?date(c.manual_access.valid_until):'';
  const tr=node('tr'),first=node('td'),identity=node('div','','customer-identity-line');
  const bold=node('b',c.email),companies=node('span',(c.companies||[]).map(x=>x.name).join(' · ')||'Sem empresa','sub'),classification=node('span',classificationLabel(c),'sub');
- identity.append(bold,makePresenceBadge(c.owner_id));
+ bold.title=c.email;identity.append(bold,makePresenceBadge(c.owner_id));
  first.append(identity,companies,classification);tr.append(first);
  cell(tr,(c.plan||'—').toUpperCase()+(c.price?' · '+money(c.price):''));
  const expired=c.status==='trial'&&c.trial_end&&Date.parse(c.trial_end)<Date.now();

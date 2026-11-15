@@ -138,3 +138,44 @@ test('menu real da landing: hamburger visível, foco perceptível e abre no celu
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),true);
  await page.close();
 });
+
+test('Clientes compacto no desktop e cartões acessíveis no mobile',async()=>{
+ for(const width of [390,760,1365]){
+  const page=await load('/admin/',{width,height:900});
+  const metrics=await page.evaluate(()=>{
+   document.querySelector('#loading').hidden=true;
+   document.querySelector('#content').hidden=false;
+   document.querySelector('#view-overview').hidden=true;
+   document.querySelector('#view-customers').hidden=false;
+   const body=document.querySelector('#customers-body');
+   body.replaceChildren();
+   for(let i=0;i<6;i++){
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td><div class="customer-identity-line"><b>cliente'+i+'@empresa-exemplo.com.br</b><span class="customer-presence offline">Offline</span></div><span class="sub">Empresa teste '+i+'</span><span class="sub">Interno</span></td><td>START · R$ 19,90</td><td><span class="pill active">Ativo</span><span class="sub">Autorização manual até 20/11/2026</span></td><td>1</td><td><span class="pill active">Manual até 20/11/2026</span></td><td>15/11/2026</td><td><div class="actions"><select class="search" aria-label="Classificação"><option>Interno</option></select><button class="btn danger">Revogar autorização</button><button class="btn">Bloquear</button><button class="btn">Mensagem</button><button class="btn danger">Cancelar renovação</button></div></td>';
+    body.append(tr);
+   }
+   const row=body.querySelector('tr'),button=row.querySelector('button'),table=document.querySelector('.customers-table');
+   return {
+    pageWidth:document.documentElement.scrollWidth,viewport:innerWidth,
+    tableMinWidth:getComputedStyle(table).minWidth,
+    rowDisplay:getComputedStyle(row).display,rowHeight:row.getBoundingClientRect().height,
+    headerDisplay:getComputedStyle(table.tHead).display,
+    cellFontSize:parseFloat(getComputedStyle(row.cells[1]).fontSize),
+    actionVisible:button.getBoundingClientRect().width>45&&button.getBoundingClientRect().height>=26,
+    actionContainerWidth:row.cells[6].getBoundingClientRect().width
+   };
+  });
+  assert.ok(metrics.pageWidth<=width+2,'viewport '+width+' must not overflow: '+JSON.stringify(metrics));
+  assert.equal(metrics.actionVisible,true,'action button readable at '+width);
+  if(width<=760){
+   assert.equal(metrics.headerDisplay,'none');
+   assert.equal(metrics.rowDisplay,'grid');
+   assert.equal(metrics.tableMinWidth,'0px');
+  }else{
+   assert.equal(metrics.rowDisplay,'table-row');
+   assert.ok(metrics.cellFontSize<=11,'desktop customer body must remain compact');
+   assert.ok(metrics.rowHeight<108,'desktop six client rows should remain compact: '+metrics.rowHeight);
+  }
+  await page.close();
+ }
+});
