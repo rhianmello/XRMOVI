@@ -203,7 +203,8 @@ const pill=(tr,text,tone='')=>{const td=node('td'),span=node('span',text,'pill '
 const show=id=>{for(const x of ['loading','unauthorized','content'])el(x).hidden=x!==id};
 let db,info={accounts:[],summary:{},revenue:[],payments:[],requests:[]},signups=[],threadId=null,tab='overview';
 let presenceByUser=new Map(),presenceLoaded=false,presenceIsLoading=false;
-let showTestAccounts=false;
+let showTestAccounts=false; // Payment audit filter remains external-only by default.
+let showCustomerTests=true; // The Clients tab lists internal/test accounts by default.
 const isOwnerAccount=a=>String(a.email||'').trim().toLowerCase()==='rhian.udm@gmail.com';
 const classes={external:'Cliente externo',internal:'Interno',homologation:'Homologação',unclassified:'A classificar'};
 function classificationOf(a){return classes[a?.commercial_classification]?a.commercial_classification:'unclassified'}
@@ -214,13 +215,16 @@ function visiblePayments(){return (info.payments||[]).filter(p=>{const a=payment
 function refreshFilterLabel(){
  const a=(info.accounts||[]).filter(x=>!isOwnerAccount(x));
  const pending=a.filter(x=>classificationOf(x)==='unclassified').length;
- const hidden=a.filter(x=>['internal','homologation'].includes(classificationOf(x))).length;
- const label=showTestAccounts
-   ?'Exibindo internos, testes e contas a classificar ('+pending+'). KPIs continuam somente externos.'
-   :'Exibindo externos e '+pending+' conta(s) a classificar. '+hidden+' conta(s) internas/homologação ocultas. Nenhum dado apagado.';
- const action=showTestAccounts?'Ocultar internos e testes':'Mostrar internos e testes';
- for(const id of ['commercial-filter-label','commercial-filter-label-payments'])el(id).textContent=label;
- for(const id of ['commercial-filter-toggle','commercial-filter-toggle-payments'])el(id).textContent=action;
+ const internal=a.filter(x=>['internal','homologation'].includes(classificationOf(x))).length;
+ // Customer-list visibility is independent from sales/payment reporting filters.
+ el('commercial-filter-label').textContent=showCustomerTests
+   ?'Exibindo '+a.length+' conta(s), incluindo '+internal+' interna(s)/teste(s) e '+pending+' a classificar. Esta lista não confirma vendas.'
+   :'Exibindo contas externas e '+pending+' a classificar. '+internal+' conta(s) internas/de teste ocultas apenas nesta lista.';
+ el('commercial-filter-toggle').textContent=showCustomerTests?'Ocultar internos e testes':'Mostrar internos e testes';
+ el('commercial-filter-label-payments').textContent=showTestAccounts
+   ?'Auditoria de pagamentos: mostrando internos e testes; os KPIs e vendas continuam somente externos.'
+   :'Auditoria de pagamentos: mostrando apenas clientes externos classificados.';
+ el('commercial-filter-toggle-payments').textContent=showTestAccounts?'Ocultar internos e testes':'Mostrar internos e testes';
 }
 function status(text,type=''){el('feedback').textContent=text;el('feedback').className='status '+type}
 // Presence is approximate: a visible authenticated page reports every 45 s.
@@ -256,7 +260,7 @@ function updateCustomerNavPresence(){
   nav.title='Clientes · presença indisponível';
   return;
  }
- const owners=new Set(commercialAccounts().map(account=>String(account.owner_id||'')).filter(Boolean));
+ const owners=new Set(customerAccounts().map(account=>String(account.owner_id||'')).filter(Boolean));
  let online=0;
  for(const userId of owners){
   const last=presenceByUser.get(userId),when=last?Date.parse(last):NaN;
@@ -338,8 +342,13 @@ function rowCustomer(c,full=false){
  return tr;
 }
 function commercialAccounts(){
- // Accounts awaiting review remain visible, but NEVER become sales by default.
+ // Preserve existing payment and executive data visibility; never infer new sales.
  return (info.accounts||[]).filter(a=>!isOwnerAccount(a)&&(showTestAccounts||!['internal','homologation'].includes(classificationOf(a))));
+}
+function customerAccounts(){
+ // The Clients tab shows registered accounts, including internal/homologation users.
+ // This must not change billing, revenue, plan or account classification.
+ return (info.accounts||[]).filter(a=>!isOwnerAccount(a)&&(showCustomerTests||!['internal','homologation'].includes(classificationOf(a))));
 }
 function classifiedExternalAccounts(){
  return (info.accounts||[]).filter(a=>!isOwnerAccount(a)&&classificationOf(a)==='external');
@@ -374,23 +383,24 @@ function render(){
  for(const [label,value,tone] of [['Clientes externos pendentes',s.trial,'pending'],['Assinaturas externas ativas',s.active,'active'],['Assinaturas vencidas/canceladas',s.expired,'blocked'],['Contas bloqueadas',s.blocked,'blocked'],['Mensagens não lidas',s.unread,'pending'],['Mensalidades externas de referência',money(s.mrr),'active'],['Contas a classificar',s.unclassified,'pending']]){
   const line=node('div');line.style.cssText='display:flex;justify-content:space-between;align-items:center;gap:12px';line.append(node('span',label),node('span',value,'pill '+tone));portfolio.append(line)
  }
- const recent=el('recent-customers');recent.replaceChildren();commercialAccounts().slice(0,7).forEach(c=>recent.append(rowCustomer(c)));if(!recent.children.length)emptyRows(recent,5,'Ainda não há clientes.');
+ const recent=el('recent-customers');recent.replaceChildren();customerAccounts().slice(0,7).forEach(c=>recent.append(rowCustomer(c)));if(!recent.children.length)emptyRows(recent,5,'Ainda não há clientes.');
  renderCustomers();renderCommercialHistory();renderSignups();renderPayments();renderRequests();renderContacts();
 }
 function renderCustomers(){
- const root=el('customers-body');root.replaceChildren();const q=el('customer-search').value.toLocaleLowerCase('pt-BR');
- const list=commercialAccounts().filter(c=>(c.email+' '+(c.companies||[]).map(x=>x.name).join(' ')).toLocaleLowerCase('pt-BR').includes(q));
+ const root=el('customers-body');root.replaceChildren();
+ const q=el('customer-search').value.trim().toLocaleLowerCase('pt-BR');
+ const accounts=customerAccounts();
+ const list=accounts.filter(c=>(c.email+' '+(c.companies||[]).map(x=>x.name).join(' ')).toLocaleLowerCase('pt-BR').includes(q));
  for(const c of list)root.append(rowCustomer(c,true));
  if(!list.length){
-  const all=commercialAccounts();
-  const hasOtherAccounts=(info.accounts||[]).some(a=>!isOwnerAccount(a)&&['internal','homologation'].includes(classificationOf(a)));
+  const hiddenInternals=!showCustomerTests&&(info.accounts||[]).some(a=>!isOwnerAccount(a)&&['internal','homologation'].includes(classificationOf(a)));
   const message=q
-    ?'Nenhum cliente corresponde à pesquisa. Limpe a busca ou revise os filtros.'
-    :!showTestAccounts&&hasOtherAccounts
-      ?'Nenhum cliente externo encontrado. Clique em "Mostrar internos e testes" para ver os demais cadastros.'
-      :!showTestAccounts&&!all.length
-        ?'Nenhuma conta comercial visível. Confira "Todos os cadastros" ou clique em "Mostrar internos e testes" para conferir as contas internas.'
-        :'Nenhum cliente cadastrado nesta lista.';
+   ?'Nenhuma conta corresponde à pesquisa. Limpe a busca ou revise os filtros.'
+   :hiddenInternals
+    ?'Nenhuma conta externa visível. Clique em "Mostrar internos e testes" para visualizar as contas classificadas como internas.'
+    :accounts.length===0
+     ?'Nenhuma conta comercial cadastrada. Consulte "Todos os cadastros" para usuários ainda sem conta.'
+     :'Nenhuma conta corresponde ao filtro atual.';
   emptyRows(root,7,message);
  }
 }
@@ -430,7 +440,7 @@ function renderPayments(){const root=el('payments-body');root.replaceChildren();
 function renderRequests(){const root=el('requests-body');root.replaceChildren();for(const p of info.requests||[]){const r=node('tr');cell(r,date(p.date));cell(r,p.company);cell(r,p.plan);pill(r,p.status,p.status==='pending'?'pending':'');root.append(r)}if(!root.children.length)emptyRows(root,4,'Nenhuma solicitação registrada.')}
 function renderContacts(){
  const root=el('contacts');root.replaceChildren();
- const ordered=[...commercialAccounts()].sort((a,b)=>Number(b.unread>0)-Number(a.unread>0)||Date.parse(b.last_message||b.created_at)-Date.parse(a.last_message||a.created_at));
+ const ordered=[...customerAccounts()].sort((a,b)=>Number(b.unread>0)-Number(a.unread>0)||Date.parse(b.last_message||b.created_at)-Date.parse(a.last_message||a.created_at));
  for(const a of ordered){const b=node('button','','contact'+(a.id===threadId?' active':''));b.type='button';const title=node('b',a.email),desc=node('small',(a.companies||[]).map(x=>x.name).join(' · ')||'Sem empresa');b.append(title,desc);if(a.unread)b.append(node('span',a.unread+' nova(s)','unread'));b.onclick=()=>{threadId=a.id;renderContacts();void loadThread()};root.append(b)}
  if(!ordered.length)root.append(node('p','Nenhuma conta cadastrada.','empty'));
 }
@@ -497,7 +507,7 @@ async function cancelCustomerRecurring(c){
  }catch(e){status('Não foi possível concluir o cancelamento: '+e.message,'error')}
 }
 async function loadThread(){
- const a=commercialAccounts().find(x=>x.id===threadId);if(!a){el('thread-title').textContent='Selecione um cliente';return}
+ const a=customerAccounts().find(x=>x.id===threadId);if(!a){el('thread-title').textContent='Selecione um cliente';return}
  el('thread-title').textContent=a.email+' · '+(a.companies||[]).map(x=>x.name).join(' / ');
  const root=el('thread-messages');root.replaceChildren(node('p','Carregando mensagens…','empty'));
  try{
@@ -599,7 +609,11 @@ function openTab(name){
 }
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>openTab(b.dataset.tab));
 document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>openTab(b.dataset.goto));
-for(const id of ['commercial-filter-toggle','commercial-filter-toggle-payments'])el(id).onclick=()=>{showTestAccounts=!showTestAccounts;render()};
+el('commercial-filter-toggle').onclick=()=>{
+ showCustomerTests=!showCustomerTests;
+ renderCustomers();updateCustomerNavPresence();refreshFilterLabel();
+};
+el('commercial-filter-toggle-payments').onclick=()=>{showTestAccounts=!showTestAccounts;render()};
 el('customer-search').oninput=renderCustomers;
 el('commercial-history-search').oninput=renderCommercialHistory;
 el('signup-search').oninput=renderSignups;

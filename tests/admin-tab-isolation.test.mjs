@@ -27,8 +27,8 @@ test('Clientes displays its own search, controls, table and dedicated presence c
  assert.doesNotMatch(section,/id="k-online"|id="xrm-billing-health"|id="xrm-mail-health"/);
  assert.match(ui,/identity\.append\(bold,makePresenceBadge\(c\.owner_id\)\)/);
  assert.match(ui,/emptyRows\(root,7,message\)/);
- assert.match(ui,/Nenhum cliente externo encontrado\. Clique em "Mostrar internos e testes" para ver os demais cadastros\./);
- assert.match(ui,/Nenhum cliente corresponde à pesquisa\. Limpe a busca ou revise os filtros\./);
+ assert.match(ui,/Nenhuma conta externa visível\. Clique em "Mostrar internos e testes" para visualizar as contas classificadas como internas\./);
+ assert.match(ui,/Nenhuma conta corresponde à pesquisa\. Limpe a busca ou revise os filtros\./);
  assert.match(ui,/identity\.append\(node\('span',u\.email\),makePresenceBadge\(u\.id\)\)/);
  assert.doesNotMatch(section,/<th>Presença<\/th>/);
 });
@@ -37,7 +37,10 @@ test('Payments keeps its own commercial toggle and presence uses existing owner-
  const start=position('view-payments'),end=position('view-requests');
  const section=ui.slice(start,end);
  assert.ok(section.includes('id="commercial-filter-toggle-payments"'));
- assert.match(ui,/for\(const id of \['commercial-filter-toggle','commercial-filter-toggle-payments'\]\)el\(id\)\.onclick/);
+ assert.match(ui,/el\('commercial-filter-toggle'\)\.onclick=\(\)=>\{/);
+ assert.match(ui,/el\('commercial-filter-toggle-payments'\)\.onclick=\(\)=>\{showTestAccounts=!showTestAccounts;render\(\)\}/);
+ assert.match(ui,/let showCustomerTests=true;/);
+ assert.match(ui,/let showTestAccounts=false;/);
  assert.match(ui,/rpc\('admin_presence_list'\)/);
  assert.match(ui,/function updatePresenceBadge\(badge\)/);
  assert.match(ui,/if\(name!==tab\)status\(''\)/);
@@ -67,10 +70,10 @@ test('menu Clientes inclui contagem online/offline sem repetir usuários',()=>{
   const button={classList:{add:v=>classes.add(v),remove:v=>classes.delete(v),toggle:(v,on)=>on?classes.add(v):classes.delete(v)},title:''};
   const document={querySelector:selector=>selector==='.owner-sidebar [data-tab="customers"]'?button:null};
   const el=id=>nodes[id]||null;
-  const commercialAccounts=()=>accounts;
+  const customerAccounts=()=>accounts;
   const presenceByUser=new Map(rows);
-  const go=Function('document','el','commercialAccounts','presenceByUser','presenceLoaded',controller+'\nreturn updateCustomerNavPresence()');
-  go(document,el,commercialAccounts,presenceByUser,loaded);
+  const go=Function('document','el','customerAccounts','presenceByUser','presenceLoaded',controller+'\nreturn updateCustomerNavPresence()');
+  go(document,el,customerAccounts,presenceByUser,loaded);
   return {online:nodes['customers-presence-online'].textContent,offline:nodes['customers-presence-offline'].textContent,classes,title:button.title};
  }
  const now=new Date().toISOString();
@@ -86,4 +89,37 @@ test('menu Clientes inclui contagem online/offline sem repetir usuários',()=>{
  assert.equal(offline.online,'0');
  assert.equal(offline.offline,'1');
  assert.equal(offline.classes.has('has-online'),false);
+});
+
+test('client rows include internal and homologation by default without changing commercial reporting',()=>{
+ assert.match(ui,/let showCustomerTests=true;/);
+ assert.match(ui,/function customerAccounts\(\)\{/);
+ assert.match(ui,/const accounts=customerAccounts\(\)/);
+ assert.match(ui,/const owners=new Set\(customerAccounts\(\)/);
+ assert.match(ui,/const customerList=classifiedExternalAccounts\(\)/);
+ assert.match(ui,/const payments=commercialPayments\(\)/);
+ assert.match(ui,/function visiblePayments\(\)\{/);
+ const scope=ui.slice(ui.indexOf('function customerAccounts(){'),ui.indexOf('function classifiedExternalAccounts(){'));
+ assert.ok(scope.startsWith('function customerAccounts(){'));
+ const classificationOf=a=>a.commercial_classification||'unclassified';
+ const isOwnerAccount=a=>a.email==='owner@example.com';
+ const info={accounts:[
+  {email:'owner@example.com',owner_id:'owner',commercial_classification:'internal'},
+  {email:'user1@example.com',owner_id:'1',commercial_classification:'internal'},
+  {email:'user2@example.com',owner_id:'2',commercial_classification:'homologation'},
+  {email:'user3@example.com',owner_id:'3',commercial_classification:'external'}
+ ]};
+ const getter=Function('info','showCustomerTests','isOwnerAccount','classificationOf',scope+'\nreturn customerAccounts()');
+ const all=getter(info,true,isOwnerAccount,classificationOf);
+ assert.equal(all.length,3,'all non-owner accounts appear by default, including internal and homologation');
+ const external=getter(info,false,isOwnerAccount,classificationOf);
+ assert.deepEqual(external.map(x=>x.owner_id),['3'],'button hides internal/homologation without changing classifications');
+});
+
+test('visible internal accounts also appear in recent registrations and messaging',()=>{
+ assert.match(ui,/customerAccounts\(\)\.slice\(0,7\)\.forEach\(c=>recent\.append\(rowCustomer\(c\)\)\)/);
+ assert.match(ui,/const ordered=\[\.\.\.customerAccounts\(\)\]\.sort/);
+ assert.match(ui,/const a=customerAccounts\(\)\.find\(x=>x\.id===threadId\)/);
+ assert.match(ui,/identity\.append\(bold,makePresenceBadge\(c\.owner_id\)\)/);
+ assert.match(ui,/identity\.append\(node\('span',u\.email\),makePresenceBadge\(u\.id\)\)/);
 });
