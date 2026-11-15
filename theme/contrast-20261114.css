@@ -1,0 +1,236 @@
+/* XRMOVI | Auditoria de contraste em todas as rotas — 14/11/2026.
+ * Camada exclusivamente visual, reversível pelo Git. Não modifica lógica,
+ * permissões, estado de assinatura, checkout, analytics ou persistência. */
+:root{color-scheme:light}
+body:is(.xrm-sales-page,.seo-page,.xrm-admin-page,.fleet-page,.xrm-utility-page,.xrm-faq-page){
+  color-scheme:light;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Demonstração "Explorar painel": antes havia tinta escura sobre cartões escuros.
+   Converter TODO o dialog para superfícies claras, inclusive as abas dinâmicas. */
+body.xrm-sales-page #demo{
+  color-scheme:light!important;
+  background:#fff!important;
+  background-image:none!important;
+  color:#142b42!important;
+  border:1px solid #c8dce9!important;
+  box-shadow:0 24px 75px rgba(12,35,53,.28)!important;
+}
+body.xrm-sales-page #demo::backdrop{background:rgba(11,30,48,.60)!important}
+body.xrm-sales-page #demo .preview-top,
+body.xrm-sales-page #demo .preview-nav{
+  background:#f7fafc!important;
+  background-image:none!important;
+  border-color:#dbe5ee!important;
+  color:#142b42!important;
+}
+body.xrm-sales-page #demo .preview-top span{color:#475569!important}
+body.xrm-sales-page #demo #preview-close{
+  background:#edf5fa!important;
+  border:1px solid #a8c9dc!important;
+  color:#164668!important;
+  min-width:44px;min-height:44px;
+}
+body.xrm-sales-page #demo .preview-nav button{
+  color:#344c63!important;
+  border-color:transparent!important;
+  background:transparent!important;
+  min-height:44px;
+}
+body.xrm-sales-page #demo .preview-nav button:is(:hover,[aria-pressed="true"]){
+  color:#07518b!important;
+  background:#e5f3f9!important;
+  border-color:#a7cddb!important;
+}
+body.xrm-sales-page #demo .preview-main{background:#fff!important;color:#142b42!important}
+body.xrm-sales-page #demo :is(.preview-company,.preview-card){
+  background:#fff!important;
+  background-image:none!important;
+  border:1px solid #d4e2ec!important;
+  color:#142b42!important;
+  box-shadow:0 7px 24px rgba(20,43,66,.05)!important;
+}
+body.xrm-sales-page #demo .preview-company{background:#f2f8fc!important}
+body.xrm-sales-page #demo .preview-company span{color:#087986!important}
+body.xrm-sales-page #demo :is(.preview-company h2,.preview-card h3,.preview-view-title){
+  color:#142b42!important;
+  opacity:1!important;
+}
+body.xrm-sales-page #demo :is(.preview-company p,.preview-card p,.preview-action){
+  color:#475569!important;
+}
+body.xrm-sales-page #demo .preview-card li{
+  color:#344c63!important;
+  border-color:#e0e9f1!important;
+}
+body.xrm-sales-page #demo .preview-kpi{
+  --tone-rgb:7,89,165;
+  --tone-ink:#07518b;
+  color:#142b42!important;
+  background:linear-gradient(130deg,rgba(var(--tone-rgb),.08),#fff 60%)!important;
+  border:1px solid rgba(var(--tone-rgb),.35)!important;
+  box-shadow:0 7px 22px rgba(20,43,66,.055)!important;
+}
+body.xrm-sales-page #demo .preview-kpi[data-tone="ok"]{--tone-rgb:8,126,97;--tone-ink:#086b55}
+body.xrm-sales-page #demo .preview-kpi[data-tone="warning"]{--tone-rgb:155,101,0;--tone-ink:#805000}
+body.xrm-sales-page #demo .preview-kpi[data-tone="alert"]{--tone-rgb:180,35,53;--tone-ink:#a51e35}
+body.xrm-sales-page #demo .preview-kpi span{color:var(--tone-ink)!important;opacity:1!important}
+body.xrm-sales-page #demo .preview-kpi strong{color:#142b42!important}
+body.xrm-sales-page #demo :is(.preview-bars span,.preview-status){background:#e3edf4!important}
+body.xrm-sales-page #demo .preview-consumption li strong{color:#07518b!important}
+body.xrm-sales-page #demo .preview-action .btn{
+  background:#0759a5!important;color:#fff!important;
+  border:1px solid #0759a5!important;
+}
+body.xrm-sales-page #demo :focus-visible{
+  outline:3px solid #087986!important;outline-offset:2px!important;
+}
+
+/* Páginas de vendas/SEO: o CSS institucional antigo vinha depois do import
+   de tema claro. Este arquivo é carregado por ÚLTIMO no head de cada rota. */
+body.seo-page{
+  --sea:#f7fafc;--panel:#fff;--panel2:#f3f8fb;
+  --line:#dbe5ee;--mint:#087986;--light:#142b42;
+  --muted:#475569;--gold:#805000;
+  background:#fff!important;color:#142b42!important;
+}
+body.seo-page .top{
+  background:rgba(255,255,255,.97)!important;
+  border-color:#dbe5ee!important;
+}
+body.seo-page :is(h1,h2,h3,h4,.brand){color:#142b42!important}
+body.seo-page .brand span{color:#087986!important}
+body.seo-page .brand small,
+body.seo-page .top nav a:not(.btn){color:#344c63!important}
+body.seo-page :is(.lead,.mini-note,.section-intro,.subtext,.visual-foot,
+ .visual-top,.visual-row span,.card p,.step-list span,.example p,
+ .example li,details p,.related a span,.final-cta p,.crumbs,footer){
+  color:#475569!important;
+}
+body.seo-page :is(.eyebrow,.textlink,.crumbs a){color:#07518b!important}
+body.seo-page .btn:not(.secondary){
+  background:#0759a5!important;color:#fff!important;
+  border-color:#0759a5!important;
+}
+body.seo-page .btn.secondary{
+  background:#fff!important;color:#07518b!important;
+  border-color:#a8c7d8!important;
+}
+body.seo-page :is(.visual,.card,.example,details,.related a,.visual-row,
+ .calc-form,.calc-results,.spreadsheet-demo,.download-card,.important){
+  background:#fff!important;background-image:none!important;
+  border-color:#d7e4ed!important;color:#142b42!important;
+  box-shadow:0 8px 28px rgba(20,43,66,.045)!important;
+}
+body.seo-page :is(.stripe,.seo-hub){background:#f6fafc!important;border-color:#dae6ef!important}
+body.seo-page .final-cta{
+  background:linear-gradient(135deg,#f1f9fc,#fff)!important;
+  border-color:#c4dee9!important;color:#142b42!important;
+}
+body.seo-page .calc-fields label{color:#344c63!important}
+body.seo-page .calc-fields input{
+  background:#fff!important;border:1px solid #aebfcd!important;color:#142b42!important;
+}
+body.seo-page .calc-results output{color:#086b55!important}
+body.seo-page .calc-results .metric{border-color:#dbe5ee!important}
+body.seo-page .calc-results .metric span,
+body.seo-page .calc-note{color:#475569!important}
+body.seo-page .calc-error{color:#a51e35!important}
+body.seo-page .spreadsheet-demo th,
+body.seo-page .spreadsheet-demo td{
+  border-color:#dbe5ee!important;color:#344c63!important;
+}
+body.seo-page .spreadsheet-demo th{background:#edf5f9!important;font-weight:800}
+body.seo-page .important{
+  background:#eff7fb!important;color:#344c63!important;
+  border-left:4px solid #087986!important;
+}
+body.seo-page footer a{color:#07518b!important}
+
+/* Telas do painel e ADM que ainda usam tokens de texto herdados. */
+body.fleet-page :is(.fleet-view,.fleet-modal,.fleet-drawer,.fleet-panel){
+  color:#142b42;
+}
+body.fleet-page .fleet-view :is(h2,h3,h4),
+body.xrm-admin-page :is(.panel,.screen) :is(h2,h3,h4){
+  color:#142b42!important;
+}
+body.fleet-page :is(.fleet-empty,.fleet-form-note,.fleet-chart-empty),
+body.xrm-admin-page :is(.empty,.notice:not(.success):not(.error)){
+  color:#475569!important;
+}
+body.fleet-page :is(button,input,select,textarea):focus-visible,
+body.xrm-admin-page :is(button,input,select,textarea):focus-visible{
+  outline:3px solid #087986!important;outline-offset:2px!important;
+}
+
+/* Páginas utilitárias: motorista, documentos, suporte, OS e operações. */
+body.xrm-utility-page{background:#f7fafc!important;color:#142b42!important}
+body.xrm-utility-page :is(h1,h2,h3,h4){color:#142b42!important}
+body.xrm-utility-page :is(.panel,.card,.stat,.feature,.result,.messages){
+  background:#fff!important;color:#142b42!important;
+  border-color:#dbe5ee!important;
+}
+body.xrm-utility-page :is(label,.hint,.sub,.lead,.empty){color:#475569!important}
+body.xrm-utility-page :is(input,select,textarea){
+  background:#fff!important;color:#142b42!important;border-color:#b8cbd9!important;
+}
+body.xrm-utility-page :is(input,textarea)::placeholder{color:#64748b!important}
+body.xrm-utility-page :focus-visible{outline:3px solid #087986!important;outline-offset:2px!important}
+
+/* FAQ era a única página comercial com <body> sem classe de tema. */
+body.xrm-faq-page{background:#f7fafc!important;color:#142b42!important}
+body.xrm-faq-page header{
+  background:rgba(255,255,255,.97)!important;
+  border-color:#dbe5ee!important;
+}
+body.xrm-faq-page .brand img{background:#0d2b40;padding:5px 9px;border-radius:10px}
+body.xrm-faq-page .links a{color:#344c63!important}
+body.xrm-faq-page .eyebrow{color:#087986!important}
+body.xrm-faq-page :is(h1,h2,h3,summary){color:#142b42!important}
+body.xrm-faq-page :is(.section-head p,details p,.xrm-faq-bottom span,footer){
+  color:#475569!important;
+}
+body.xrm-faq-page :is(details,.xrm-faq-bottom){
+  background:#fff!important;
+  border:1px solid #dbe5ee!important;
+  color:#142b42!important;
+  box-shadow:0 8px 24px rgba(20,43,66,.04)!important;
+}
+body.xrm-faq-page details[open]{border-color:#087986!important}
+body.xrm-faq-page .btn{background:#0759a5!important;color:#fff!important}
+body.xrm-faq-page footer{border-color:#dbe5ee!important}
+
+/* Rolagem e toques no celular sem cortar módulos nem navegação. */
+@media(max-width:760px){
+  body.xrm-sales-page #demo{
+    width:calc(100% - 16px)!important;
+    max-height:calc(100dvh - 16px)!important;
+    border-radius:14px!important;
+  }
+  body.xrm-sales-page #demo .preview-top{padding:9px 12px!important}
+  body.xrm-sales-page #demo .preview-top img{max-width:132px;height:auto}
+  body.xrm-sales-page #demo .preview-top span{font-size:11px!important}
+  body.xrm-sales-page #demo .preview-nav{
+    overflow-x:auto!important;overscroll-behavior-x:contain;
+    -webkit-overflow-scrolling:touch;scrollbar-width:thin;
+  }
+  body.xrm-sales-page #demo .preview-nav button{
+    min-height:44px!important;white-space:nowrap;
+  }
+  body.xrm-sales-page #demo .preview-main{padding:13px!important}
+  body.xrm-sales-page #demo .preview-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  body.xrm-sales-page #demo .preview-cards{grid-template-columns:1fr!important}
+  body.xrm-sales-page #demo .preview-kpi{min-width:0}
+  body.xrm-sales-page #demo .preview-kpi strong{overflow-wrap:anywhere}
+  body.seo-page :is(.calc-form,.calc-results){padding:18px!important}
+  body.xrm-faq-page .links{gap:12px}
+}
+@media(max-width:360px){
+  body.xrm-sales-page #demo .preview-kpi{padding:10px!important}
+  body.xrm-sales-page #demo .preview-top img{max-width:108px}
+}
+@media(prefers-reduced-motion:reduce){
+  body.xrm-sales-page #demo *,body.xrm-faq-page *{transition:none!important}
+}
