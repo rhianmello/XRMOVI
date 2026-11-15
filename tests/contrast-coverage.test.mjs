@@ -18,28 +18,28 @@ const pages = [
   'admin/storage.html', 'admin/storage-hml.html', 'admin/storage-hml-probe.html'
 ];
 
-test('all existing user-facing pages load the high-contrast layer last in head', () => {
+test('all existing user-facing pages load the contrast layer last in head', () => {
   for (const page of pages) {
     const html = readFileSync(resolve(root, page), 'utf8');
-    const head = html.split(/<\\/head>/i)[0];
-    assert.ok(html.includes('</head>'), `missing </head>: ${page}`);
-    assert.match(head, /\\/theme\\/contrast-20261114\\.css\\?v=20261114-1/, `theme missing in ${page}`);
+    const head = html.split('</head>')[0];
+    assert.ok(html.includes('</head>'), 'missing closing head in ' + page);
+    assert.ok(head.includes('/theme/contrast-20261114.css?v=20261114-1'), 'theme missing in ' + page);
     assert.ok(
       head.indexOf('/theme/contrast-20261114.css') > head.lastIndexOf('<style'),
-      `contrast must load after inline styles: ${page}`
+      'theme must follow inline styles in ' + page
     );
   }
 });
 
-test('the explore demo and FAQ keep explicit readable light surfaces', () => {
+test('explore dialog, SEO and FAQ have explicit readable surfaces', () => {
   const css = readFileSync(resolve(root, 'theme/contrast-20261114.css'), 'utf8');
   const landing = readFileSync(resolve(root, 'index.html'), 'utf8');
   const faq = readFileSync(resolve(root, 'perguntas-frequentes/index.html'), 'utf8');
-  assert.match(css, /body\\.xrm-sales-page #demo\\{/);
-  assert.match(css, /#demo \\.preview-company h2/);
-  assert.match(css, /#demo \\.preview-kpi strong/);
-  assert.match(css, /body\\.seo-page\\{/);
-  assert.match(css, /body\\.xrm-faq-page\\{/);
-  assert.match(landing, /<dialog id="demo"/);
-  assert.match(faq, /<body class="xrm-faq-page">/);
+  assert.ok(css.includes('body.xrm-sales-page #demo{'));
+  assert.ok(css.includes('#demo :is(.preview-company h2'));
+  assert.ok(css.includes('#demo .preview-kpi strong'));
+  assert.ok(css.includes('body.seo-page{'));
+  assert.ok(css.includes('body.xrm-faq-page{'));
+  assert.ok(landing.includes('<dialog id="demo"'));
+  assert.ok(faq.includes('<body class="xrm-faq-page">'));
 });
