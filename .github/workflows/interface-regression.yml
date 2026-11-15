@@ -63,7 +63,10 @@ jobs:
                 try{
                   const url='https://xrmovi.com.br'+route;
                   const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
-                  await page.waitForTimeout(1800);
+                  await page.waitForTimeout(1200);
+                  const reject=page.getByText('Recusar',{exact:true}).first();
+                  if(await reject.count()) await reject.click({timeout:2500}).catch(()=>{});
+                  await page.waitForTimeout(500);
                   const title=await page.title();
                   const filename='ad-screenshots/'+name+'-'+format+'.png';
                   await page.screenshot({path:filename,animations:'disabled'});
@@ -72,6 +75,25 @@ jobs:
                 await page.close();
               }
             }
+            const demoPage=await browser.newPage({viewport:{width:1440,height:1000}});
+            await demoPage.goto('https://xrmovi.com.br/',{waitUntil:'domcontentloaded',timeout:45000});
+            await demoPage.waitForTimeout(900);
+            await demoPage.locator('[data-demo]').first().click();
+            const modal=demoPage.locator('dialog#demo');
+            await modal.waitFor({state:'visible',timeout:10000});
+            for(const [view,name] of [
+              ['overview','08-demo-visao-geral'],
+              ['vehicles','09-demo-veiculos'],
+              ['maintenance','10-demo-manutencao'],
+              ['reports','11-demo-relatorios']
+            ]){
+              await demoPage.locator('[data-preview="'+view+'"]').click();
+              await demoPage.waitForTimeout(350);
+              const filename='ad-screenshots/'+name+'.png';
+              await modal.screenshot({path:filename,animations:'disabled'});
+              console.log(filename,'demo illustrates features, not real customer data');
+            }
+            await demoPage.close();
             await browser.close();
           })().catch(e=>{console.error(e);process.exitCode=1});
           NODE
