@@ -8,6 +8,19 @@ try {
  const {data:{user}}=await db.auth.getUser();
  const owner=user?.email?.toLowerCase()==='rhian.udm@gmail.com';
  const internal=window.XrmoviAnalytics?.isInternal?.()===true;
+ // Only signed-in users publish a user-scoped heartbeat; no identity enters
+ // the anonymous public Presence channel.
+ if(user?.id&&!owner){
+  const ping=async()=>{
+   if(document.visibilityState!=='visible')return;
+   try{const {error}=await db.rpc('xrmovi_presence_ping');if(error)throw error}
+   catch(error){console.warn('Sinal de atividade indisponível:',error.message)}
+  };
+  void ping();
+  window.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')void ping()});
+  window.addEventListener('pageshow',()=>void ping());
+  window.setInterval(()=>void ping(),45000);
+ }
  if(!owner&&!internal){
   const id=(()=>{try{let v=sessionStorage.getItem('xrmovi_presence_id');if(!v){v=crypto.randomUUID();sessionStorage.setItem('xrmovi_presence_id',v)}return v}catch{return crypto.randomUUID()}})();
   const channel=db.channel('xrmovi-online-visitors-v1',{config:{presence:{key:id,enabled:true}}});
