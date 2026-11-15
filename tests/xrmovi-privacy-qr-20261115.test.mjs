@@ -10,7 +10,8 @@ const mileage=sql.slice(sql.indexOf('CREATE OR REPLACE FUNCTION public.xrmovi_qr
 test('exactly two complete PL/pgSQL function bodies, with no trailing replacement fragment',()=>{
  assert.equal((sql.match(/AS \\$function\\$/g)||[]).length,2);
  assert.equal((sql.match(/end \\$function\\$/g)||[]).length,2);
- assert.equal(mileage.trim().endsWith('end $function$'),true);
+ assert.equal(mileage.trim().endsWith('end $function$;'),true);
+ assert.equal((sql.match(/end \\$function\\$;/g)||[]).length,2);
  assert.equal((mileage.match(/insert into xrmovi\\.odometer_reports/g)||[]).length,1);
  assert.equal((service.match(/insert into xrmovi\\.driver_service_submissions/g)||[]).length,1);
  assert.ok(mileage.includes("[.](jpg|png|webp)$')"));
