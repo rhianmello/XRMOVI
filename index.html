@@ -842,7 +842,10 @@ body.xrm-auth-open{overflow:hidden}
  function openAuth(event){
   if(event)event.preventDefault();
   const preview=document.getElementById('demo');
-  const trial=new URL(event?.currentTarget?.href||location.href).searchParams.get('trial')==='1';
+  const authUrl=new URL(event?.currentTarget?.href||location.href);
+  const trial=authUrl.searchParams.get('trial')==='1';
+  // Commercial signup links must open Criar conta; existing-customer links remain Entrar.
+  const signupIntent=trial||authUrl.searchParams.has('vehicles')||authUrl.searchParams.get('signup')==='1';
   if(preview?.open)preview.close();
   returnFocus=document.activeElement;
   if(trial){
@@ -851,7 +854,7 @@ body.xrm-auth-open{overflow:hidden}
     localStorage.setItem('xrmovi_fleet_trial_intent','1');
    }catch{}
   }
-  document.querySelector(trial?'[data-auth-mode="signup"]':'[data-auth-mode="signin"]')?.click();
+  document.querySelector(signupIntent?'[data-auth-mode="signup"]':'[data-auth-mode="signin"]')?.click();
   modal.classList.add('open');modal.setAttribute('aria-hidden','false');
   document.body.classList.add('xrm-auth-open');
   modal.querySelector('[name="email"]')?.focus({preventScroll:true});
