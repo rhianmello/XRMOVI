@@ -196,6 +196,9 @@ footer{padding:20px;text-align:center;color:#849eae;font-size:11px}
 .xrm-admin-page .owner-alerts-panel p{font-size:13px;color:#526b80;line-height:1.5;margin:0 0 12px}
 .xrm-admin-page #owner-alerts-enable{margin:0 0 12px;background:#095995;color:white;border:0}
 .xrm-admin-page #owner-alerts-enable[hidden]{display:none}
+.xrm-admin-page #owner-alerts-test{margin:0 0 12px}
+.xrm-admin-page #owner-alerts-test[hidden]{display:none}
+.xrm-admin-page .owner-alerts-push-status{margin:0 0 14px;font-size:12px;color:#587185}
 .xrm-admin-page .owner-alerts-list{display:grid;gap:8px}
 .xrm-admin-page .owner-alerts-entry{display:grid;gap:5px;text-align:left;width:100%;padding:12px;background:#f9fcfe;border:1px solid #e3edf3;border-radius:11px;color:#23445c;cursor:pointer}
 .xrm-admin-page .owner-alerts-entry.is-unread{background:#ebf7fd;border-color:#b6d9eb}
@@ -792,6 +795,7 @@ async function start(){
   try {
     const alerts = await import('./owner-notifications.js?v=20261119-1');
     alerts.mountOwnerNotifications({
+      db,
       userId: data.user.id,
       initialSnapshot: { signups, accounts: info.accounts },
       fetchSnapshot: async () => {
