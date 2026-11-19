@@ -185,6 +185,29 @@ footer{padding:20px;text-align:center;color:#849eae;font-size:11px}
  .xrm-admin-page #view-customers .customer-history .table-wrap{overflow-x:auto}
 }
 </style>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style id="owner-notification-styles">
+.xrm-admin-page #owner-alerts-button{white-space:nowrap}
+.xrm-admin-page .owner-alerts-panel{position:fixed;z-index:65;top:100px;right:16px;width:min(430px,calc(100vw - 24px));max-height:min(68vh,650px);overflow-y:auto;background:white;color:#15334b;border:1px solid #ccdfe9;border-radius:18px;padding:18px;box-shadow:0 18px 50px #0c233944}
+.xrm-admin-page .owner-alerts-panel[hidden]{display:none!important}
+.xrm-admin-page .owner-alerts-panel h2{font-size:19px;margin:0 0 8px}
+.xrm-admin-page .owner-alerts-panel p{font-size:13px;color:#526b80;line-height:1.5;margin:0 0 12px}
+.xrm-admin-page #owner-alerts-enable{margin:0 0 12px;background:#095995;color:white;border:0}
+.xrm-admin-page #owner-alerts-enable[hidden]{display:none}
+.xrm-admin-page #owner-alerts-test{margin:0 0 12px}
+.xrm-admin-page #owner-alerts-test[hidden]{display:none}
+.xrm-admin-page .owner-alerts-push-status{margin:0 0 14px;font-size:12px;color:#587185}
+.xrm-admin-page .owner-alerts-list{display:grid;gap:8px}
+.xrm-admin-page .owner-alerts-entry{display:grid;gap:5px;text-align:left;width:100%;padding:12px;background:#f9fcfe;border:1px solid #e3edf3;border-radius:11px;color:#23445c;cursor:pointer}
+.xrm-admin-page .owner-alerts-entry.is-unread{background:#ebf7fd;border-color:#b6d9eb}
+.xrm-admin-page .owner-alerts-entry strong{font-size:13px}
+.xrm-admin-page .owner-alerts-entry span{font-size:12px;overflow-wrap:anywhere}
+.xrm-admin-page .owner-alerts-entry small{font-size:11px;color:#638095}
+.xrm-admin-page .owner-alerts-empty{padding:14px;text-align:center}
+@media(max-width:700px){.xrm-admin-page .owner-alerts-panel{top:132px;right:12px}.xrm-admin-page #owner-alerts-button{padding:9px 12px}}
+</style>
 </head><body class="xrm-admin-page">
 <header><a href="../" class="brand"><img class="xrmovi-official-mark" src="/assets/xrmovi-logo-oficial.svg?v=20261110-v2" alt="XRMOVI" width="164" height="40"><span><small>PROPRIETÁRIO</small></span></a><div class="actions"><a class="btn ghost" href="../v3/">Frota</a><button class="btn" id="refresh">Atualizar</button><button class="btn" id="signout">Sair</button></div></header>
 <main>
@@ -707,7 +730,19 @@ el('message-form').onsubmit=async event=>{
  finally{button.disabled=false}
 };
 el('refresh').onclick=()=>void refresh();
-el('signout').onclick=async()=>{if(db)await db.auth.signOut();try{localStorage.removeItem('xrmovi_ga4_internal_admin_v1')}catch(_error){}location.replace('../?login=1')};
+el('signout').onclick=async()=>{
+ try {
+  const registration=await navigator.serviceWorker?.getRegistration('/');
+  const subscription=await registration?.pushManager?.getSubscription();
+  if(subscription) {
+   await db.functions.invoke('xrmovi-owner-push',{body:{action:'unsubscribe',endpoint:subscription.endpoint}});
+   await subscription.unsubscribe();
+  }
+ } catch(error){console.warn('Falha ao remover notificações deste aparelho:',error)}
+ if(db)await db.auth.signOut();
+ try{localStorage.removeItem('xrmovi_ga4_internal_admin_v1')}catch(_error){}
+ location.replace('../?login=1');
+};
 async function checkBillingStatus(){
  const label=el('xrm-billing-health');
  try{
@@ -768,6 +803,35 @@ async function start(){
   // Only a server-verified platform administrator can mark this browser as internal.
   try{localStorage.setItem('xrmovi_ga4_internal_admin_v1',JSON.stringify({role:'platform_admin',until:Date.now()+14*24*60*60*1000}))}catch(_error){}
   await refresh();startOnlineCounter();void loadAccountPresence();void checkBillingStatus();
+  // Consultas e avisos ativos somente depois de validar o administrador no servidor.
+  try {
+    const alerts = await import('./owner-notifications.js?v=20261119-1');
+    alerts.mountOwnerNotifications({
+      db,
+      userId: data.user.id,
+      initialSnapshot: { signups, accounts: info.accounts },
+      fetchSnapshot: async () => {
+        const [latestSignups, latestOverview] = await Promise.all([
+          rpc('admin_auth_signups'), rpc('commercial_admin_overview')
+        ]);
+        return { signups: latestSignups, accounts: latestOverview?.accounts || [] };
+      },
+      onNewEvents: () => refresh(),
+      onNavigate: ({ kind, accountId }) => {
+        if (kind === 'support' && (info.accounts || []).some(account => account.id === accountId)) {
+          threadId = accountId; openTab('messages');
+        } else if (kind === 'signup') openTab('signups');
+        else openTab('messages');
+      }
+    });
+  } catch(error) { console.warn('Central de notificações indisponível:', error); }
+  const openFromAlert = new URLSearchParams(location.search);
+  if (openFromAlert.get('tab') === 'signups') openTab('signups');
+  if (openFromAlert.get('tab') === 'messages') {
+    const accountId = openFromAlert.get('account');
+    if ((info.accounts || []).some(account => account.id === accountId)) threadId = accountId;
+    openTab('messages');
+  }
    window.setInterval(()=>void loadAccountPresence(),30000);
    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')void loadAccountPresence()});
   // Recarrega os testes sem comprometer outros painéis ou criar eventos de marketing.
