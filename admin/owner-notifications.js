@@ -255,7 +255,7 @@ export function mountOwnerNotifications({ db, userId, initialSnapshot, fetchSnap
     try {
       const { data, error } = await db.functions.invoke('xrmovi-owner-push', { body: { action: 'test' } });
       if (error || data?.ok !== true) throw Error(error?.message || data?.error || 'Falha no teste');
-      pushStatus.textContent = 'Notificação de teste enviada. Confira os avisos do aparelho.';
+      pushStatus.textContent = 'Teste solicitado. Confira se a notificação aparece no aparelho.';
     } catch (error) { pushStatus.textContent = 'Erro no teste: ' + String(error.message || error); }
     finally { testPush.disabled = false; }
   });
@@ -267,7 +267,7 @@ export function mountOwnerNotifications({ db, userId, initialSnapshot, fetchSnap
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') void poll();
   });
-  reconcile(initialSnapshot, true);
+  reconcile(initialSnapshot, false); // Não repete na abertura os avisos já recebidos enquanto o app esteve fechado.
   void prepareRemotePush();
   timer = window.setInterval(() => void poll(), POLL_MS);
   render();
