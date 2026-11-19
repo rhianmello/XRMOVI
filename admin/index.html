@@ -730,7 +730,19 @@ el('message-form').onsubmit=async event=>{
  finally{button.disabled=false}
 };
 el('refresh').onclick=()=>void refresh();
-el('signout').onclick=async()=>{if(db)await db.auth.signOut();try{localStorage.removeItem('xrmovi_ga4_internal_admin_v1')}catch(_error){}location.replace('../?login=1')};
+el('signout').onclick=async()=>{
+ try {
+  const registration=await navigator.serviceWorker?.getRegistration('/');
+  const subscription=await registration?.pushManager?.getSubscription();
+  if(subscription) {
+   await db.functions.invoke('xrmovi-owner-push',{body:{action:'unsubscribe',endpoint:subscription.endpoint}});
+   await subscription.unsubscribe();
+  }
+ } catch(error){console.warn('Falha ao remover notificações deste aparelho:',error)}
+ if(db)await db.auth.signOut();
+ try{localStorage.removeItem('xrmovi_ga4_internal_admin_v1')}catch(_error){}
+ location.replace('../?login=1');
+};
 async function checkBillingStatus(){
  const label=el('xrm-billing-health');
  try{
