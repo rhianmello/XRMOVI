@@ -382,8 +382,9 @@ function rowCustomer(c,full=false){
   if(c.status==='canceled'&&c.paid_through)tr.lastElementChild.append(node('span','Acesso pago até '+date(c.paid_through),'sub'));
  if(full){
   cell(tr,number(c.vehicles));
-  const accessText=c.blocked?'Bloqueado':manual?'Manual até '+manualUntil:c.status==='active'?'Assinatura ativa':'Pagamento pendente';
-  pill(tr,accessText,c.blocked?'blocked':manual||c.status==='active'?'active':'pending');
+  const trialValid=c.status==='trial'&&c.trial_end&&Date.parse(c.trial_end)>Date.now();
+  const accessText=c.blocked?'Bloqueado':manual?'Manual até '+manualUntil:trialValid?'Teste liberado':c.status==='active'?'Assinatura ativa':'Pagamento pendente';
+  pill(tr,accessText,c.blocked?'blocked':manual||trialValid||c.status==='active'?'active':'pending');
  }
  cell(tr,date(c.created_at));
  const td=node('td'),actions=node('div','','actions');
@@ -397,7 +398,9 @@ function rowCustomer(c,full=false){
   toggle.type='button';toggle.onclick=()=>void changeAccess(c);
   const chat=node('button','Mensagem'+(c.unread?' ('+c.unread+')':''),'btn');
   chat.type='button';chat.onclick=()=>{threadId=c.id;openTab('messages');void loadThread()};
-  actions.append(toggle,chat);
+  const historyButton=node('button','Histórico de acessos','btn');
+  historyButton.type='button';historyButton.onclick=()=>void showCustomerAccessHistory(c);
+  actions.append(toggle,chat,historyButton);
    const chooser=node('select','','search');
    chooser.style.cssText='max-width:160px;min-width:145px;font-size:12px';
    chooser.setAttribute('aria-label','Classificação comercial: '+c.email);
@@ -414,6 +417,10 @@ function rowCustomer(c,full=false){
  }
  td.append(actions);tr.append(td);
  return tr;
+}
+async function showCustomerAccessHistory(account){
+ try{const module=await import('./access-history.js?v=20261119-1');module.openAccessHistory({email:account.email,fetchHistory:()=>rpc('admin_access_history',{p_account:account.id})})}
+ catch(error){status('Histórico indisponível: '+error.message,'error')}
 }
 function commercialAccounts(){
  // Preserve existing payment and executive data visibility; never infer new sales.
