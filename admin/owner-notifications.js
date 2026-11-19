@@ -39,7 +39,7 @@ function normalized(snapshot, adminId) {
   };
 }
 
-export function mountOwnerNotifications({ userId, initialSnapshot, fetchSnapshot, onNewEvents, onNavigate }) {
+export function mountOwnerNotifications({ db, userId, initialSnapshot, fetchSnapshot, onNewEvents, onNavigate }) {
   if (!userId || typeof fetchSnapshot !== 'function') return null;
   const key = PREFIX + userId;
   const oldSaved = readJSON(key);
@@ -47,6 +47,11 @@ export function mountOwnerNotifications({ userId, initialSnapshot, fetchSnapshot
   let history = Array.isArray(oldSaved?.history) ? oldSaved.history.slice(0, MAX_HISTORY) : [];
   let busy = false;
   let timer;
+  let pushReady = false;
+  let pushSubscriptionSaved = false;
+  let pushRegistration = null;
+  let pushPublicKey = null;
+  let pushError = '';
 
   const host = document.querySelector('header .actions');
   if (!host || document.getElementById('owner-alerts-button')) return null;
@@ -65,8 +70,13 @@ export function mountOwnerNotifications({ userId, initialSnapshot, fetchSnapshot
   panel.setAttribute('aria-label', 'Notificações do proprietário');
   const heading = item('h2', 'Avisos do XRMOVI');
   const help = item('p', 'Novos cadastros e mensagens de clientes aparecem aqui. No iPhone, instale o XRMOVI na Tela de Início e permita notificações.');
+  const pushStatus = item('p', 'Preparando avisos do celular…', 'owner-alerts-push-status');
+  pushStatus.setAttribute('role', 'status');
+  const testPush = item('button', 'Enviar notificação de teste', 'btn ghost');
+  testPush.type = 'button';
+  testPush.id = 'owner-alerts-test';
   const list = item('div', null, 'owner-alerts-list');
-  panel.append(heading, help, enable, list);
+  panel.append(heading, help, enable, testPush, pushStatus, list);
   host.prepend(bell);
   document.querySelector('main')?.prepend(panel);
 
@@ -93,13 +103,20 @@ export function mountOwnerNotifications({ userId, initialSnapshot, fetchSnapshot
     }
     const supported = 'Notification' in window && 'serviceWorker' in navigator;
     const allowed = supported && Notification.permission === 'granted';
-    enable.hidden = allowed;
-    enable.textContent = !supported ? 'Avisos disponíveis no app instalado' :
+    enable.hidden = pushSubscriptionSaved;
+    enable.textContent = !supported ? 'Instale o app para permitir avisos' :
       Notification.permission === 'denied' ? 'Notificações bloqueadas no dispositivo' :
-      'Ativar notificações';
+      'Ativar notificações no celular';
     enable.disabled = !supported || (supported && Notification.permission === 'denied');
+    pushStatus.textContent = pushSubscriptionSaved ?
+      'Ativado neste aparelho: novos cadastros e mensagens podem chegar mesmo com o XRMOVI fechado.' :
+      pushReady ? 'Pronto para ativar as notificações push deste aparelho.' :
+      allowed ? 'Avisos locais permitidos. O envio com o app fechado ainda não está ativo. ' + pushError :
+      pushError || 'No iPhone, abra o XRMOVI pela Tela de Início e toque em Ativar.';
+    testPush.hidden = !pushSubscriptionSaved;
   }
   async function systemAlert(event) {
+    if (pushSubscriptionSaved) return; // Evita duplicar o push remoto.
     if (!('Notification' in window) || Notification.permission !== 'granted' || !('serviceWorker' in navigator)) return;
     try {
       const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
@@ -172,20 +189,75 @@ export function mountOwnerNotifications({ userId, initialSnapshot, fetchSnapshot
       persist(); render();
     }
   });
+  function vapidBytes(publicKey) {
+    const b64 = publicKey.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = b64 + '='.repeat((4 - b64.length % 4) % 4);
+    return Uint8Array.from(atob(padded), char => char.charCodeAt(0));
+  }
+  async function registerServerSubscription(subscription) {
+    const { data, error } = await db.functions.invoke('xrmovi-owner-push', {
+      body: { action: 'subscribe', subscription: subscription.toJSON() }
+    });
+    if (error || data?.ok !== true) throw Error(error?.message || data?.error || 'Não foi possível registrar o aparelho.');
+    pushSubscriptionSaved = true;
+    pushError = '';
+    render();
+  }
+  async function prepareRemotePush() {
+    if (!db || !('serviceWorker' in navigator) || !('PushManager' in window)) {
+      pushError = 'Este navegador ainda não permite Web Push. No iPhone, instale e abra o XRMOVI pela Tela de Início.';
+      render(); return;
+    }
+    try {
+      const [registration, result] = await Promise.all([
+        navigator.serviceWorker.register('/sw.js', { scope: '/' }),
+        db.functions.invoke('xrmovi-owner-push', { body: { action: 'public-key' } })
+      ]);
+      if (result.error || !result.data?.public_key) throw Error(result.error?.message || result.data?.error || 'Chave de notificações indisponível');
+      pushPublicKey = result.data.public_key;
+      pushRegistration = registration;
+      pushReady = true;
+      if (Notification.permission === 'granted') {
+        const existing = await registration.pushManager.getSubscription();
+        if (existing) await registerServerSubscription(existing);
+      }
+    } catch (error) {
+      pushError = 'Envio remoto indisponível no momento. ' + String(error.message || error);
+      console.warn('XRMOVI push:', error);
+    }
+    render();
+  }
   enable.addEventListener('click', async () => {
-    // O pedido precisa ser iniciado diretamente pelo toque, especialmente no iOS.
+    // Permissão deve partir do clique real do usuário, especialmente no iOS.
     if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
     try {
       const permission = await Notification.requestPermission();
-      if (permission === 'granted') await navigator.serviceWorker.register('/sw.js', { scope: '/' });
-      render();
-      if (permission === 'granted') {
-        await systemAlert({
-          id: 'teste', kind: 'signup', title: 'Avisos do XRMOVI ativados',
-          body: 'Você receberá alertas de novos cadastros e mensagens enquanto o painel estiver ativo.'
-        });
+      if (permission !== 'granted') { render(); return; }
+      const registration = pushRegistration || await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+      if (!pushReady) {
+        pushError = 'Avisos do sistema permitidos. O envio remoto ainda está indisponível.';
+        render();
+        return;
       }
-    } catch (error) { console.warn('Erro ao ativar avisos:', error); render(); }
+      let subscription = await registration.pushManager.getSubscription();
+      if (!subscription) subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true, applicationServerKey: vapidBytes(pushPublicKey)
+      });
+      await registerServerSubscription(subscription);
+    } catch (error) {
+      pushError = 'Falha na ativação: ' + String(error.message || error);
+      console.warn('Não foi possível ativar Web Push:', error);
+      render();
+    }
+  });
+  testPush.addEventListener('click', async () => {
+    testPush.disabled = true;
+    try {
+      const { data, error } = await db.functions.invoke('xrmovi-owner-push', { body: { action: 'test' } });
+      if (error || data?.ok !== true) throw Error(error?.message || data?.error || 'Falha no teste');
+      pushStatus.textContent = 'Notificação de teste enviada. Confira os avisos do aparelho.';
+    } catch (error) { pushStatus.textContent = 'Erro no teste: ' + String(error.message || error); }
+    finally { testPush.disabled = false; }
   });
   document.addEventListener('click', event => {
     if (!panel.hidden && !panel.contains(event.target) && !bell.contains(event.target)) {
@@ -196,6 +268,7 @@ export function mountOwnerNotifications({ userId, initialSnapshot, fetchSnapshot
     if (document.visibilityState === 'visible') void poll();
   });
   reconcile(initialSnapshot, true);
+  void prepareRemotePush();
   timer = window.setInterval(() => void poll(), POLL_MS);
   render();
   return { poll, destroy: () => window.clearInterval(timer) };
