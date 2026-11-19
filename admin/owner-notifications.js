@@ -66,8 +66,8 @@ export function mountOwnerNotifications({ userId, initialSnapshot, fetchSnapshot
   const heading = item('h2', 'Avisos do XRMOVI');
   const help = item('p', 'Novos cadastros e mensagens de clientes aparecem aqui. No iPhone, instale o XRMOVI na Tela de Início e permita notificações.');
   const list = item('div', null, 'owner-alerts-list');
-  panel.append(heading, help, list);
-  host.prepend(bell, enable);
+  panel.append(heading, help, enable, list);
+  host.prepend(bell);
   document.querySelector('main')?.prepend(panel);
 
   function persist() { writeJSON(key, { last, history }); }
